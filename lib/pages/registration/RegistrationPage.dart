@@ -1,23 +1,25 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ourappfyp/Components/Button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ourappfyp/Components/Button.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegistrationPage> createState() => _RegistrationPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  bool _rememberMe = false;
+class _RegistrationPageState extends State<RegistrationPage> {
+  late String fullName;
+  late String email;
+  late String password;
 
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     final double verticalSpacing = screenSize.height * 0.05;
     final double WidthOfFields = screenSize.width * 0.8;
-
     return Scaffold(
       backgroundColor: Color.fromRGBO(3, 7, 18, 1),
       body: SingleChildScrollView(
@@ -60,20 +62,9 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'Login to continue',
-                    style: GoogleFonts.inter(
-                      textStyle: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 40.0),
                   const Text(
-                    'User ID',
+                    'Full Name',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -82,11 +73,35 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 10),
                   inputField(
-                    hintText: 'Enter your username',
+                    hintText: 'Enter your full name',
                     prefixIcon: Icons.person,
                     width: WidthOfFields,
                     onChanged: (value) {
-                      // Handle username onChanged
+                      setState(() {
+                        fullName = value;
+                      });
+                      // print(fullName);
+                    },
+                  ),
+                  const SizedBox(height: 45),
+                  const Text(
+                    'Email',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  inputField(
+                    hintText: 'Enter your email',
+                    prefixIcon: Icons.email,
+                    width: WidthOfFields,
+                    onChanged: (value) {
+                      setState(() {
+                        email = value;
+                      });
+                      // print(email);
                     },
                   ),
                   const SizedBox(height: 45),
@@ -104,87 +119,32 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: Icons.password,
                     width: WidthOfFields,
                     onChanged: (value) {
-                      // Handle password onChanged
+                      setState(() {
+                        password = value;
+                      });
+                      // print(password);
                     },
                     obscureText: true,
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
-              Container(
-                margin: EdgeInsets.only(left: 32),
-                width: WidthOfFields,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Checkbox(
-                            value: _rememberMe,
-                            fillColor: MaterialStateProperty.all(
-                              Color.fromRGBO(109, 40, 217, 1.0),
-                            ),
-                            onChanged: (bool? value) => {
-                                  setState(() {
-                                    _rememberMe = value ?? !_rememberMe;
-                                  })
-                                }),
-                        const Text(
-                          'Remember Me',
-                          style: TextStyle(color: Colors.white, fontSize: 13.0),
-                        ),
-                      ],
-                    ),
-                    TextButton(
-                        onPressed: () => {},
-                        child: const Text(
-                          'Forgot Password?',
-                          style: TextStyle(color: Colors.white, fontSize: 13.0),
-                        ))
-                  ],
-                ),
-              ),
-              SizedBox(height: 35),
+              SizedBox(height: (screenSize.height * 0.15)),
               Button(
-                text: "Login",
-                onPressed: () => {},
+                text: "Sign Up",
+                onPressed: () => {print("signUp")},
                 width: WidthOfFields,
-              ),
-              SizedBox(height: 10),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Don't have an account?",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Navigate to signup page
-                        // Navigator.pushNamed(context, '/signup');
-                      },
-                      child: const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: Color.fromRGBO(109, 40, 217, 1.0),
-                          fontSize: 13,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Color.fromRGBO(109, 40, 217, 1.0),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              )
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _SignUp() async {
+    String UserName = this.fullName;
+    String EmailId = this.email;
+    String Password = this.password;
   }
 
   Widget inputField({
