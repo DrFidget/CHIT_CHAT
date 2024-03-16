@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:ourappfyp/Components/Button.dart';
 
-class Registration extends StatelessWidget {
-  const Registration({Key? key});
+class HomePage extends StatelessWidget {
+  const HomePage({Key? key});
 
   @override
   Widget build(BuildContext context) {
