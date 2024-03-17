@@ -34,7 +34,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     Icons.arrow_back,
                     color: Colors.white,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/');
+                  },
                 ),
                 title: Text(
                   "ChitChat",
@@ -53,7 +55,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welcome Back!',
+                    'Create Account Now!',
                     style: GoogleFonts.jockeyOne(
                       textStyle: const TextStyle(
                         color: Colors.white,
@@ -176,3 +178,4 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 }
+//https://www.youtube.com/watch?v=rWamixHIKmQ&ab_channel=FlutterMapp

@@ -32,7 +32,9 @@ class _LoginPageState extends State<LoginPage> {
                     Icons.arrow_back,
                     color: Colors.white,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/');
+                  },
                 ),
                 title: Text(
                   "ChitChat",
@@ -164,8 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     TextButton(
                       onPressed: () {
-                        // Navigate to signup page
-                        // Navigator.pushNamed(context, '/signup');
+                        Navigator.pushNamed(context, '/register');
                       },
                       child: const Text(
                         'Sign Up',
