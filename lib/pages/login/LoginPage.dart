@@ -122,11 +122,11 @@ class _LoginPageState extends State<LoginPage> {
                         Checkbox(
                             value: _rememberMe,
                             fillColor: MaterialStateProperty.all(
-                              Color.fromRGBO(109, 40, 217, 1.0),
+                              Color.fromRGBO(248, 240, 229, 1.0),
                             ),
-                            onChanged: (bool? value) => {
+                            onChanged: (v) => {
                                   setState(() {
-                                    _rememberMe = value ?? !_rememberMe;
+                                    _rememberMe = !_rememberMe;
                                   })
                                 }),
                         const Text(
