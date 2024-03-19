@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/Components/Button.dart';
+import 'package:ourappfyp/auth/auth.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
@@ -143,10 +144,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
+  // void _SignUp() async {
+  //   String UserName = this.fullName;
+  //   String EmailId = this.email;
+  //   String Password = this.password;
+  // }
   void _SignUp() async {
-    String UserName = this.fullName;
-    String EmailId = this.email;
-    String Password = this.password;
+    try {
+      await Auth()
+          .createUserWithEmailAndPassword(email: email, password: password);
+
+      Navigator.pushReplacementNamed(context, '/login');
+      print('User registered successfully!');
+    } catch (e) {
+      print('Error registering user: $e');
+    }
   }
 
   Widget inputField({
