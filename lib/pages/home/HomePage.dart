@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
           Button(
             text: 'Login',
             // ignore: avoid_print
-            onPressed: () => {Navigator.pushNamed(context, '/login')},
+            onPressed: () => {print("login")},
             width: imageSize,
             height: (screenSize.height * .06),
           ),
@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
           Button(
             text: 'Register',
             // ignore: avoid_print
-            onPressed: () => {Navigator.pushNamed(context, '/register')},
+            onPressed: () => {print("register")},
             width: imageSize,
             height: (screenSize.height * .06),
           ), // Passing text to the button
