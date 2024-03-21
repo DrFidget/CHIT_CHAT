@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:ourappfyp/pages/login/LoginPage.dart';
 import 'package:ourappfyp/pages/home/HomePage.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:ourappfyp/pages/register/RegistrationPage.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    runApp(const MyApp());
+  } catch (error) {
+    print("Firebase initialization error: $error");
+    // Handle the error here, potentially show a message to the user
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -12,6 +24,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(title: 'Flutter Demo', home: LoginPage());
+    return MaterialApp(
+      title: 'Flutter Demo',
+      //  home: RegistrationPage()
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomePage(),
+        '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegistrationPage(),
+      },
+    );
   }
 }
