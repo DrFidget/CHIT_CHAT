@@ -3,6 +3,7 @@ import 'package:ourappfyp/pages/login/LoginPage.dart';
 import 'package:ourappfyp/pages/home/HomePage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ourappfyp/pages/register/RegistrationPage.dart';
+import 'package:ourappfyp/pages/call/CallScreen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -25,11 +26,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       //  home: RegistrationPage()
       initialRoute: '/',
       routes: {
-        '/': (context) => const HomePage(),
+        '/': (context) => const CallScreen(),
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegistrationPage(),
       },
