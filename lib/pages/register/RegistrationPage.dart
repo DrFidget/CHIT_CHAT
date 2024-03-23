@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/Components/Button.dart';
+import 'package:ourappfyp/pages/auth/auth.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
@@ -12,8 +13,10 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   late String fullName;
-  late String email;
-  late String password;
+  late String Email;
+  late String Password;
+  // final TextEditingController email = TextEditingController();
+  // final TextEditingController password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -101,9 +104,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     width: WidthOfFields,
                     onChanged: (value) {
                       setState(() {
-                        email = value;
+                        Email = value;
                       });
-                      // print(email);
+                      // print(fullName);
                     },
                   ),
                   const SizedBox(height: 45),
@@ -120,20 +123,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     hintText: 'Enter your password',
                     prefixIcon: Icons.password,
                     width: WidthOfFields,
+                    obscureText: true,
                     onChanged: (value) {
                       setState(() {
-                        password = value;
+                        Password = value;
                       });
-                      // print(password);
+                      // print(fullName);
                     },
-                    obscureText: true,
                   ),
                 ],
               ),
               SizedBox(height: (screenSize.height * 0.15)),
               Button(
                 text: "Sign Up",
-                onPressed: () => {print("signUp")},
+                onPressed: _SignUp,
                 width: WidthOfFields,
               )
             ],
@@ -144,9 +147,34 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   void _SignUp() async {
-    String UserName = this.fullName;
-    String EmailId = this.email;
-    String Password = this.password;
+    String emailValue = Email;
+    String passwordValue = Password;
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailValue,
+        password: passwordValue,
+      );
+      print("User signed up successfully!");
+    } catch (e) {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(
+                '${e.toString()}. Please check your credentials and try again!'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Okay'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        },
+      );
+      // Handle error, show error message to the user, etc.
+    }
   }
 
   Widget inputField({

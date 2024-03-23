@@ -1,16 +1,27 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ourappfyp/Components/Button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ourappfyp/pages/auth/auth.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late String _email;
+  late String _password;
   bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _email = '';
+    _password = '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +99,9 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: Icons.person,
                     width: WidthOfFields,
                     onChanged: (value) {
-                      // Handle username onChanged
+                      setState(() {
+                        _email = value;
+                      });
                     },
                   ),
                   const SizedBox(height: 45),
@@ -105,10 +118,12 @@ class _LoginPageState extends State<LoginPage> {
                     hintText: 'Enter your password',
                     prefixIcon: Icons.password,
                     width: WidthOfFields,
-                    onChanged: (value) {
-                      // Handle password onChanged
-                    },
                     obscureText: true,
+                    onChanged: (value) {
+                      setState(() {
+                        _password = value;
+                      });
+                    },
                   ),
                 ],
               ),
@@ -126,11 +141,11 @@ class _LoginPageState extends State<LoginPage> {
                             fillColor: MaterialStateProperty.all(
                               const Color.fromRGBO(109, 40, 217, 1.0),
                             ),
-                            onChanged: (bool? value) => {
-                                  setState(() {
-                                    _rememberMe = value ?? !_rememberMe;
-                                  })
-                                }),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _rememberMe = value ?? !_rememberMe;
+                              });
+                            }),
                         const Text(
                           'Remember Me',
                           style: TextStyle(color: Colors.white, fontSize: 13.0),
@@ -149,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 35),
               Button(
                 text: "Login",
-                onPressed: () => {},
+                onPressed: () => {_signIn()},
                 width: WidthOfFields,
               ),
               const SizedBox(height: 10),
@@ -191,10 +206,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget inputField({
     required String hintText,
     required IconData prefixIcon,
-    required Function(String) onChanged,
     double? width,
     double? height,
     bool obscureText = false,
+    ValueChanged<String>? onChanged,
   }) {
     return Container(
       width: width ?? 400,
@@ -215,5 +230,63 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  void _signIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: this._email,
+        password: this._password,
+      );
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Signed In'),
+            content: Text('SignIn successful'),
+            actions: <Widget>[
+              TextButton(
+                  child: Text('Okay'),
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, '/')),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      String errorMessage = 'An error occurred, please try again later.';
+
+      // Check if the error is FirebaseAuthException
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'user-not-found':
+            errorMessage = 'No user found with this email.';
+            break;
+          case 'wrong-password':
+            errorMessage = 'Invalid password.';
+            break;
+          default:
+            errorMessage = 'Authentication failed. Please try again later.';
+            break;
+        }
+      }
+
+      // Show error dialog with appropriate message
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(errorMessage),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Okay'),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }
