@@ -154,7 +154,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
         email: emailValue,
         password: passwordValue,
       );
-      print("User signed up successfully!");
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Signup done'),
+            content: Text('Signup successful'),
+            actions: <Widget>[
+              TextButton(
+                  child: Text('Okay'),
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, '/')),
+            ],
+          );
+        },
+      );
     } catch (e) {
       showDialog(
         // ignore: use_build_context_synchronously
