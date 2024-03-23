@@ -188,9 +188,9 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                   Text(
                     description,
                     style: GoogleFonts.inter(
-                      textStyle: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w300,
+                      textStyle:  TextStyle(
+                        color: Colors.white.withOpacity(0.6),
+                        fontWeight: FontWeight.normal,
                         fontSize: 16,
                       ),
                     ),
@@ -218,11 +218,11 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.jockeyOne(
+                  style: GoogleFonts.inter(
                     textStyle: TextStyle(
                       color: Colors.white.withOpacity(0.6),
                       fontWeight: FontWeight.normal,
-                      fontSize: 20,
+                      fontSize: 16,
                     ),
                   ),
                 ),

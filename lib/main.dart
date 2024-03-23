@@ -33,8 +33,8 @@ class MyApp extends StatelessWidget {
       //  home: RegistrationPage()
       initialRoute: '/',
       routes: {
-        '/': (context) => SettingsPage(),
-        //'/': (context) => ChatSettingsPage(),
+       // '/': (context) => SettingsPage(),
+        '/': (context) => ChatSettingsPage(),
        // '/': (context) => const CallScreen(),
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegistrationPage(),

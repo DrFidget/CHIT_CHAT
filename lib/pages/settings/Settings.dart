@@ -65,17 +65,17 @@ class SettingsPage extends StatelessWidget {
                         style: GoogleFonts.inter(
                           textStyle: const TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.normal,
                             fontSize: 16,
                           ),
                         ),
                       ),
                       Text(
                         'Hi Its Alex',
-                        style: GoogleFonts.interTight(
-                          textStyle: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w300,
+                        style: GoogleFonts.inter(
+                          textStyle: TextStyle(
+                            color: Colors.white.withOpacity(0.5),
+                            fontWeight: FontWeight.normal,
                             fontSize: 14,
                           ),
                         ),
@@ -172,16 +172,17 @@ class SettingsPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-                Text(
-                  description,
-                  style: GoogleFonts.inter(
-                    textStyle: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w300,
-                      fontSize: 16,
+                if (description.isNotEmpty) // Show description only if it's not empty
+                  Text(
+                    description,
+                    style: GoogleFonts.inter(
+                      textStyle:  TextStyle(
+                        color: Colors.white.withOpacity(0.6),
+                        fontWeight: FontWeight.normal,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
