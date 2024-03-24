@@ -4,6 +4,8 @@ import 'package:ourappfyp/pages/home/HomePage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ourappfyp/pages/register/RegistrationPage.dart';
 import 'package:ourappfyp/pages/call/CallScreen.dart';
+import 'package:ourappfyp/pages/settings/Settings.dart';
+import 'package:ourappfyp/pages/chat_Setting/chatsetting.dart';
 import 'firebase_options.dart';
 
 void main() async {
