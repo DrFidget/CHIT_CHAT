@@ -248,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
               TextButton(
                   child: Text('Okay'),
                   onPressed: () =>
-                      Navigator.pushReplacementNamed(context, '/')),
+                      Navigator.pushReplacementNamed(context, '/callScreen')),
             ],
           );
         },

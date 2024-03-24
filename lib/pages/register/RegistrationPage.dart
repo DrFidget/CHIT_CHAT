@@ -164,7 +164,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               TextButton(
                   child: Text('Okay'),
                   onPressed: () =>
-                      Navigator.pushReplacementNamed(context, '/')),
+                      Navigator.pushReplacementNamed(context, '/callScreen')),
             ],
           );
         },
