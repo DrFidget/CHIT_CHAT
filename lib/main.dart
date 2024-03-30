@@ -6,6 +6,7 @@ import 'package:ourappfyp/pages/register/RegistrationPage.dart';
 import 'package:ourappfyp/pages/call/CallScreen.dart';
 import 'package:ourappfyp/pages/settings/Settings.dart';
 import 'package:ourappfyp/pages/chat_Setting/chatsetting.dart';
+import 'package:ourappfyp/pages/chat_dash/chat.dart';
 import 'firebase_options.dart';
 
 void main() async {
