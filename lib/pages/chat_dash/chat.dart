@@ -2,25 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ChitChat Chat Screen',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: const ChatScreen(),
-    );
-  }
-}
-
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
@@ -221,7 +202,8 @@ class ChatScreen extends StatelessWidget {
                   ),
                   title: Text(
                     getRandomName(),
-                    style: const TextStyle(color: Colors.white), // Set name text color to white
+                    style: const TextStyle(
+                        color: Colors.white), // Set name text color to white
                   ),
                   subtitle: Row(
                     children: [
@@ -232,7 +214,9 @@ class ChatScreen extends StatelessWidget {
                         ),
                       Text(
                         index == 3 ? 'Photo' : getRandomMessage(),
-                        style: const TextStyle(color: Colors.white), // Set message text color to white
+                        style: const TextStyle(
+                            color: Colors
+                                .white), // Set message text color to white
                       ), // Display random message or "Photo" for the 4th sender
                     ],
                   ),
@@ -241,12 +225,16 @@ class ChatScreen extends StatelessWidget {
                     children: [
                       Text(
                         getTime(index),
-                        style: const TextStyle(color: Colors.white), // Set timestamp text color to white
+                        style: const TextStyle(
+                            color: Colors
+                                .white), // Set timestamp text color to white
                       ),
                       const SizedBox(width: 5),
                       (index % 2 == 0)
                           ? const Icon(Icons.done_all, color: Colors.blue)
-                          : const Icon(Icons.done, color: Colors.red), // Conditionally display read/unread status icon
+                          : const Icon(Icons.done,
+                              color: Colors
+                                  .red), // Conditionally display read/unread status icon
                     ],
                   ),
                 );
