@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ourappfyp/Components/Button.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ourappfyp/pages/auth/auth.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

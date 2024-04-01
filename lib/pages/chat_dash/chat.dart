@@ -1,9 +1,17 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ourappfyp/pages/call/CallScreen.dart';
 
-class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  int _selectedIndex = 0;
 
   // Sample messages
   static const List<String> sampleMessages = [
@@ -61,27 +69,9 @@ class ChatScreen extends StatelessWidget {
     }
   }
 
-  GestureDetector buildTabItem(int index, String text) {
-    return GestureDetector(
-      onTap: () {
-        // Handle tab item tapped
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     final double screenHeight = MediaQuery.of(context).size.height;
     final double appBarHeight = AppBar().preferredSize.height;
@@ -122,6 +112,7 @@ class ChatScreen extends StatelessWidget {
               },
             ),
             PopupMenuButton(
+              icon: const Icon(Icons.more_vert, color: Colors.white),
               itemBuilder: (BuildContext context) => [
                 const PopupMenuItem(
                   value: "New group",
@@ -233,8 +224,8 @@ class ChatScreen extends StatelessWidget {
                       (index % 2 == 0)
                           ? const Icon(Icons.done_all, color: Colors.blue)
                           : const Icon(Icons.done,
-                              color: Colors
-                                  .red), // Conditionally display read/unread status icon
+                          color: Colors
+                              .red), // Conditionally display read/unread status icon
                     ],
                   ),
                 );
@@ -244,5 +235,42 @@ class ChatScreen extends StatelessWidget {
         ],
       ),
     );
-  }
+}
+
+GestureDetector buildTabItem(int index, String text) {
+  return GestureDetector(
+    onTap: () {
+      setState(() {
+        _selectedIndex = index;
+        if(index == 2) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CallScreen()),
+          );
+        }
+        // Navigate to corresponding screen based on index
+      });
+    },
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: _selectedIndex == index ? Colors.white : Colors.transparent,
+            width: 2.0,
+          ),
+        ),
+      ),
+      child: Text(
+        text,
+        style: GoogleFonts.inter(
+          textStyle: TextStyle(
+            color: _selectedIndex == index ? Colors.white : Colors.grey,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    ),
+  );
+}
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/Components/UserCallInfo.dart';
+import 'package:ourappfyp/pages/chat_dash/chat.dart';
 
 class CallScreen extends StatefulWidget {
   const CallScreen({Key? key}) : super(key: key);
@@ -53,10 +54,32 @@ class _CallScreenState extends State<CallScreen> {
                 // Add camera functionality here
               },
             ),
-            IconButton(
-              icon: Icon(Icons.more_vert, color: Colors.white),
-              onPressed: () {
-                // Add more functionality here
+            PopupMenuButton(
+              icon: const Icon(Icons.more_vert, color: Colors.white),
+              itemBuilder: (BuildContext context) => [
+                const PopupMenuItem(
+                  value: "New group",
+                  child: Text("New group"),
+                ),
+                const PopupMenuItem(
+                  value: "New broadcast",
+                  child: Text("New broadcast"),
+                ),
+                const PopupMenuItem(
+                  value: "WhatsApp Web",
+                  child: Text("WhatsApp Web"),
+                ),
+                const PopupMenuItem(
+                  value: "Starred messages",
+                  child: Text("Starred messages"),
+                ),
+                const PopupMenuItem(
+                  value: "Settings",
+                  child: Text("Settings"),
+                ),
+              ],
+              onSelected: (value) {
+                // Handle item selection
               },
             ),
           ],
@@ -106,7 +129,7 @@ class _CallScreenState extends State<CallScreen> {
               name: 'John Doe',
               phoneNumber: '+123-456-7890',
               profilePicUrl:
-              'https://i0.wp.com/eacademy.edu.vn/wp-content/uploads/2023/photos1/1/WhatsApp-DP-Cute-175.jpg?fit=928%2C1160&ssl=1', // Example placeholder image URL
+                  'https://i0.wp.com/eacademy.edu.vn/wp-content/uploads/2023/photos1/1/WhatsApp-DP-Cute-175.jpg?fit=928%2C1160&ssl=1', // Example placeholder image URL
               callType: CallType.missed,
               timestamp: '9:00 AM',
             ),
@@ -114,7 +137,7 @@ class _CallScreenState extends State<CallScreen> {
               name: 'Jane Smith',
               phoneNumber: '+987-654-3210',
               profilePicUrl:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-HXPOrqk0Xh2iP9mzykc56h43VMgtIAXlWA&usqp=CAU', // Example placeholder image URL
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-HXPOrqk0Xh2iP9mzykc56h43VMgtIAXlWA&usqp=CAU', // Example placeholder image URL
               callType: CallType.outgoing,
               timestamp: '11:30 AM',
             ),
@@ -122,7 +145,7 @@ class _CallScreenState extends State<CallScreen> {
               name: 'Alice Johnson',
               phoneNumber: '+111-222-3333',
               profilePicUrl:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8QBzahCYEdwzKa4RnTI3AJ1J261SrpSBAZA&usqp=CAU', // Example placeholder image URL
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8QBzahCYEdwzKa4RnTI3AJ1J261SrpSBAZA&usqp=CAU', // Example placeholder image URL
               callType: CallType.received,
               timestamp: '1:45 PM',
             ),
@@ -130,7 +153,7 @@ class _CallScreenState extends State<CallScreen> {
               name: 'Bob Williams',
               phoneNumber: '+444-555-6666',
               profilePicUrl:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_OncQaOAG28bxsEaYnorYlfmB15IPShSbfg&usqp=CAU', // Example placeholder image URL
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_OncQaOAG28bxsEaYnorYlfmB15IPShSbfg&usqp=CAU', // Example placeholder image URL
               callType: CallType.missed,
               timestamp: '3:20 PM',
             ),
@@ -138,7 +161,7 @@ class _CallScreenState extends State<CallScreen> {
               name: 'Alice Johnson',
               phoneNumber: '+111-222-3333',
               profilePicUrl:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_S6vFF59KAagc1c2tVJEu_pupHS763T4mog&usqp=CAU', // Example placeholder image URL
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_S6vFF59KAagc1c2tVJEu_pupHS763T4mog&usqp=CAU', // Example placeholder image URL
               callType: CallType.outgoing,
               timestamp: '1:45 PM',
             ),
@@ -146,7 +169,7 @@ class _CallScreenState extends State<CallScreen> {
               name: 'Bob Williams',
               phoneNumber: '+444-555-6666',
               profilePicUrl:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_wGmIhCT3dbe65Abb30IASkh7lS6fhiYeQA&usqp=CAU', // Example placeholder image URL
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_wGmIhCT3dbe65Abb30IASkh7lS6fhiYeQA&usqp=CAU', // Example placeholder image URL
               callType: CallType.missed,
               timestamp: '3:20 PM',
             ),
@@ -154,7 +177,7 @@ class _CallScreenState extends State<CallScreen> {
               name: 'Alice Johnson',
               phoneNumber: '+111-222-3333',
               profilePicUrl:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsmfERbRAo-HYTKP9GAGOduXnxd5rivD9q-Q&usqp=CAU', // Example placeholder image URL
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsmfERbRAo-HYTKP9GAGOduXnxd5rivD9q-Q&usqp=CAU', // Example placeholder image URL
               callType: CallType.received,
               timestamp: '1:45 PM',
             ),
@@ -162,7 +185,7 @@ class _CallScreenState extends State<CallScreen> {
               name: 'Bob Williams',
               phoneNumber: '+444-555-6666',
               profilePicUrl:
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuFie48AoiZKZY7X1Vr-Dn4mKoEqBj6fy_kw&usqp=CAU', // Example placeholder image URL
+                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuFie48AoiZKZY7X1Vr-Dn4mKoEqBj6fy_kw&usqp=CAU', // Example placeholder image URL
               callType: CallType.missed,
               timestamp: '3:20 PM',
             ),
@@ -179,6 +202,12 @@ class _CallScreenState extends State<CallScreen> {
         setState(() {
           _selectedIndex = index;
           // Navigate to corresponding screen based on index
+          if (index == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ChatScreen()),
+            );
+          }
         });
       },
       child: Container(
@@ -186,7 +215,8 @@ class _CallScreenState extends State<CallScreen> {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: _selectedIndex == index ? Colors.white : Colors.transparent,
+              color:
+                  _selectedIndex == index ? Colors.white : Colors.transparent,
               width: 2.0,
             ),
           ),
