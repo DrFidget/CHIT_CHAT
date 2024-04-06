@@ -34,7 +34,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushNamed(context, '/');
               },
             ),
             title: Text(
@@ -62,7 +62,10 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                     description: 'Set Custom Notification Sound',
                   ),
                   const SizedBox(height: 10),
-                  const Divider(color: Colors.white, thickness: 2,),
+                  const Divider(
+                    color: Colors.white,
+                    thickness: 2,
+                  ),
                   _buildSettingHeading(
                     title: 'Deletion Settings',
                     //description: 'Manage deletion preferences for chats',
@@ -80,7 +83,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                               context,
                               "Delete All Chats?",
                               "Are you sure you want to delete all chats?",
-                                  () {
+                              () {
                                 // Add logic to delete all chats
                                 _deleteAllChats();
                               },
@@ -102,7 +105,10 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Divider(color: Colors.white, thickness: 2,),
+                  const Divider(
+                    color: Colors.white,
+                    thickness: 2,
+                  ),
                   const SizedBox(height: 10),
                   _buildSettingOption(
                     icon: Icons.block,
@@ -135,6 +141,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
       ),
     );
   }
+
   Widget _buildSettingOption({
     IconData? icon,
     required String title,
@@ -149,7 +156,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
               context,
               "Block User?",
               "Are you sure you want to block this user?",
-                  () {
+              () {
                 // Add logic to block the user
                 _blockUser();
               },
@@ -175,20 +182,25 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                         ),
                       ),
                       SizedBox(width: 10),
-                      if (icon != null && title == 'Block User') // Only show the icon if the title is 'Block User'
+                      if (icon != null &&
+                          title ==
+                              'Block User') // Only show the icon if the title is 'Block User'
                         Icon(
                           icon,
-                          color: icon == Icons.block ? Colors.red : Color.fromRGBO(109, 40, 217, 1),
+                          color: icon == Icons.block
+                              ? Colors.red
+                              : Color.fromRGBO(109, 40, 217, 1),
                           size: 30,
                         ),
                     ],
                   ),
-                  if (description.isNotEmpty) // Show description only if it's not empty
+                  if (description
+                      .isNotEmpty) // Show description only if it's not empty
                     const SizedBox(height: 10),
                   Text(
                     description,
                     style: GoogleFonts.inter(
-                      textStyle:  TextStyle(
+                      textStyle: TextStyle(
                         color: Colors.white.withOpacity(0.6),
                         fontWeight: FontWeight.normal,
                         fontSize: 16,
@@ -239,6 +251,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
       ),
     );
   }
+
   void _showDateTimePickerDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -282,7 +295,8 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
   }
 
   Widget _buildDatePickerWidget(BuildContext context, StateSetter setState) {
-    String formattedDate = "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}";
+    String formattedDate =
+        "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}";
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -293,7 +307,6 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
       ),
     );
   }
-
 
   Future<void> _selectDate(BuildContext context, StateSetter setState) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -333,7 +346,9 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
     }
   }
 }
-void _showConfirmationDialog(BuildContext context, String title, String content, VoidCallback onConfirm) {
+
+void _showConfirmationDialog(BuildContext context, String title, String content,
+    VoidCallback onConfirm) {
   showDialog(
     context: context,
     builder: (BuildContext context) {

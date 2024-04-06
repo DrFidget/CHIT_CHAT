@@ -71,7 +71,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     final double screenHeight = MediaQuery.of(context).size.height;
     final double appBarHeight = AppBar().preferredSize.height;
@@ -92,6 +91,7 @@ class _ChatScreenState extends State<ChatScreen> {
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
               // Handle back button press
+              Navigator.pushNamed(context, '/');
             },
           ),
           title: Text(
@@ -224,8 +224,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       (index % 2 == 0)
                           ? const Icon(Icons.done_all, color: Colors.blue)
                           : const Icon(Icons.done,
-                          color: Colors
-                              .red), // Conditionally display read/unread status icon
+                              color: Colors
+                                  .red), // Conditionally display read/unread status icon
                     ],
                   ),
                 );
@@ -235,42 +235,43 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
-}
+  }
 
-GestureDetector buildTabItem(int index, String text) {
-  return GestureDetector(
-    onTap: () {
-      setState(() {
-        _selectedIndex = index;
-        if(index == 2) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CallScreen()),
-          );
-        }
-        // Navigate to corresponding screen based on index
-      });
-    },
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: _selectedIndex == index ? Colors.white : Colors.transparent,
-            width: 2.0,
+  GestureDetector buildTabItem(int index, String text) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedIndex = index;
+          if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CallScreen()),
+            );
+          }
+          // Navigate to corresponding screen based on index
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color:
+                  _selectedIndex == index ? Colors.white : Colors.transparent,
+              width: 2.0,
+            ),
+          ),
+        ),
+        child: Text(
+          text,
+          style: GoogleFonts.inter(
+            textStyle: TextStyle(
+              color: _selectedIndex == index ? Colors.white : Colors.grey,
+              fontSize: 16,
+            ),
           ),
         ),
       ),
-      child: Text(
-        text,
-        style: GoogleFonts.inter(
-          textStyle: TextStyle(
-            color: _selectedIndex == index ? Colors.white : Colors.grey,
-            fontSize: 16,
-          ),
-        ),
-      ),
-    ),
-  );
-}
+    );
+  }
 }

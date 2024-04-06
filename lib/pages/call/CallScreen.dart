@@ -34,7 +34,7 @@ class _CallScreenState extends State<CallScreen> {
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
-              // Handle back button press
+              Navigator.pushNamed(context, '/');
             },
           ),
           title: Text(

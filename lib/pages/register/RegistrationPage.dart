@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/Components/Button.dart';
+import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   late String fullName;
   late String Email;
   late String Password;
+  final FireStoreService = UserFirestoreService();
   // final TextEditingController email = TextEditingController();
   // final TextEditingController password = TextEditingController();
 
@@ -148,11 +150,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
   void _SignUp() async {
     String emailValue = Email;
     String passwordValue = Password;
+    String fullnameValue = fullName;
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailValue,
         password: passwordValue,
       );
+      try {
+        await FireStoreService.addUser(
+            fullnameValue, emailValue, passwordValue);
+      } catch (e) {
+        print(e);
+      }
+
       showDialog(
         context: context,
         builder: (context) {

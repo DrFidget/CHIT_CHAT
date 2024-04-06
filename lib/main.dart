@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ourappfyp/pages/home/HomePage.dart';
 import 'package:ourappfyp/pages/login/LoginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ourappfyp/pages/register/RegistrationPage.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
       //  home: RegistrationPage()
       initialRoute: '/',
       routes: {
-        '/': (context) => const ChatScreen(),
+        '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegistrationPage(),
         '/callScreen': (context) => const CallScreen(),
