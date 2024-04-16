@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:ourappfyp/Components/Button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ourappfyp/types/UserClass.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,6 +16,22 @@ class _LoginPageState extends State<LoginPage> {
   late String _email;
   late String _password;
   bool _rememberMe = false;
+  final _myBox = Hive.box('userBox');
+
+  void WriteData() async {
+    print("++++++++++++++++++++++++++++++++++++++++++++");
+    try {
+      await _myBox.put(1, UserClass(email: _email, password: _password));
+      print("------------------LOCAL-STORAGE--------------------");
+      final UserClass x = await _myBox.get(1);
+      print(x.name);
+      print(x.email);
+      print(x.password);
+      print("--------------------------------------");
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   void initState() {
@@ -237,6 +255,8 @@ class _LoginPageState extends State<LoginPage> {
         email: this._email,
         password: this._password,
       );
+
+      WriteData();
       showDialog(
         context: context,
         builder: (context) {

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:ourappfyp/pages/home/HomePage.dart';
 import 'package:ourappfyp/pages/login/LoginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ourappfyp/pages/register/RegistrationPage.dart';
 import 'package:ourappfyp/pages/call/CallScreen.dart';
 import 'package:ourappfyp/pages/chat_dash/chat.dart';
+import 'package:ourappfyp/types/UserClass.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -13,6 +16,13 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    try {
+      await Hive.initFlutter();
+      Hive.registerAdapter(UserClassAdapter());
+      await Hive.openBox<UserClass>('userBox');
+    } catch (e) {
+      print("error loading hive error : $e");
+    }
     runApp(const MyApp());
   } catch (error) {
     print("Firebase initialization error: $error");
