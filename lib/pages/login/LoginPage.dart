@@ -16,17 +16,17 @@ class _LoginPageState extends State<LoginPage> {
   late String _email;
   late String _password;
   bool _rememberMe = false;
-  final _myBox = Hive.box('userBox');
 
   void WriteData() async {
     print("++++++++++++++++++++++++++++++++++++++++++++");
+    final _myBox = Hive.box<UserClass>('userBox');
     try {
       await _myBox.put(1, UserClass(email: _email, password: _password));
       print("------------------LOCAL-STORAGE--------------------");
-      final UserClass x = await _myBox.get(1);
-      print(x.name);
-      print(x.email);
-      print(x.password);
+      final x = await _myBox.get(1);
+      print(x?.name);
+      print(x?.email);
+      print(x?.password);
       print("--------------------------------------");
     } catch (e) {
       print(e);
