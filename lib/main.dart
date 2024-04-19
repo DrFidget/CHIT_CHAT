@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:ourappfyp/pages/MainDashboard/MainDashboard.dart';
 import 'package:ourappfyp/pages/home/HomePage.dart';
 import 'package:ourappfyp/pages/login/LoginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegistrationPage(),
         '/callScreen': (context) => const CallScreen(),
+        '/MainDashBoard': (context) => const MainDashBoard()
       },
     );
   }

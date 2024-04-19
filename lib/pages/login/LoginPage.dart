@@ -266,8 +266,8 @@ class _LoginPageState extends State<LoginPage> {
             actions: <Widget>[
               TextButton(
                   child: Text('Okay'),
-                  onPressed: () =>
-                      Navigator.pushReplacementNamed(context, '/callScreen')),
+                  onPressed: () => Navigator.pushReplacementNamed(
+                      context, '/MainDashBoard')),
             ],
           );
         },

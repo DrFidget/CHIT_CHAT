@@ -12,4 +12,12 @@ class UserFirestoreService {
       'timeStamp': Timestamp.now()
     });
   }
+
+  //edit user by id
+  //delete user by id
+  //get users []
+  Stream<QuerySnapshot> getAllUsersFromDB() {
+    return users.snapshots();
+  }
+  //get user by id {}
 }
