@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     projectId: 'chattingapp-chitchat',
     storageBucket: 'chattingapp-chitchat.appspot.com',
   );
+
 }
