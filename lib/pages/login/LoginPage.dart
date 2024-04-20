@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:ourappfyp/Components/Button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 import 'package:ourappfyp/types/UserClass.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,22 +16,36 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late String _email;
   late String _password;
+  final UserFirestoreService userFirestoreService = UserFirestoreService();
   bool _rememberMe = false;
+
+  void printData(String email) async {}
 
   void WriteData() async {
     print("++++++++++++++++++++++++++++++++++++++++++++");
-    final _myBox = Hive.box<UserClass>('userBox');
     try {
-      await _myBox.put(1, UserClass(email: _email, password: _password));
-      print("------------------LOCAL-STORAGE--------------------");
-      final x = await _myBox.get(1);
-      print(x?.name);
-      print(x?.email);
-      print(x?.password);
-      print("--------------------------------------");
+      UserClass? user = await userFirestoreService.getUserByEmail(_email);
+      if (user != null) {
+        final _myBox = Hive.box<UserClass>('userBox');
+        try {
+          await _myBox.put(1, user);
+          print("------------------LOCAL-STORAGE--------------------");
+          final x = await _myBox.get(1);
+          print(x?.name);
+          print(x?.email);
+          print(x?.password);
+          print(x?.ID);
+          print(x?.timeStamp);
+          print("--------------------------------------");
+        } catch (e) {
+          print(e);
+        }
+      }
     } catch (e) {
       print(e);
     }
+    print("++++++++++++++++++++++++++++++++++++++++++++");
+    // final _myBox = Hive.box<UserClass>('userBox');
   }
 
   @override
