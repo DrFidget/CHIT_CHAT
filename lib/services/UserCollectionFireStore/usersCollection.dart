@@ -21,7 +21,7 @@ class UserFirestoreService {
       'name': name,
       'email': email,
       'password': password,
-      'timeStamp': getFormattedTimestamp()
+      'timeStamp': Timestamp.now()
     });
   }
 

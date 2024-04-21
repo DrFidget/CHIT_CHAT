@@ -38,7 +38,10 @@ class _ChatRoomListScreenState extends State<ChatRoomListScreen> {
       appBar: AppBar(
         title: Text('Chat Rooms'),
       ),
-      body: DIsplayAllChats(chatRoomsFuture: _chatRoomsFuture),
+      body: DIsplayAllChats(
+        chatRoomsFuture: _chatRoomsFuture,
+        loggedInUserId: widget.loggedInUserId,
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showNewChatRoomBottomSheet(context);
@@ -170,8 +173,9 @@ class _NewChatRoomBottomSheetState extends State<NewChatRoomBottomSheet> {
 
 class DIsplayAllChats extends StatelessWidget {
   final Future<List<ChatRoom>> chatRoomsFuture;
-  // final String loggedInUserId;
-  const DIsplayAllChats({Key? key, required this.chatRoomsFuture})
+  final String loggedInUserId;
+  const DIsplayAllChats(
+      {Key? key, required this.chatRoomsFuture, required this.loggedInUserId})
       : super(key: key);
 
   @override
@@ -202,14 +206,16 @@ class DIsplayAllChats extends StatelessWidget {
               subtitle: Text(chatRoom.timeStamp ?? ''), // Adjust as needed
               onTap: () {
                 // Navigate to chat room or perform any action here
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) => ChattingPage(
-                //             SenderId: loggedInUserId,
-                //             ReceiverId: chatRoom.memberId,
-                //           )),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChattingPage(
+                            SenderId: loggedInUserId,
+                            ReceiverId: chatRoom.memberId ?? "",
+                            ChatRoomId: chatRoom.roomId ?? "",
+                            // ReceiverName: chatRoom.,
+                          )),
+                );
               },
             );
           },
