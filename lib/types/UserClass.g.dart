@@ -20,19 +20,22 @@ class UserClassAdapter extends TypeAdapter<UserClass> {
       email: fields[0] as String?,
       name: fields[1] as String?,
       password: fields[2] as String?,
+      timeStamp: fields[3] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserClass obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.email)
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.password);
+      ..write(obj.password)
+      ..writeByte(3)
+      ..write(obj.timeStamp);
   }
 
   @override
