@@ -14,6 +14,9 @@ class UserClass {
   String? timeStamp;
   @HiveField(4)
   String? ID;
+  //piture
+  //bio
+  //
 
   UserClass({
     this.email,

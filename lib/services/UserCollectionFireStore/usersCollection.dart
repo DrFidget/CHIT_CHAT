@@ -2,19 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ourappfyp/types/UserClass.dart';
 import 'package:intl/intl.dart';
 
+String getFormattedTimestamp() {
+  Timestamp timestamp = Timestamp.now();
+  DateTime date = timestamp.toDate();
+
+  var format = DateFormat('dd-MM-yyyy:HH:mm:ss');
+  String formattedDate = format.format(date);
+
+  return formattedDate;
+}
+
 class UserFirestoreService {
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
-
-  String getFormattedTimestamp() {
-    Timestamp timestamp = Timestamp.now();
-    DateTime date = timestamp.toDate();
-
-    var format = DateFormat('dd-MM-yyyy:HH:mm:ss');
-    String formattedDate = format.format(date);
-
-    return formattedDate;
-  }
 
   Future<void> addUser(String name, String email, String password) {
     return users.add({
