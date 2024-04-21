@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -6,6 +7,7 @@ import 'package:ourappfyp/pages/home/HomePage.dart';
 import 'package:ourappfyp/pages/login/LoginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ourappfyp/pages/register/RegistrationPage.dart';
+import 'package:ourappfyp/pages/settings/Settings.dart';
 import 'package:ourappfyp/pages/call/CallScreen.dart';
 import 'package:ourappfyp/pages/chat_dash/chat.dart';
 import 'package:ourappfyp/types/UserClass.dart';
@@ -34,7 +36,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of your application.a
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -47,7 +49,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegistrationPage(),
         '/callScreen': (context) => const CallScreen(),
-        '/MainDashBoard': (context) => const MainDashBoard()
+        '/MainDashBoard': (context) => const MainDashBoard(),
+        '/Settings': (context) => SettingsPage()
       },
     );
   }
