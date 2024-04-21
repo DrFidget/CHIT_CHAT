@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:ourappfyp/Components/Button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ourappfyp/pages/settings/Settings.dart';
 import 'package:ourappfyp/types/UserClass.dart';
 
 class LoginPage extends StatefulWidget {
@@ -18,15 +19,15 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false;
 
   void WriteData() async {
-    print("++++++++++++++++++++++++++++++++++++++++++++");
+    // print("++++++++++++++++++++++++++++++++++++++++++++");
     final _myBox = Hive.box<UserClass>('userBox');
     try {
       await _myBox.put(1, UserClass(email: _email, password: _password));
-      print("------------------LOCAL-STORAGE--------------------");
+      // print("------------------LOCAL-STORAGE--------------------");
       final x = await _myBox.get(1);
-      print(x?.name);
-      print(x?.email);
-      print(x?.password);
+      // print(x?.name);
+      // print(x?.email);
+      // print(x?.password);
       print("--------------------------------------");
     } catch (e) {
       print(e);
@@ -266,8 +267,8 @@ class _LoginPageState extends State<LoginPage> {
             actions: <Widget>[
               TextButton(
                   child: Text('Okay'),
-                  onPressed: () => Navigator.pushReplacementNamed(
-                      context, '/MainDashBoard')),
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, '/Settings')),
             ],
           );
         },
@@ -300,7 +301,8 @@ class _LoginPageState extends State<LoginPage> {
             actions: <Widget>[
               TextButton(
                 child: Text('Okay'),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    {Navigator.pushReplacementNamed(context, '/Settings')},
               ),
             ],
           );
