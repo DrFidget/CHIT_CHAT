@@ -6,6 +6,7 @@ class MessageClass {
   Timestamp? timeStamp;
   String? message;
   String? type;
+  String? roomId;
 
   MessageClass(
     this.senderID,
@@ -13,6 +14,7 @@ class MessageClass {
     this.timeStamp,
     this.message,
     this.type,
+    this.roomId,
   );
   MessageClass.fromJson(Map<String, dynamic> json) {
     senderID = json['senderID'];
@@ -20,6 +22,7 @@ class MessageClass {
     timeStamp = json['timeStamp'];
     message = json['message'];
     type = json['type'];
+    roomId = json['roomId'];
   }
   void printMessageDetails(MessageClass message) {
     print('Sender ID: ${message.senderID}');
@@ -27,5 +30,6 @@ class MessageClass {
     print('Time Stamp: ${message.timeStamp}');
     print('Message: ${message.message}');
     print('Type: ${message.type}');
+    print('Room ID: ${message.roomId}');
   }
 }

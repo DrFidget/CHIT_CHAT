@@ -28,6 +28,7 @@ class _ChatRoomListScreenState extends State<ChatRoomListScreen> {
   }
 
   Future<List<ChatRoom>> _fetchChatRooms() async {
+    // await ChatRoomService.populateDummyChatRooms();
     return await ChatRoomService.getAllChatRoomsByCreatorId(
         widget.loggedInUserId);
   }
@@ -210,6 +211,7 @@ class DIsplayAllChats extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => ChattingPage(
+                            RoomId: chatRoom.roomId ?? "",
                             SenderId: loggedInUserId,
                             ReceiverId: chatRoom.memberId ?? "",
                             ChatRoomId: chatRoom.roomId ?? "",

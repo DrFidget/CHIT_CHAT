@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:ourappfyp/Components/Message.dart';
 import 'package:ourappfyp/services/MessagesCollectionFireStore/messageCollection.dart';
 import 'package:ourappfyp/types/MessageClass.dart';
 
 class ChattingPage extends StatefulWidget {
   final String SenderId;
   final String ReceiverId;
+  final String RoomId;
   // final String ReceiverName;
   final String ChatRoomId;
 
@@ -14,7 +16,8 @@ class ChattingPage extends StatefulWidget {
       {super.key,
       required this.SenderId,
       required this.ReceiverId,
-      required this.ChatRoomId});
+      required this.ChatRoomId,
+      required this.RoomId});
 
   @override
   State<ChattingPage> createState() => _ChattingPageState();
@@ -34,6 +37,7 @@ class _ChattingPageState extends State<ChattingPage> {
         // DateTime.now().toString(),
         messageInput.text,
         'text',
+        widget.ChatRoomId,
       );
       await ChatService.addMessage(newMessage);
       messageInput.clear();
@@ -49,8 +53,8 @@ class _ChattingPageState extends State<ChattingPage> {
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  ChatService.getMessages(widget.SenderId, widget.ReceiverId),
+              stream: ChatService.getChatRoomMEssages(widget.ChatRoomId),
+              // ChatService.getMessages(widget.SenderId, widget.ReceiverId),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   // Process the data here
@@ -62,11 +66,19 @@ class _ChattingPageState extends State<ChattingPage> {
                       var messageData = snapshot.data!.docs[index].data()
                           as Map<String, dynamic>;
                       // Return a widget to display the message
-                      return ListTile(
-                        // title: Text("message"),
-                        title: Text(messageData['message']),
-                        subtitle: Text(messageData['timeStamp'].toString()),
-                      );
+                      return MessageWidget(
+                          backgroundColor:
+                              widget.SenderId == messageData['senderID']
+                                  ? Colors.purple
+                                  : Colors.white,
+                          textColor: widget.SenderId == messageData['senderID']
+                              ? Colors.white
+                              : Colors.black,
+                          text: messageData['message'],
+                          alignLeft: widget.SenderId == messageData['senderID']
+                              ? false
+                              : true,
+                          callback: () => {});
                     },
                   );
                 } else if (snapshot.hasError) {

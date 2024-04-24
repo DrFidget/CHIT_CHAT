@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class MessageWidget extends StatelessWidget {
   final Color backgroundColor;
+  final Color textColor;
   final String text;
   final bool alignLeft;
   final Function callback;
@@ -9,6 +10,7 @@ class MessageWidget extends StatelessWidget {
   const MessageWidget({
     Key? key,
     required this.backgroundColor,
+    required this.textColor,
     required this.text,
     required this.alignLeft,
     required this.callback,
@@ -24,7 +26,7 @@ class MessageWidget extends StatelessWidget {
           callback();
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
           child: Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -34,7 +36,7 @@ class MessageWidget extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.white,
+                color: textColor,
                 fontSize: 16,
               ),
             ),

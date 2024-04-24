@@ -16,6 +16,7 @@ class MessagesFirestoreServices {
       'timeStamp': ts,
       'reciverID': message.reciverID,
       'senderID': message.senderID,
+      'roomId': message.roomId
     });
   }
 
@@ -23,6 +24,14 @@ class MessagesFirestoreServices {
     return messages
         .where('senderID', isEqualTo: senderID)
         .where('reciverID', isEqualTo: reciverID)
+        .orderBy('timeStamp', descending: false)
+        //  .limit(10)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getChatRoomMEssages(String ChatRoomID) {
+    return messages
+        .where('roomId', isEqualTo: ChatRoomID)
         .orderBy('timeStamp', descending: false)
         //  .limit(10)
         .snapshots();

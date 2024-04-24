@@ -49,14 +49,16 @@ class chatBoxFirestoreService {
   }
 
   Future<List<ChatRoom>> getAllChatRoomsByCreatorId(String creatorId) async {
-    print("my iasdas ==========${creatorId}");
+    print("id: " + creatorId);
     try {
       QuerySnapshot querySnapshot =
-          await chatBox.where('creatorId', isEqualTo: creatorId).get();
+          await chatBox.where('members', arrayContains: creatorId).get();
       List<ChatRoom> chatRoomList = [];
       for (var documentSnapshot in querySnapshot.docs) {
         ChatRoom chatRoom =
             ChatRoom.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+        String id = documentSnapshot.id as String;
+        chatRoom.roomId = id;
         chatRoomList.add(chatRoom);
       }
       for (var x in chatRoomList) {
@@ -81,26 +83,31 @@ class chatBoxFirestoreService {
       {
         'creatorId': '22KDDtL7ebpFluEyXOKE',
         'memberId': 'HMV9ZwJWdMdIgaeTopgc',
+        'members': ['22KDDtL7ebpFluEyXOKE', 'HMV9ZwJWdMdIgaeTopgc'],
         'timeStamp': getFormattedTimestamp(),
       },
       {
         'creatorId': '22KDDtL7ebpFluEyXOKE',
         'memberId': 'HtxZc2ylJOFXzIje6UZd',
+        'members': ['22KDDtL7ebpFluEyXOKE', 'HtxZc2ylJOFXzIje6UZd'],
         'timeStamp': getFormattedTimestamp(),
       },
       {
         'creatorId': '22KDDtL7ebpFluEyXOKE',
         'memberId': 'QyODPvqLH06V4EZkh1nf',
+        'members': ['22KDDtL7ebpFluEyXOKE', 'QyODPvqLH06V4EZkh1nf'],
         'timeStamp': getFormattedTimestamp(),
       },
       {
         'creatorId': '22KDDtL7ebpFluEyXOKE',
         'memberId': 'hlxivmxrZZGfxgMikW61',
+        'members': ['22KDDtL7ebpFluEyXOKE', 'hlxivmxrZZGfxgMikW61'],
         'timeStamp': getFormattedTimestamp(),
       },
       {
         'creatorId': '22KDDtL7ebpFluEyXOKE',
         'memberId': 'kOgBHK6DoEWGPHx8F2av',
+        'members': ['22KDDtL7ebpFluEyXOKE', 'kOgBHK6DoEWGPHx8F2av'],
         'timeStamp': getFormattedTimestamp(),
       },
     ];
