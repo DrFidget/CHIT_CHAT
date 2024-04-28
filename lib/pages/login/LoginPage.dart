@@ -281,8 +281,8 @@ class _LoginPageState extends State<LoginPage> {
             actions: <Widget>[
               TextButton(
                   child: Text('Okay'),
-                  onPressed: () => Navigator.pushReplacementNamed(
-                      context, '/MainDashBoard')),
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, '/main')),
             ],
           );
         },
@@ -315,8 +315,7 @@ class _LoginPageState extends State<LoginPage> {
             actions: <Widget>[
               TextButton(
                 child: Text('Okay'),
-                onPressed: () =>
-                    {Navigator.pushReplacementNamed(context, '/MainDashBoard')},
+                onPressed: () => {},
               ),
             ],
           );
