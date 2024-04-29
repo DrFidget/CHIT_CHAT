@@ -12,6 +12,7 @@ import 'package:ourappfyp/pages/call/CallScreen.dart';
 import 'package:ourappfyp/pages/chat_dash/chat.dart';
 import 'package:ourappfyp/pages/settings/profileSetting.dart';
 import 'package:ourappfyp/types/UserClass.dart';
+import 'package:ourappfyp/pages/chat_dash/temp_dash.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       //  home: RegistrationPage()
-      initialRoute: '/profileSetting',
+      initialRoute: '/login',
       routes: {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
@@ -52,7 +53,8 @@ class MyApp extends StatelessWidget {
         '/callScreen': (context) => const CallScreen(),
         '/MainDashBoard': (context) => const MainDashBoard(),
         '/Settings': (context) => SettingsPage(),
-        '/profileSetting':(context) => ProfileScreen(),
+        '/profileSetting': (context) => ProfileScreen(),
+        '/Dashboard_Page': (context) => Dashboard_Page(),
       },
     );
   }
