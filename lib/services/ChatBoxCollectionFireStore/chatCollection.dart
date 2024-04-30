@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
 import 'package:ourappfyp/types/ChatRoomClass.dart';
 
 class chatBoxFirestoreService {
@@ -11,6 +10,37 @@ class chatBoxFirestoreService {
       'creatorId': creatorID,
       'memberId': memberId,
       'timeStamp': Timestamp.now(),
+    });
+  }
+
+  Future<void> updateChatRoomTimestamp(String id) {
+    return chatBox.doc(id).update({
+      'timeStamp': Timestamp.now(),
+    });
+  }
+
+  Future<void> createChatRoom(String CreatorID, String MemberID) {
+    var sortedList = <String>[];
+    sortedList.add(CreatorID);
+    sortedList.add(MemberID);
+    sortedList.sort();
+    var name = sortedList[0] + sortedList[1];
+
+    // Check if a chat room with the same name already exists
+    return chatBox.where('name', isEqualTo: name).get().then((querySnapshot) {
+      if (querySnapshot.size > 0) {
+        // If a chat room with the same name already exists, do not create a new one
+        print('Chat room with name $name already exists');
+      } else {
+        // If no chat room with the same name exists, create a new one
+        chatBox.add({
+          'creatorId': CreatorID,
+          'memberId': MemberID,
+          'members': sortedList,
+          'name': name,
+          'timeStamp': Timestamp.now(),
+        });
+      }
     });
   }
 
@@ -115,7 +145,7 @@ class chatBoxFirestoreService {
   Stream<QuerySnapshot> getChatRoomsOfLoggedInPerson(String loggedInID) {
     return chatBox
         .where('members', arrayContains: loggedInID)
-        .orderBy('timeStamp', descending: false)
+        .orderBy('timeStamp', descending: true)
         .snapshots();
   }
 }

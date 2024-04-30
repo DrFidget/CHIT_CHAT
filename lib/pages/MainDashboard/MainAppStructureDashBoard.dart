@@ -28,7 +28,7 @@ class _AppStructureState extends State<AppStructure> {
                 "ChitChat",
                 style: GoogleFonts.jockeyOne(
                   color: Colors.white,
-                  fontSize: 35,
+                  fontSize: 32,
                   fontWeight: FontWeight.w300,
                 ),
               )),

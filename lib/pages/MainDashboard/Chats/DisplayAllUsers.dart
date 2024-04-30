@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:ourappfyp/services/ChatBoxCollectionFireStore/chatCollection.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 
 class AllUsers extends StatefulWidget {
@@ -7,10 +8,12 @@ class AllUsers extends StatefulWidget {
     super.key,
     required this.userServices,
     required this.scrollController,
+    required this.loggedInUserId,
   });
 
   final UserFirestoreService userServices;
   final ScrollController scrollController;
+  final String loggedInUserId;
 
   @override
   _AllUsersState createState() => _AllUsersState();
@@ -18,6 +21,8 @@ class AllUsers extends StatefulWidget {
 
 class _AllUsersState extends State<AllUsers> {
   String _searchText = "";
+
+  final chatBoxFirestoreService chatServices = chatBoxFirestoreService();
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +58,26 @@ class _AllUsersState extends State<AllUsers> {
                   itemCount: users.length,
                   itemBuilder: (context, index) {
                     var user = users[index];
-                    return ListTile(
-                      title: Text(user['name'] as String),
-                      subtitle: Text(user['email'] as String),
-                    );
+
+                    if (snapshot.data!.docs[index].id !=
+                        widget.loggedInUserId) {
+                      print(
+                          "hello ${widget.loggedInUserId}, ${snapshot.data!.docs[index].id}");
+                      return ListTile(
+                        title: Text(user['name'] as String),
+                        subtitle: Text(user['email'] as String),
+                        onTap: () {
+                          try {
+                            onTapUser(widget.loggedInUserId,
+                                snapshot.data!.docs[index].id, chatServices);
+                          } catch (e) {
+                            print(e);
+                          }
+                        },
+                      );
+                    }
+
+                    return Container();
                   },
                 );
               } else if (snapshot.hasError) {
@@ -72,8 +93,8 @@ class _AllUsersState extends State<AllUsers> {
   }
 }
 
-void showAllUsers(
-    BuildContext context, UserFirestoreService userServices) async {
+void showAllUsers(BuildContext context, UserFirestoreService userServices,
+    String loggedInUserId) async {
   await showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -92,8 +113,14 @@ void showAllUsers(
         builder: (context, scrollController) => AllUsers(
           userServices: userServices,
           scrollController: scrollController,
+          loggedInUserId: loggedInUserId,
         ),
       ),
     ),
   );
+}
+
+void onTapUser(
+    String CreatorID, String MemberID, chatBoxFirestoreService chatServices) {
+  chatServices.createChatRoom(CreatorID, MemberID);
 }

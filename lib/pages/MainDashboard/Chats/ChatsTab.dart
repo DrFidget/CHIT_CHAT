@@ -62,7 +62,7 @@ class _ChatsTabState extends State<ChatsTab> {
               ],
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showAllUsers(context, userServices),
+        onPressed: () => showAllUsers(context, userServices, loggedInUserId),
         child: const Icon(Icons.add),
       ),
     );

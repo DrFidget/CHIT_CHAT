@@ -26,7 +26,7 @@ class MessageWidget extends StatelessWidget {
           callback();
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
           child: Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
