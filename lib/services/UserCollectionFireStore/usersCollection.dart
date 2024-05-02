@@ -10,7 +10,9 @@ class UserFirestoreService {
       'name': name,
       'email': email,
       'password': password,
-      'timeStamp': Timestamp.now()
+      'timeStamp': Timestamp.now().toString(),
+      'imageLink':
+          'https://firebasestorage.googleapis.com/v0/b/chattingapp-chitchat.appspot.com/o/profileImage?alt=media&token=3bc23625-b6af-4e67-a541-e28fce9b2985',
     });
   }
 

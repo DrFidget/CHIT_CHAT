@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       //  home: RegistrationPage()
-      initialRoute: '/profileSettings',
+      initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),

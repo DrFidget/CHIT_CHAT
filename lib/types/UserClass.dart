@@ -14,6 +14,8 @@ class UserClass {
   String? timeStamp;
   @HiveField(4)
   String? ID;
+  @HiveField(5)
+  String? imageLink;
   //piture
   //bio
   //
@@ -24,6 +26,7 @@ class UserClass {
     this.password,
     this.timeStamp,
     this.ID,
+    this.imageLink,
   });
   factory UserClass.fromJson(Map<String, dynamic> json) {
     return UserClass(
@@ -32,6 +35,7 @@ class UserClass {
       password: json['password'],
       timeStamp: json['timeStamp'],
       ID: json['ID'],
+      imageLink: json['imageLink'],
     );
   }
   void printUser() {
@@ -40,6 +44,7 @@ class UserClass {
     print('Password: $password');
     print('Timestamp: $timeStamp');
     print('ID: $ID');
+    print('ImageLink: $imageLink');
   }
   // UserClass.fromMap(Map<String, dynamic> json)
 }

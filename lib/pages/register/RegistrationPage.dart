@@ -185,7 +185,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
       Navigator.pop(context); // Dismiss loading dialog
 
-      Navigator.pushReplacementNamed(context, '/callScreen');
+      Navigator.pushReplacementNamed(context, '/login');
     } catch (e) {
       setState(() {
         _errorMessage =
