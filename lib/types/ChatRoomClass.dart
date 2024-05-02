@@ -1,11 +1,11 @@
-import 'dart:ffi';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatRoom {
   String? creatorId;
   String? memberId;
   String? roomName;
   String? roomId;
-  String? timeStamp;
+  Timestamp? timeStamp;
   List<dynamic>? members;
 
   ChatRoom({

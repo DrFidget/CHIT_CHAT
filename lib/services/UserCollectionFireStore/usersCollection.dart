@@ -1,16 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ourappfyp/types/UserClass.dart';
-import 'package:intl/intl.dart';
-
-String getFormattedTimestamp() {
-  Timestamp timestamp = Timestamp.now();
-  DateTime date = timestamp.toDate();
-
-  var format = DateFormat('dd-MM-yyyy:HH:mm:ss');
-  String formattedDate = format.format(date);
-
-  return formattedDate;
-}
 
 class UserFirestoreService {
   final CollectionReference users =
@@ -84,5 +73,14 @@ class UserFirestoreService {
       'password': user.password,
       'timeStamp': user.timeStamp
     });
+  }
+
+  Stream<QuerySnapshot> getStreamOFAllUsers() {
+    try {
+      return users.snapshots();
+    } catch (e) {
+      print("Error fetching user stream: $e");
+      throw e; // Rethrow the error so it can be caught where the stream is used.
+    }
   }
 }

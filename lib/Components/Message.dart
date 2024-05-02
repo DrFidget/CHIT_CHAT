@@ -6,6 +6,7 @@ class MessageWidget extends StatelessWidget {
   final String text;
   final bool alignLeft;
   final Function callback;
+  final DateTime dateTime;
 
   const MessageWidget({
     Key? key,
@@ -14,32 +15,52 @@ class MessageWidget extends StatelessWidget {
     required this.text,
     required this.alignLeft,
     required this.callback,
+    required this.dateTime,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final maxWidth =
+        MediaQuery.of(context).size.width * 0.8; // Adjust percentage as needed
+
     return Container(
-      width: MediaQuery.of(context).size.width * 0.7,
       alignment: alignLeft ? Alignment.centerLeft : Alignment.centerRight,
       child: GestureDetector(
         onTap: () {
           callback();
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
-          child: Container(
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              text,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 16,
+          padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                constraints: BoxConstraints(maxWidth: maxWidth),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(
+                      20), // Increased border radius for rounder shape
+                ),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 16,
+                  ),
+                ),
               ),
-            ),
+              SizedBox(
+                  height:
+                      4), // Adding some space between the main text and the timestamp
+              Text(
+                '${dateTime.hour}:${dateTime.minute}', // Displaying only time for simplicity, you can format the DateTime as needed
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                ),
+              ),
+            ],
           ),
         ),
       ),

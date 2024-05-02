@@ -1,18 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:ourappfyp/Components/Message.dart';
+import 'package:ourappfyp/services/ChatBoxCollectionFireStore/chatCollection.dart';
 import 'package:ourappfyp/services/MessagesCollectionFireStore/messageCollection.dart';
+import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 import 'package:ourappfyp/types/MessageClass.dart';
+import 'package:ourappfyp/types/UserClass.dart';
 
-class ChattingPage extends StatefulWidget {
+class MessagingPage extends StatefulWidget {
   final String SenderId;
   final String ReceiverId;
   final String ChatRoomId;
   final String? RoomId;
+
   // final String ReceiverName;
 
-  const ChattingPage(
+  const MessagingPage(
       {super.key,
       required this.SenderId,
       required this.ReceiverId,
@@ -20,13 +24,35 @@ class ChattingPage extends StatefulWidget {
       this.RoomId});
 
   @override
-  State<ChattingPage> createState() => _ChattingPageState();
+  State<MessagingPage> createState() => _MessagingPageState();
 }
 
-class _ChattingPageState extends State<ChattingPage> {
+class _MessagingPageState extends State<MessagingPage> {
   final TextEditingController messageInput = TextEditingController();
   final MessagesFirestoreServices ChatService = MessagesFirestoreServices();
-  // late Stream<QuerySnapshot> messagesStream;
+  final chatBoxFirestoreService chatRoomService = chatBoxFirestoreService();
+  final UserFirestoreService userservices = UserFirestoreService();
+  UserClass? user; //get user from widget.reciverId
+
+  @override
+  void initState() {
+    super.initState();
+    // Call the method to fetch the user when the widget initializes
+    fetchUser();
+  }
+
+  void fetchUser() async {
+    // Fetch the user using the provided ReceiverId
+    UserClass? fetchedUser = await userservices.getUserById(widget.ReceiverId);
+    if (fetchedUser != null) {
+      setState(() {
+        user = fetchedUser;
+      });
+    } else {
+      // Handle the case where the user is not found
+      // For example, show an error message or default to a generic user
+    }
+  }
 
   void SendMessage() async {
     if (messageInput.text.isNotEmpty) {
@@ -34,40 +60,40 @@ class _ChattingPageState extends State<ChattingPage> {
         widget.SenderId,
         widget.ReceiverId,
         Timestamp.now(),
-        // DateTime.now().toString(),
         messageInput.text,
         'text',
         widget.ChatRoomId,
       );
-      await ChatService.addMessage(newMessage);
       messageInput.clear();
+      await ChatService.addMessage(newMessage);
+      chatRoomService.updateChatRoomTimestamp(widget.ChatRoomId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final userName = user != null ? user!.name ?? "Unknown User" : "Loading...";
     return Scaffold(
-      appBar: AppBar(title: Text(widget.ReceiverId)),
+      backgroundColor: Color.fromARGB(255, 3, 7, 10),
+      appBar: AppBar(title: Text(userName)),
       body: Column(
-        // Expanded()
         children: [
+          SizedBox(
+            height: 15,
+          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: ChatService.getChatRoomMEssages(widget.ChatRoomId),
-              // ChatService.getMessages(widget.SenderId, widget.ReceiverId),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  // Process the data here
-                  // For example, display the messages in a ListView
                   return ListView.builder(
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      // Extract message data from snapshot
                       var messageData = snapshot.data!.docs[index].data()
                           as Map<String, dynamic>;
-                      // Return a widget to display the message
+                      var time = messageData['timeStamp'] as Timestamp;
                       return MessageWidget(
-                          dateTime: DateTime.now(),
+                          dateTime: time.toDate(),
                           backgroundColor:
                               widget.SenderId == messageData['senderID']
                                   ? Colors.purple
@@ -96,10 +122,6 @@ class _ChattingPageState extends State<ChattingPage> {
     );
   }
 
-  // Widget buildMEssageItem(DocumentSnapshot document) {
-  //   Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-  // }
-
   Widget buildMessageInput() {
     return Container(
       padding: EdgeInsets.all(10),
@@ -111,12 +133,19 @@ class _ChattingPageState extends State<ChattingPage> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: "Type a message",
+                hintStyle: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+              style: TextStyle(
+                color: const Color.fromARGB(255, 255, 255, 255),
               ),
             ),
           ),
           IconButton(
             icon: Icon(Icons.send),
             onPressed: SendMessage,
+            color: const Color.fromARGB(255, 255, 255, 255),
           ),
         ],
       ),

@@ -204,7 +204,8 @@ class DIsplayAllChats extends StatelessWidget {
             ChatRoom chatRoom = chatRooms[index];
             return ListTile(
               title: Text('Chat with ${chatRoom.memberId}'), // Adjust as needed
-              subtitle: Text(chatRoom.timeStamp ?? ''), // Adjust as needed
+              subtitle:
+                  Text(chatRoom.timeStamp.toString() ?? ''), // Adjust as needed
               onTap: () {
                 // Navigate to chat room or perform any action here
                 Navigator.push(
