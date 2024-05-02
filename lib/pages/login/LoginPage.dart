@@ -18,35 +18,10 @@ class _LoginPageState extends State<LoginPage> {
   late String _password;
   final UserFirestoreService userFirestoreService = UserFirestoreService();
   bool _rememberMe = false;
+  bool _isLoading = false;
+  late String _errorMessage = '';
 
   void printData(String email) async {}
-
-  void WriteData() async {
-    print("++++++++++++++++++++++++++++++++++++++++++++");
-    try {
-      UserClass? user = await userFirestoreService.getUserByEmail(_email);
-      if (user != null) {
-        final _myBox = Hive.box<UserClass>('userBox');
-        try {
-          await _myBox.put(1, user);
-          print("------------------LOCAL-STORAGE--------------------");
-          final x = await _myBox.get(1);
-          print(x?.name);
-          print(x?.email);
-          print(x?.password);
-          print(x?.ID);
-          print(x?.timeStamp);
-          print("--------------------------------------");
-        } catch (e) {
-          print(e);
-        }
-      }
-    } catch (e) {
-      print(e);
-    }
-    print("++++++++++++++++++++++++++++++++++++++++++++");
-    // final _myBox = Hive.box<UserClass>('userBox');
-  }
 
   @override
   void initState() {
@@ -55,11 +30,111 @@ class _LoginPageState extends State<LoginPage> {
     _password = '';
   }
 
+  void _signIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator());
+        },
+      );
+
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _email,
+        password: _password,
+      );
+
+      WriteData();
+
+      Navigator.pop(context); // Dismiss loading dialog
+      Navigator.pushReplacementNamed(context, '/Settings');
+    } on FirebaseAuthException catch (e) {
+      String errorMessage =
+          'An unexpected error occurred, please try again later.';
+
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found with this email.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Invalid password.';
+          break;
+      }
+
+      setState(() {
+        _errorMessage = errorMessage;
+        _isLoading = false;
+      });
+
+      Navigator.pop(context); // Dismiss loading dialog
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'An unexpected error occurred, please try again later.';
+        _isLoading = false;
+      });
+
+      Navigator.pop(context); // Dismiss loading dialog
+    }
+  }
+
+  // void _signIn() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //     _errorMessage = '';
+  //   });
+
+  //   try {
+  //     showDialog(
+  //       context: context,
+  //       builder: (context) {
+  //         return Center(child: CircularProgressIndicator());
+  //       },
+  //     );
+
+  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //       email: _email,
+  //       password: _password,
+  //     );
+
+  //     WriteData();
+
+  //     Navigator.pop(context); // Dismiss loading dialog
+  //     Navigator.pushReplacementNamed(context, '/Settings');
+  //   } on FirebaseAuthException catch (e) {
+  //     String errorMessage =
+  //         'An unexpected error occurred, please try again later.';
+
+  //     switch (e.code) {
+  //       case 'user-not-found':
+  //         errorMessage = 'No user found with this email.';
+  //         break;
+  //       case 'wrong-password':
+  //         errorMessage = 'Invalid password.';
+  //         break;
+  //     }
+
+  //     setState(() {
+  //       _errorMessage = errorMessage;
+  //       _isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       _errorMessage = 'An unexpected error occurred, please try again later.';
+  //       _isLoading = false;
+  //     });
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     final double verticalSpacing = screenSize.height * 0.05;
-    final double WidthOfFields = screenSize.width * 0.8;
+    final double widthOfFields = screenSize.width * 0.8;
 
     return Scaffold(
       backgroundColor: const Color.fromRGBO(3, 7, 18, 1),
@@ -129,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                   inputField(
                     hintText: 'Enter your username',
                     prefixIcon: Icons.person,
-                    width: WidthOfFields,
+                    width: widthOfFields,
                     onChanged: (value) {
                       setState(() {
                         _email = value;
@@ -149,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                   inputField(
                     hintText: 'Enter your password',
                     prefixIcon: Icons.password,
-                    width: WidthOfFields,
+                    width: widthOfFields,
                     obscureText: true,
                     onChanged: (value) {
                       setState(() {
@@ -162,7 +237,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 30),
               Container(
                 margin: const EdgeInsets.only(left: 32),
-                width: WidthOfFields,
+                width: widthOfFields,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -196,9 +271,15 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 35),
               Button(
                 text: "Login",
-                onPressed: () => {_signIn()},
-                width: WidthOfFields,
+                onPressed: _isLoading ? () {} : _signIn,
+                // onPressed: _isLoading ? null : _signIn!,
+                width: widthOfFields,
               ),
+              if (_errorMessage.isNotEmpty)
+                Text(
+                  _errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
               const SizedBox(height: 10),
               Container(
                 child: Row(
@@ -281,8 +362,8 @@ class _LoginPageState extends State<LoginPage> {
             actions: <Widget>[
               TextButton(
                   child: Text('Okay'),
-                  onPressed: () =>
-                      Navigator.pushReplacementNamed(context, '/main')),
+                  onPressed: () => Navigator.pushReplacementNamed(
+                      context, '/MainDashBoard')),
             ],
           );
         },
@@ -315,7 +396,8 @@ class _LoginPageState extends State<LoginPage> {
             actions: <Widget>[
               TextButton(
                 child: Text('Okay'),
-                onPressed: () => {},
+                onPressed: () =>
+                    {Navigator.pushReplacementNamed(context, '/MainDashBoard')},
               ),
             ],
           );
