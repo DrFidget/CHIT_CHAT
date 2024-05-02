@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
       WriteData();
 
       Navigator.pop(context); // Dismiss loading dialog
-      Navigator.pushReplacementNamed(context, '/Settings');
+      Navigator.pushReplacementNamed(context, '/MainApp');
     } on FirebaseAuthException catch (e) {
       String errorMessage =
           'An unexpected error occurred, please try again later.';
@@ -81,54 +81,6 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pop(context); // Dismiss loading dialog
     }
   }
-
-  // void _signIn() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //     _errorMessage = '';
-  //   });
-
-  //   try {
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return Center(child: CircularProgressIndicator());
-  //       },
-  //     );
-
-  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-  //       email: _email,
-  //       password: _password,
-  //     );
-
-  //     WriteData();
-
-  //     Navigator.pop(context); // Dismiss loading dialog
-  //     Navigator.pushReplacementNamed(context, '/Settings');
-  //   } on FirebaseAuthException catch (e) {
-  //     String errorMessage =
-  //         'An unexpected error occurred, please try again later.';
-
-  //     switch (e.code) {
-  //       case 'user-not-found':
-  //         errorMessage = 'No user found with this email.';
-  //         break;
-  //       case 'wrong-password':
-  //         errorMessage = 'Invalid password.';
-  //         break;
-  //     }
-
-  //     setState(() {
-  //       _errorMessage = errorMessage;
-  //       _isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       _errorMessage = 'An unexpected error occurred, please try again later.';
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -345,64 +297,30 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _signIn() async {
+  void WriteData() async {
+    print("++++++++++++++++++++++++++++++++++++++++++++");
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: this._email,
-        password: this._password,
-      );
-
-      WriteData();
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Signed In'),
-            content: Text('SignIn successful'),
-            actions: <Widget>[
-              TextButton(
-                  child: Text('Okay'),
-                  onPressed: () => Navigator.pushReplacementNamed(
-                      context, '/MainDashBoard')),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      String errorMessage = 'An error occurred, please try again later.';
-
-      // Check if the error is FirebaseAuthException
-      if (e is FirebaseAuthException) {
-        switch (e.code) {
-          case 'user-not-found':
-            errorMessage = 'No user found with this email.';
-            break;
-          case 'wrong-password':
-            errorMessage = 'Invalid password.';
-            break;
-          default:
-            errorMessage = 'Authentication failed. Please try again later.';
-            break;
+      UserClass? user = await userFirestoreService.getUserByEmail(_email);
+      if (user != null) {
+        final _myBox = Hive.box<UserClass>('userBox');
+        try {
+          await _myBox.put(1, user);
+          print("------------------LOCAL-STORAGE--------------------");
+          final x = await _myBox.get(1);
+          print(x?.name);
+          print(x?.email);
+          print(x?.password);
+          print(x?.ID);
+          print(x?.timeStamp);
+          print("--------------------------------------");
+        } catch (e) {
+          print(e);
         }
       }
-
-      // Show error dialog with appropriate message
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text(errorMessage),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Okay'),
-                onPressed: () =>
-                    {Navigator.pushReplacementNamed(context, '/MainDashBoard')},
-              ),
-            ],
-          );
-        },
-      );
+    } catch (e) {
+      print(e);
     }
+    print("++++++++++++++++++++++++++++++++++++++++++++");
+    // final _myBox = Hive.box<UserClass>('userBox');
   }
 }
