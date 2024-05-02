@@ -67,6 +67,7 @@ class _ChattingPageState extends State<ChattingPage> {
                           as Map<String, dynamic>;
                       // Return a widget to display the message
                       return MessageWidget(
+                          dateTime: DateTime.now(),
                           backgroundColor:
                               widget.SenderId == messageData['senderID']
                                   ? Colors.purple

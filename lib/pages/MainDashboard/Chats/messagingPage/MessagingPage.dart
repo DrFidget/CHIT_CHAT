@@ -74,26 +74,26 @@ class _MessagingPageState extends State<MessagingPage> {
   Widget build(BuildContext context) {
     final userName = user != null ? user!.name ?? "Unknown User" : "Loading...";
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 3, 7, 10),
       appBar: AppBar(title: Text(userName)),
       body: Column(
-        // Expanded()
         children: [
+          SizedBox(
+            height: 15,
+          ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: ChatService.getChatRoomMEssages(widget.ChatRoomId),
-              // ChatService.getMessages(widget.SenderId, widget.ReceiverId),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  // Process the data here
-                  // For example, display the messages in a ListView
                   return ListView.builder(
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      // Extract message data from snapshot
                       var messageData = snapshot.data!.docs[index].data()
                           as Map<String, dynamic>;
-                      // Return a widget to display the message
+                      var time = messageData['timeStamp'] as Timestamp;
                       return MessageWidget(
+                          dateTime: time.toDate(),
                           backgroundColor:
                               widget.SenderId == messageData['senderID']
                                   ? Colors.purple
@@ -122,10 +122,6 @@ class _MessagingPageState extends State<MessagingPage> {
     );
   }
 
-  // Widget buildMEssageItem(DocumentSnapshot document) {
-  //   Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-  // }
-
   Widget buildMessageInput() {
     return Container(
       padding: EdgeInsets.all(10),
@@ -137,12 +133,19 @@ class _MessagingPageState extends State<MessagingPage> {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: "Type a message",
+                hintStyle: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+              style: TextStyle(
+                color: const Color.fromARGB(255, 255, 255, 255),
               ),
             ),
           ),
           IconButton(
             icon: Icon(Icons.send),
             onPressed: SendMessage,
+            color: const Color.fromARGB(255, 255, 255, 255),
           ),
         ],
       ),

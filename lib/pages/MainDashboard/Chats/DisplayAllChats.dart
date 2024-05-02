@@ -46,7 +46,7 @@ Widget DisplayAllChatsWithUsers(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => MessagingPage(
-                                            SenderId: creatorId,
+                                            SenderId: loggedInUserId,
                                             ReceiverId: memberId,
                                             ChatRoomId: chatRoomID)));
                               }),
