@@ -82,54 +82,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // void _signIn() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //     _errorMessage = '';
-  //   });
-
-  //   try {
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return Center(child: CircularProgressIndicator());
-  //       },
-  //     );
-
-  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
-  //       email: _email,
-  //       password: _password,
-  //     );
-
-  //     WriteData();
-
-  //     Navigator.pop(context); // Dismiss loading dialog
-  //     Navigator.pushReplacementNamed(context, '/Settings');
-  //   } on FirebaseAuthException catch (e) {
-  //     String errorMessage =
-  //         'An unexpected error occurred, please try again later.';
-
-  //     switch (e.code) {
-  //       case 'user-not-found':
-  //         errorMessage = 'No user found with this email.';
-  //         break;
-  //       case 'wrong-password':
-  //         errorMessage = 'Invalid password.';
-  //         break;
-  //     }
-
-  //     setState(() {
-  //       _errorMessage = errorMessage;
-  //       _isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       _errorMessage = 'An unexpected error occurred, please try again later.';
-  //       _isLoading = false;
-  //     });
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;

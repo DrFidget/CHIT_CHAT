@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       //  home: RegistrationPage()
-      initialRoute: '/login',
+      initialRoute: '/profileSettings',
       routes: {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         '/callScreen': (context) => const CallScreen(),
         '/MainDashBoard': (context) => const MainDashBoard(),
         '/Settings': (context) => SettingsPage(),
-        '/profileSetting': (context) => ProfileScreen(),
+        '/profileSettings': (context) => ProfileScreen(),
         '/Dashboard_Page': (context) => Dashboard_Page(),
       },
     );

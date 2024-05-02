@@ -16,6 +16,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   late String Email;
   late String Password;
   final FireStoreService = UserFirestoreService();
+  bool _isLoading = false;
+  String _errorMessage = '';
   // final TextEditingController email = TextEditingController();
   // final TextEditingController password = TextEditingController();
 
@@ -134,7 +136,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                 ],
               ),
-              SizedBox(height: (screenSize.height * 0.15)),
+              SizedBox(height: (screenSize.height * 0.08)),
               Button(
                 text: "Sign Up",
                 onPressed: _SignUp,
@@ -151,11 +153,29 @@ class _RegistrationPageState extends State<RegistrationPage> {
     String emailValue = Email;
     String passwordValue = Password;
     String fullnameValue = fullName;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
     try {
+      showDialog(
+        context: context,
+        barrierDismissible:
+            false, // Prevent dialog from being dismissed by tapping outside
+        builder: (context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      );
+
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailValue,
         password: passwordValue,
       );
+
       try {
         await FireStoreService.addUser(
             fullnameValue, emailValue, passwordValue);
@@ -163,40 +183,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
         print(e);
       }
 
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Signup done'),
-            content: Text('Signup successful'),
-            actions: <Widget>[
-              TextButton(
-                  child: Text('Okay'),
-                  onPressed: () =>
-                      Navigator.pushReplacementNamed(context, '/callScreen')),
-            ],
-          );
-        },
-      );
+      Navigator.pop(context); // Dismiss loading dialog
+
+      Navigator.pushReplacementNamed(context, '/callScreen');
     } catch (e) {
-      showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text(
-                '${e.toString()}. Please check your credentials and try again!'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Okay'),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          );
-        },
+      setState(() {
+        _errorMessage =
+            '${e.toString()}. Please check your credentials and try again!';
+        _isLoading = false;
+      });
+
+      Navigator.pop(context); // Dismiss loading dialog
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_errorMessage),
+        ),
       );
-      // Handle error, show error message to the user, etc.
     }
   }
 
