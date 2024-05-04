@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
         password: _password,
       );
 
-      WriteData();
+      await WriteData();
 
       Navigator.pop(context); // Dismiss loading dialog
       Navigator.pushReplacementNamed(context, '/MainApp');
@@ -297,7 +297,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void WriteData() async {
+  Future<void> WriteData() async {
     print("++++++++++++++++++++++++++++++++++++++++++++");
     try {
       UserClass? user = await userFirestoreService.getUserByEmail(_email);
@@ -306,7 +306,11 @@ class _LoginPageState extends State<LoginPage> {
         final clearingPreviousLocalStorage = await _myBox.get(1);
         if (clearingPreviousLocalStorage != null) {
           print("********************Deleting--------------------");
-          await _myBox.delete(1);
+          try {
+            await _myBox.delete(1);
+          } catch (E) {
+            print("+++++++++ deleting error ${E}");
+          }
         }
 
         try {

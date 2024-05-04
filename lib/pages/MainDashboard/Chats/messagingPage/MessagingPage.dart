@@ -13,6 +13,7 @@ class MessagingPage extends StatefulWidget {
   final String ReceiverId;
   final String ChatRoomId;
   final String? RoomId;
+  final String? UNAME;
 
   // final String ReceiverName;
 
@@ -21,7 +22,8 @@ class MessagingPage extends StatefulWidget {
       required this.SenderId,
       required this.ReceiverId,
       required this.ChatRoomId,
-      this.RoomId});
+      this.RoomId,
+      this.UNAME});
 
   @override
   State<MessagingPage> createState() => _MessagingPageState();
@@ -75,7 +77,7 @@ class _MessagingPageState extends State<MessagingPage> {
     final userName = user != null ? user!.name ?? "Unknown User" : "Loading...";
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 3, 7, 10),
-      appBar: AppBar(title: Text(userName)),
+      appBar: AppBar(title: Text(widget.UNAME ?? userName)),
       body: Column(
         children: [
           SizedBox(

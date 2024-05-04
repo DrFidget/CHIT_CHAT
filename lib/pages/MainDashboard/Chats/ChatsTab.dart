@@ -30,11 +30,11 @@ class _ChatsTabState extends State<ChatsTab> {
   void getUserFromLocalStorage() async {
     try {
       final _myBox = await Hive.openBox<UserClass>('userBox');
-      final UserClass? user = _myBox.get(1);
+      final UserClass? user = await _myBox.get(1);
       if (user != null) {
         setState(() {
           loggedInUserId = user.ID as String;
-          // print("my lasdas ->${loggedInUserId}");
+          print("logged in user id is ->${loggedInUserId} and name is ");
           isLoading = false;
         });
       } else {

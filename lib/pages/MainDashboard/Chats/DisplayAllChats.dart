@@ -47,9 +47,11 @@ Widget DisplayAllChatsWithUsers(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => MessagingPage(
-                                            SenderId: loggedInUserId,
-                                            ReceiverId: memberId,
-                                            ChatRoomId: chatRoomID)));
+                                              SenderId: loggedInUserId,
+                                              ReceiverId: memberId,
+                                              ChatRoomId: chatRoomID,
+                                              UNAME: user.name ?? "",
+                                            )));
                               }),
                         );
                       } else if (snapshot.hasError) {
