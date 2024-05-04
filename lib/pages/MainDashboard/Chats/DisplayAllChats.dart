@@ -27,9 +27,10 @@ Widget DisplayAllChatsWithUsers(
                   var creatorId = chatRoom['creatorId'] as String;
                   var memberId = chatRoom['memberId'] as String;
                   var chatRoomID = snapshot.data!.docs[index].id;
+                  var displayNameID =
+                      loggedInUserId == creatorId ? memberId : creatorId;
                   return FutureBuilder(
-                    future: userServices
-                        .getUserById(chatRoom['memberId'] as String),
+                    future: userServices.getUserById(displayNameID as String),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         UserClass user = snapshot.data!;

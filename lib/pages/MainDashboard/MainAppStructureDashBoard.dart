@@ -101,7 +101,7 @@ class _AppStructureState extends State<AppStructure> {
             children: [
               // Contents for Tab 1
               Container(
-                color: Colors.red,
+                color: const Color.fromARGB(255, 255, 255, 255),
                 child: ChatsTab(),
               ),
               // Contents for Tab 2

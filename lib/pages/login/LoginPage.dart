@@ -303,6 +303,12 @@ class _LoginPageState extends State<LoginPage> {
       UserClass? user = await userFirestoreService.getUserByEmail(_email);
       if (user != null) {
         final _myBox = Hive.box<UserClass>('userBox');
+        final clearingPreviousLocalStorage = await _myBox.get(1);
+        if (clearingPreviousLocalStorage != null) {
+          print("********************Deleting--------------------");
+          await _myBox.delete(1);
+        }
+
         try {
           await _myBox.put(1, user);
           print("------------------LOCAL-STORAGE--------------------");

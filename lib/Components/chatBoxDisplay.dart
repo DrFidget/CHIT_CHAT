@@ -67,14 +67,14 @@ class ChatBoxDisplayWidget extends StatelessWidget {
                             Text(
                               chatMessage.name,
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
                             SizedBox(height: 2),
                             Text(
                               chatMessage.email,
                               style: TextStyle(
-                                color: Colors.black54,
+                                color: Color.fromARGB(255, 255, 255, 255),
                                 fontSize: 14,
                               ),
                             ),
@@ -83,7 +83,7 @@ class ChatBoxDisplayWidget extends StatelessWidget {
                         Text(
                           formattedTimestamp(chatMessage.timestamp),
                           style: TextStyle(
-                            color: Colors.black54,
+                            color: Color.fromARGB(255, 255, 255, 255),
                             fontSize: 12,
                           ),
                         ),

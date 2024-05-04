@@ -54,6 +54,7 @@ class _ChatsTabState extends State<ChatsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 3, 7, 18),
       body: isLoading
           ? const CircularProgressIndicator()
           : Stack(
