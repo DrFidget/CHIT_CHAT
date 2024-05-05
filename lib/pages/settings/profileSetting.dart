@@ -1,9 +1,12 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/utils.dart';
-import 'package:ourappfyp/resources/add_data.dart';
+import 'package:ourappfyp/types/UserClass.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:ourappfyp/pages/chat_dash/temp_dash.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -14,22 +17,138 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
+  // final TextEditingController phoneController = TextEditingController();
   Uint8List? _image;
+  late String userId = '';
 
-  void selectImage() async {
+  @override
+  void initState() {
+    super.initState();
+    _getUserID();
+  }
+
+  void _checkUser(String userId) async {
+    try {
+      // Reference to the Firestore collection
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+
+      // Get user document based on the user ID
+      DocumentSnapshot userSnapshot = await users.doc(userId).get();
+
+      if (userSnapshot.exists) {
+        // Extract user data from the document
+        Map<String, dynamic> userData =
+            userSnapshot.data() as Map<String, dynamic>;
+
+        // Set user details to the corresponding text fields
+        setState(() {
+          nameController.text = userData['name'] ?? '';
+          emailController.text = userData['email'] ?? '';
+          // phoneController.text = userData['phone'] ?? '';
+        });
+
+        // You need to implement image handling as per your application logic
+      } else {
+        print('User not found in Firestore');
+      }
+    } catch (error) {
+      print('Error retrieving user details: $error');
+    }
+  }
+
+  //GETTING USER ID FROM LOCAL STORAGE
+  void _getUserID() async {
+    final _myBox = await Hive.openBox<UserClass>('userBox');
+    final UserClass? user = await _myBox.get(1);
+
+    if (user != null) {
+      setState(() {
+        userId = user.ID as String;
+        print("Logged in user ID is -> $userId");
+        _checkUser(userId);
+      });
+    } else {
+      print("User ID Not Found");
+    }
+  }
+
+  void _selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
     setState(() {
       _image = img;
     });
   }
 
-  void saveProfile() async {
-    String name = nameController.text;
-    String email = nameController.text;
+  Future<String> uploadImageToStorage(Uint8List image) async {
+    try {
+      // Create a reference to the Firebase Storage bucket
+      firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref();
 
-    String resp =
-        await storeData().saveData(name: name, email: email, file: _image!);
+      // Create a unique filename for the image
+      String fileName =
+          'profile_image_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      // Upload the image file to Firebase Storage
+      await storageRef.child('profile_images/$fileName').putData(image);
+
+      // Get the download URL of the uploaded image
+      String downloadURL =
+          await storageRef.child('profile_images/$fileName').getDownloadURL();
+
+      // Return the download URL
+      return downloadURL;
+    } catch (error) {
+      print('Error uploading image to Firebase Storage: $error');
+
+      return '';
+    }
+  }
+
+  Future<void> updateUserData(
+      String name, String email, String? imageLink) async {
+    try {
+      // Reference to the Firestore collection
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+
+      // Get reference to the user document
+      DocumentReference userRef = users.doc(userId);
+
+      // Create a map containing the updated user data
+      Map<String, dynamic> userData = {
+        'name': name,
+        'email': email,
+      };
+
+      // Add imageUrl to userData if it's not null
+      if (imageLink != null) {
+        userData['imageLink'] = imageLink;
+      }
+
+      // Update user document in Firestore
+      await userRef.update(userData);
+    } catch (error) {
+      print('Error updating user details: $error');
+    }
+  }
+
+  void _saveProfile() async {
+    String name = nameController.text;
+    String email = emailController.text;
+
+    // Check if image is changed
+    if (_image != null) {
+      // Upload image to Firebase Storage
+      String imageLink = await uploadImageToStorage(_image!);
+
+      // Update user details in Firestore with the new image URL
+      await updateUserData(name, email, imageLink);
+    } else {
+      // Update user details in Firestore without changing the image URL
+      await updateUserData(name, email, null);
+    }
 
     // Navigate to the main dashboard page after saving profile
     Navigator.pushReplacement(
@@ -111,7 +230,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               icon: Icon(Icons.add_a_photo),
                               color: Colors.black,
                               onPressed: () {
-                                selectImage();
+                                _selectImage();
                               },
                             ),
                           ),
@@ -123,16 +242,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: 20),
               _buildProfileField(
-                  "Name", Icons.person, "John Doe", nameController),
+                  "Name", Icons.person, "Enter Name", nameController),
               SizedBox(height: 20),
               _buildProfileField(
-                  "Email", Icons.info, "johndoe@test.com", emailController),
-              SizedBox(height: 20),
-              _buildProfileField(
-                  "Phone", Icons.phone, "+1234567890", phoneController),
+                  "Email", Icons.info, "Enter Email", emailController),
+              // SizedBox(height: 20),
+              // _buildProfileField(
+              //     "Phone", Icons.phone, "Enter Phone", phoneController),
               SizedBox(height: 45),
               ElevatedButton(
-                onPressed: saveProfile,
+                onPressed: _saveProfile,
                 child: const Text(
                   'Save Profile',
                 ),
@@ -150,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileField(String label, IconData icon, String value,
+  Widget _buildProfileField(String label, IconData icon, String hint,
       TextEditingController controller) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
@@ -180,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextField(
                   controller: controller,
                   decoration: InputDecoration(
-                    hintText: value,
+                    hintText: hint,
                     hintStyle: TextStyle(color: Colors.white),
                     border: InputBorder.none,
                   ),

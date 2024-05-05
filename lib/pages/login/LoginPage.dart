@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:ourappfyp/Components/Button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
+import 'package:ourappfyp/pages/settings/profileSetting.dart';
 import 'package:ourappfyp/types/UserClass.dart';
 
 class LoginPage extends StatefulWidget {
@@ -52,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
       await WriteData();
 
       Navigator.pop(context); // Dismiss loading dialog
-      Navigator.pushReplacementNamed(context, '/MainApp');
+      Navigator.pushReplacementNamed(context, '/profileSettings');
     } on FirebaseAuthException catch (e) {
       String errorMessage =
           'An unexpected error occurred, please try again later.';
