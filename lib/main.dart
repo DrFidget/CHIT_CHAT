@@ -14,6 +14,7 @@ import 'package:ourappfyp/pages/chat_dash/chat.dart';
 import 'package:ourappfyp/pages/settings/profileSetting.dart';
 import 'package:ourappfyp/types/UserClass.dart';
 import 'package:ourappfyp/pages/chat_dash/temp_dash.dart';
+import 'package:ourappfyp/pages/MainDashboard/ChatiingPage.dart';
 import 'firebase_options.dart';
 
 void main() async {

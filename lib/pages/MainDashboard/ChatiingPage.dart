@@ -105,6 +105,7 @@ class _ChattingPageState extends State<ChattingPage> {
       padding: EdgeInsets.all(10),
       child: Row(
         children: [
+          Text('Hello'),
           Expanded(
             child: TextField(
               controller: messageInput,
