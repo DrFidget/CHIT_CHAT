@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/utils.dart';
 import 'package:ourappfyp/types/UserClass.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:ourappfyp/pages/chat_dash/temp_dash.dart';
+import 'package:ourappfyp/pages/MainDashboard/MainAppStructureDashBoard.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -153,7 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Navigate to the main dashboard page after saving profile
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => Dashboard_Page()),
+      MaterialPageRoute(builder: (context) => AppStructure()),
     );
   }
 

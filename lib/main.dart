@@ -9,11 +9,8 @@ import 'package:ourappfyp/pages/login/LoginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ourappfyp/pages/register/RegistrationPage.dart';
 import 'package:ourappfyp/pages/settings/Settings.dart';
-import 'package:ourappfyp/pages/call/CallScreen.dart';
-import 'package:ourappfyp/pages/chat_dash/chat.dart';
 import 'package:ourappfyp/pages/settings/profileSetting.dart';
 import 'package:ourappfyp/types/UserClass.dart';
-import 'package:ourappfyp/pages/chat_dash/temp_dash.dart';
 import 'package:ourappfyp/pages/MainDashboard/ChatiingPage.dart';
 import 'firebase_options.dart';
 
@@ -52,11 +49,9 @@ class MyApp extends StatelessWidget {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegistrationPage(),
-        '/callScreen': (context) => const CallScreen(),
         '/MainApp': (context) => const AppStructure(),
         '/Settings': (context) => SettingsPage(),
         '/profileSettings': (context) => ProfileScreen(),
-        '/Dashboard_Page': (context) => Dashboard_Page(),
       },
     );
   }
