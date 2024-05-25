@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
       await WriteData();
 
       Navigator.pop(context); // Dismiss loading dialog
-      Navigator.pushReplacementNamed(context, '/profileSettings');
+      Navigator.pushReplacementNamed(context, '/MainApp');
     } on FirebaseAuthException catch (e) {
       String errorMessage =
           'An unexpected error occurred, please try again later.';

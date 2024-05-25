@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:ourappfyp/pages/MainDashboard/MainAppStructureDashBoard.dart';
-import 'package:ourappfyp/pages/MainDashboard/MainDashboard.dart';
 import 'package:ourappfyp/pages/home/HomePage.dart';
 import 'package:ourappfyp/pages/login/LoginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,7 +10,6 @@ import 'package:ourappfyp/pages/register/RegistrationPage.dart';
 import 'package:ourappfyp/pages/settings/Settings.dart';
 import 'package:ourappfyp/pages/settings/profileSetting.dart';
 import 'package:ourappfyp/types/UserClass.dart';
-import 'package:ourappfyp/pages/MainDashboard/ChatiingPage.dart';
 import 'firebase_options.dart';
 
 void main() async {

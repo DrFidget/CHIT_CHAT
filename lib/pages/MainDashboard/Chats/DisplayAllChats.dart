@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ourappfyp/Components/chatBoxDisplay.dart';
-import 'package:ourappfyp/pages/MainDashboard/ChatiingPage.dart';
 import 'package:ourappfyp/pages/MainDashboard/Chats/messagingPage/MessagingPage.dart';
 import 'package:ourappfyp/services/ChatBoxCollectionFireStore/chatCollection.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
