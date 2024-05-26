@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:ourappfyp/Components/AudioPLayerCompoenent.dart';
 import 'package:ourappfyp/Components/Message.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ourappfyp/services/AudioServiceFirestore/AudioServiceFirestore.dart';
 import 'package:ourappfyp/services/ChatBoxCollectionFireStore/chatCollection.dart';
 import 'package:ourappfyp/services/MessagesCollectionFireStore/messageCollection.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
@@ -42,6 +46,7 @@ class _MessagingPageState extends State<MessagingPage> {
   final MessagesFirestoreServices ChatService = MessagesFirestoreServices();
   final chatBoxFirestoreService chatRoomService = chatBoxFirestoreService();
   final UserFirestoreService userservices = UserFirestoreService();
+
   UserClass? user;
 
   AudioController audioController = Get.put(AudioController());
@@ -94,6 +99,21 @@ class _MessagingPageState extends State<MessagingPage> {
       audioController.isSending.value = true;
       // Play the recorded audio
       await audioPlayer.play(DeviceFileSource(recordFilePath));
+      try {
+        final AudioServiceFirestore audioService = AudioServiceFirestore();
+        String? uploadedURL = await audioService.uploadAudioFile(
+            File(recordFilePath),
+            "audio/${DateTime.now().microsecondsSinceEpoch.toString()}");
+        if (uploadedURL != null) {
+          audioURL = uploadedURL;
+          print("Audio URL: $audioURL"); // Debugging statement
+          SendAudioMessage();
+        } else {
+          print("Failed to upload audio file."); // Handle the error
+        }
+      } catch (e) {
+        print(e);
+      }
     }
   }
 
@@ -120,6 +140,22 @@ class _MessagingPageState extends State<MessagingPage> {
         widget.ChatRoomId,
       );
       messageInput.clear();
+      await ChatService.addMessage(newMessage);
+      chatRoomService.updateChatRoomTimestamp(widget.ChatRoomId);
+    }
+  }
+
+  void SendAudioMessage() async {
+    if (audioURL.isNotEmpty) {
+      MessageClass newMessage = MessageClass(
+        widget.SenderId,
+        widget.ReceiverId,
+        Timestamp.now(),
+        audioURL,
+        'audio',
+        widget.ChatRoomId,
+      );
+      audioURL = '';
       await ChatService.addMessage(newMessage);
       chatRoomService.updateChatRoomTimestamp(widget.ChatRoomId);
     }
@@ -156,19 +192,38 @@ class _MessagingPageState extends State<MessagingPage> {
                       var messageData = snapshot.data!.docs[index].data()
                           as Map<String, dynamic>;
                       var time = messageData['timeStamp'] as Timestamp;
-                      return MessageWidget(
-                        dateTime: time.toDate(),
-                        backgroundColor:
-                            widget.SenderId == messageData['senderID']
-                                ? const Color.fromRGBO(109, 40, 217, 1.0)
-                                : Colors.white,
-                        textColor: widget.SenderId == messageData['senderID']
-                            ? Colors.white
-                            : Colors.black,
-                        text: messageData['message'],
-                        alignLeft: widget.SenderId != messageData['senderID'],
-                        callback: () => {},
-                      );
+                      var typeOfMessage = messageData['type'] as String;
+                      return typeOfMessage == 'text'
+                          ? MessageWidget(
+                              dateTime: time.toDate(),
+                              backgroundColor:
+                                  widget.SenderId == messageData['senderID']
+                                      ? const Color.fromRGBO(109, 40, 217, 1.0)
+                                      : Colors.white,
+                              textColor:
+                                  widget.SenderId == messageData['senderID']
+                                      ? Colors.white
+                                      : Colors.black,
+                              text: messageData['message'],
+                              alignLeft:
+                                  widget.SenderId != messageData['senderID'],
+                              callback: () => {},
+                            )
+                          : AudioMessageWidget(
+                              dateTime: time.toDate(),
+                              backgroundColor:
+                                  widget.SenderId == messageData['senderID']
+                                      ? const Color.fromRGBO(109, 40, 217, 1.0)
+                                      : Colors.white,
+                              textColor:
+                                  widget.SenderId == messageData['senderID']
+                                      ? Colors.white
+                                      : Colors.black,
+                              audioUrl: messageData['message'],
+                              alignLeft:
+                                  widget.SenderId != messageData['senderID'],
+                              callback: () => {},
+                            ); //null ki jagha audio message player ana ha
                     },
                   );
                 } else if (snapshot.hasError) {
