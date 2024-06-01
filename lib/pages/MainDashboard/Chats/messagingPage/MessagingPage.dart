@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:ourappfyp/Components/AudioPLayerCompoenent.dart';
 import 'package:ourappfyp/Components/Message.dart';
@@ -18,8 +17,12 @@ import 'package:ourappfyp/pages/MainDashboard/Chats/messagingPage/AudioControlle
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record_mp3/record_mp3.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:intl/intl.dart';
 import 'package:get/get.dart';
+import 'package:ourappfyp/pages/call/Calling_page.dart';
+import 'package:ourappfyp/models/user.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:ourappfyp/pages/navigator.dart';
+import 'package:ourappfyp/pages/call/call_accept_decline_page.dart';
 
 class MessagingPage extends StatefulWidget {
   final String SenderId;
@@ -46,8 +49,12 @@ class _MessagingPageState extends State<MessagingPage> {
   final MessagesFirestoreServices ChatService = MessagesFirestoreServices();
   final chatBoxFirestoreService chatRoomService = chatBoxFirestoreService();
   final UserFirestoreService userservices = UserFirestoreService();
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   UserClass? user;
+  String? firebaseToken1;
+  User1? userObject;
+  User1? senderObject;
+  UserClass? sender;
 
   AudioController audioController = Get.put(AudioController());
   AudioPlayer audioPlayer = AudioPlayer();
@@ -58,8 +65,131 @@ class _MessagingPageState extends State<MessagingPage> {
   void initState() {
     super.initState();
     fetchUser();
+    fetchFirebaseToken();
+    requestNotificationPermissions();
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.data['type'] == 'CALL_NOTIFICATION') {
+        final callerId = message.data['callerId'] ?? '';
+        final callerName = message.data['callerName'] ?? '';
+        final roomId = message.data['roomId'] ?? '';
+        final receiverId = message.data['receiverId'] ?? '';
+
+        if (callerId != null && callerName != null && roomId != null && receiverId != null) {
+          navigateToCallPage(callerId, callerName, roomId, receiverId);
+        }
+      }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      if (message.data['type'] == 'CALL_NOTIFICATION') {
+        final callerId = message.data['callerId'] ?? '';
+        final callerName = message.data['callerName'] ?? '';
+        final roomId = message.data['roomId'] ?? '';
+        final receiverId = message.data['receiverId'] ?? '';
+
+        if (callerId != null && callerName != null && roomId != null && receiverId != null) {
+          navigateToCallPage(callerId, callerName, roomId, receiverId);
+        }
+      }
+    });
+    // Handle when the app is launched from a terminated state by a notification
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null && message.data['type'] == 'CALL_NOTIFICATION') {
+        final callerId = message.data['callerId'] ?? '';
+        final callerName = message.data['callerName'] ?? '';
+        final roomId = message.data['roomId'] ?? '';
+        final receiverId = message.data['receiverId'] ?? '';
+
+        if (callerId != null && callerName != null && roomId != null && receiverId != null) {
+          navigateToCallPage(callerId, callerName, roomId, receiverId);
+        }
+      }
+    });
   }
 
+
+void _initiateCall() {
+  final String roomId = widget.ChatRoomId;
+  _firestore.collection('calls').doc(roomId).set({
+    'callerId': widget.SenderId,
+    'receiverId': widget.ReceiverId,
+    'roomId': roomId,
+  });
+
+  final senderName = sender?.name ?? 'Unknown';
+  sendCallNotification(widget.SenderId, senderName, widget.ReceiverId,roomId);
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => CallingPage(
+        callerId: widget.SenderId,
+        receiverId: widget.ReceiverId,
+        roomId: roomId,
+        onCallEnd: () {
+          Navigator.pop(context); // This will navigate back to the MessagingPage
+        },
+      ),
+    ),
+  );
+}
+
+void createUserObject() {
+  setState(() {
+    userObject = User1(
+      name: user!.name ?? "",
+      gender: null,
+      phoneNumber: user!.email ?? "",
+      birthDate: null,
+      location: null,
+      username: null,
+      firstName: "",
+      lastName: "",
+      title: "",
+      picture: user!.imageLink ?? "",
+      uuid: user!.ID ?? "",
+      firebaseToken: firebaseToken1,
+    );
+  });
+}
+
+Future<void> requestNotificationPermissions() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print('User granted permission');
+  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    print('User granted provisional permission');
+  } else {
+    print('User declined or has not accepted permission');
+  }
+}
+  void fetchFirebaseToken() async {
+    // Get the FCM token
+    try {
+      String? token = await FirebaseMessaging.instance.getToken();
+      if (token != null) {
+        firebaseToken1 = token;
+        print('FCM Token: $firebaseToken1');
+        if (user != null) {
+          createUserObject();
+        }
+      } else {
+        print('Failed to fetch FCM token. Token is null.');
+        // Optionally, you can implement a retry mechanism here
+      }
+    } catch (e) {
+      print('Error fetching FCM token: $e');
+      // Handle the error accordingly
+    }
+  }
   Future<bool> checkPermission() async {
     if (!await Permission.microphone.isGranted) {
       PermissionStatus status = await Permission.microphone.request();
@@ -117,19 +247,26 @@ class _MessagingPageState extends State<MessagingPage> {
     }
   }
 
-  void fetchUser() async {
-    UserClass? fetchedUser = await userservices.getUserById(widget.ReceiverId);
-    if (fetchedUser != null) {
-      setState(() {
-        user = fetchedUser;
-      });
-    } else {
-      // Handle the case where the user is not found
-      // For example, show an error message or default to a generic user
+void fetchUser() async {
+  // Fetch the user using the provided ReceiverId
+  UserClass? fetchedUser = await userservices.getUserById(widget.ReceiverId);
+  UserClass? senderUser = await userservices.getUserById(widget.SenderId);
+  if (fetchedUser != null) {
+    setState(() {
+      user = fetchedUser;
+      sender = senderUser;
+    });
+    if(firebaseToken1!= null) {
+      createUserObject();
     }
+  } else {
+    // Handle the case where the user is not found
+    // For example, show an error message or default to a generic user
   }
+}
 
-  void SendMessage() async {
+
+void SendMessage() async {
     if (messageInput.text.isNotEmpty) {
       MessageClass newMessage = MessageClass(
         widget.SenderId,
@@ -144,6 +281,23 @@ class _MessagingPageState extends State<MessagingPage> {
       chatRoomService.updateChatRoomTimestamp(widget.ChatRoomId);
     }
   }
+Future<void> sendCallNotification(String callerId, String callerName, String receiverId, String roomId) async {
+  HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('sendCallNotification');
+  try {
+    final response = await callable.call(<String, dynamic>{
+      'callerId': callerId,
+      'callerName': callerName,
+      'receiverId': receiverId,
+      'roomId': roomId,
+    });
+    if (response.data['success']) {
+      print('Call notification sent successfully.');
+    }
+  } catch (e) {
+    print('Failed to send call notification: $e');
+  }
+}
+
 
   void SendAudioMessage() async {
     if (audioURL.isNotEmpty) {
@@ -177,6 +331,12 @@ class _MessagingPageState extends State<MessagingPage> {
           ),
         ),
         backgroundColor: const Color.fromRGBO(109, 40, 217, 1.0),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.call),
+            onPressed: _initiateCall,
+          ),
+        ],
       ),
       body: Column(
         children: [

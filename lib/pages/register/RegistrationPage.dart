@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/Components/Button.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({Key? key}) : super(key: key);
 
@@ -175,10 +175,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
         email: emailValue,
         password: passwordValue,
       );
+      // Retrieve FCM token
+      String? firebaseToken = await FirebaseMessaging.instance.getToken();
+
 
       try {
         await FireStoreService.addUser(
-            fullnameValue, emailValue, passwordValue);
+            fullnameValue, emailValue, passwordValue, firebaseToken);
       } catch (e) {
         print(e);
       }
