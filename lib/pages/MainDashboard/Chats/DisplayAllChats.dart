@@ -28,6 +28,7 @@ Widget DisplayAllChatsWithUsers(
                   var chatRoomID = snapshot.data!.docs[index].id;
                   var displayNameID =
                       loggedInUserId == creatorId ? memberId : creatorId;
+                  var receiverId = loggedInUserId == memberId ? creatorId : memberId;
                   return FutureBuilder(
                     future: userServices.getUserById(displayNameID as String),
                     builder: (context, snapshot) {
@@ -47,7 +48,7 @@ Widget DisplayAllChatsWithUsers(
                                     MaterialPageRoute(
                                         builder: (context) => MessagingPage(
                                               SenderId: loggedInUserId,
-                                              ReceiverId: memberId,
+                                              ReceiverId: receiverId,
                                               ChatRoomId: chatRoomID,
                                               UNAME: user.name ?? "",
                                             )));

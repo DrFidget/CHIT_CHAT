@@ -5,14 +5,15 @@ class UserFirestoreService {
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
 
-  Future<void> addUser(String name, String email, String password) {
+  Future<void> addUser(String name, String email, String password, String? fcmToken) {
     return users.add({
       'name': name,
       'email': email,
       'password': password,
+      'fcmToken': fcmToken, // Add FCM token to the user document
       'timeStamp': Timestamp.now().toString(),
       'imageLink':
-          'https://firebasestorage.googleapis.com/v0/b/chattingapp-chitchat.appspot.com/o/profileImage?alt=media&token=3bc23625-b6af-4e67-a541-e28fce9b2985',
+      'https://firebasestorage.googleapis.com/v0/b/chattingapp-chitchat.appspot.com/o/profileImage?alt=media&token=3bc23625-b6af-4e67-a541-e28fce9b2985',
     });
   }
 
