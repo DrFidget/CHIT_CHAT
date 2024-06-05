@@ -19,6 +19,7 @@ class CallingPage extends StatefulWidget {
   final String receiverId;
   final String roomId;
   final VoidCallback onCallEnd;
+  final String UNAME;
 
 
   const CallingPage({
@@ -27,6 +28,7 @@ class CallingPage extends StatefulWidget {
     required this.receiverId,
     required this.roomId,
     required this.onCallEnd,
+    required this.UNAME,
   }) : super(key: key);
 
   @override
@@ -39,14 +41,21 @@ class _CallingPageState extends State<CallingPage> {
   bool _speakerOn = false;
   Timer? _callTimer;
   int _callDuration = 0;
-  String _callStatus = 'Ringing';
+  String _callStatus = 'Calling';
   DateTime? _startTime;
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   TextEditingController textEditingController = TextEditingController(text: '');
+  UserFirestoreService userFirestoreService = UserFirestoreService();
   String? room;
   @override
   void initState() {
+    super.initState();
+
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
 
     _localRenderer.initialize();
     _remoteRenderer.initialize();
@@ -54,7 +63,6 @@ class _CallingPageState extends State<CallingPage> {
       _remoteRenderer.srcObject = stream;
       setState(() {});
     });
-    super.initState();
     requestPermissions().then((_) {
       // Handle cases where permissions are not granted
       if (!mounted) return;
@@ -80,7 +88,6 @@ class _CallingPageState extends State<CallingPage> {
   }
   Future<void> _startCall() async {
     // Initialize Firestore service
-    UserFirestoreService userFirestoreService = UserFirestoreService();
 
     // Request audio focus
     await _requestAudioFocus();
@@ -91,12 +98,10 @@ class _CallingPageState extends State<CallingPage> {
     // Fetch current user's document by email
     final String currentUserEmail = FirebaseAuth.instance.currentUser?.email ?? '';
     UserClass? currentUser = await userFirestoreService.getUserByEmail(currentUserEmail);
-
     if (currentUser == null) {
       print("User not found");
       return;
     }
-
     final String? currentUserId = currentUser.ID;
 
     // Handle room creation or joining
@@ -104,7 +109,6 @@ class _CallingPageState extends State<CallingPage> {
       room = await _webRTCManager.createRoom(_remoteRenderer);
       print("roomID: $room");
       textEditingController.text = room!;
-
       // Store room ID in Firestore
       await FirebaseFirestore.instance.collection('calls').doc(widget.roomId).set({
         'roomId': room,
@@ -112,7 +116,6 @@ class _CallingPageState extends State<CallingPage> {
         'receiverId': widget.receiverId,
         'status': 'Calling',
       });
-
       _updateCallStatus('Calling');
     } else {
       // Retrieve room ID from Firestore
@@ -129,6 +132,7 @@ class _CallingPageState extends State<CallingPage> {
         print("Call document not found in Firestore");
       }
     }
+    _webRTCManager.toggleSpeaker(false);
   }
 
 
@@ -157,7 +161,6 @@ class _CallingPageState extends State<CallingPage> {
       'status': status,
     });
   }
-
   void _listenToCallStatus() {
     FirebaseFirestore.instance.collection('calls').doc(widget.roomId).snapshots().listen((snapshot) async {
       if (snapshot.exists && snapshot.data() != null) {
@@ -215,59 +218,73 @@ class _CallingPageState extends State<CallingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Calling ${widget.receiverId}'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.call_end),
-            onPressed: _endCall,
-          ),
-        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
-      body: Stack(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              color: Colors.black54,
-              padding: EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Text(
-                    'Status: $_callStatus',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    'Call Duration: ${_formatDuration(_callDuration)}',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          _micMuted ? Icons.mic_off : Icons.mic,
-                          color: Colors.white,
-                        ),
-                        onPressed: _toggleMic,
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          _speakerOn ? Icons.volume_up : Icons.volume_off,
-                          color: Colors.white,
-                        ),
-                        onPressed: _toggleSpeaker,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.call_end, color: Colors.red),
-                        onPressed: _endCall,
-                      ),
-                    ],
-                  ),
-                ],
+          Column(
+            children: [
+              SizedBox(height: 50),
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage('https://via.placeholder.com/150'), // Replace with actual caller image URL
               ),
+              SizedBox(height: 20),
+              Text(
+                widget.UNAME,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Status: $_callStatus',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+              Text(
+                'Call Duration: ${_formatDuration(_callDuration)}',
+                style: TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+          Container(
+            color: Color.fromRGBO(109, 40, 217, 1),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    _speakerOn ? Icons.volume_up : Icons.volume_off,
+                    color: Colors.white,
+                  ),
+                  onPressed: _toggleSpeaker,
+                ),
+                IconButton(
+                  icon: Icon(
+                    _micMuted ? Icons.mic_off : Icons.mic,
+                    color: Colors.white,
+                  ),
+                  onPressed: _toggleMic,
+                ),
+                IconButton(
+                  icon: Icon(Icons.call_end, color: Colors.red),
+                  onPressed: _endCall,
+                ),
+              ],
             ),
           ),
         ],

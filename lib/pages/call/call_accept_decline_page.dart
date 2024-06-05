@@ -8,12 +8,13 @@ class CallAcceptDeclinePage extends StatefulWidget {
   final String callerId;
   final String receiverId;
   final String roomId;
-
+  final String callername;
   const CallAcceptDeclinePage({
     Key? key,
     required this.callerId,
     required this.receiverId,
     required this.roomId,
+    required this.callername,
   }) : super(key: key);
 
   @override
@@ -21,6 +22,7 @@ class CallAcceptDeclinePage extends StatefulWidget {
 }
 
 class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
+
   void _acceptCall() {
     FirebaseFirestore.instance.collection('calls').doc(widget.roomId).update({
       'status': 'Accepted',
@@ -33,6 +35,7 @@ class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
           callerId: widget.callerId,
           receiverId: widget.receiverId,
           roomId: widget.roomId,
+          UNAME: widget.callername,
           onCallEnd: () {
             Navigator.pop(context); // Navigate back to the MessagingPage
           },
@@ -51,26 +54,36 @@ class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Incoming Call from ${widget.callerId}'),
-      ),
+      backgroundColor: Colors.black,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Incoming call from ${widget.callerId}'),
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: NetworkImage('https://via.placeholder.com/150'), // Replace with actual caller image URL
+            ),
             SizedBox(height: 20),
+            Text(
+              'Incoming call from ${widget.callername}',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 50),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
+                IconButton(
+                  icon: Icon(Icons.call, color: Colors.green, size: 50),
                   onPressed: _acceptCall,
-                  child: Text('Accept'),
                 ),
-                ElevatedButton(
+                IconButton(
+                  icon: Icon(Icons.call_end, color: Colors.red, size: 50),
                   onPressed: _declineCall,
-                  child: Text('Decline'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 ),
               ],
             ),
