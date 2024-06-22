@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "387040455631",
-    "project_id": "chattingapp-chitchat",
-    "storage_bucket": "chattingapp-chitchat.appspot.com"
+    "project_number": "20915245638",
+    "project_id": "chitchat-425ea",
+    "storage_bucket": "chitchat-425ea.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:387040455631:android:d6b98cc828b877da2580ba",
+        "mobilesdk_app_id": "1:20915245638:android:16d02f741e5462b266b047",
         "android_client_info": {
           "package_name": "com.example.ourappfyp"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA0fprpISYE6kgYwOCXmelCBnabZNBbBwI"
+          "current_key": "AIzaSyB2U21JtkZkqzZeXuuNRCJAm5bKRtsXq0U"
         }
       ],
       "services": {
