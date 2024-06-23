@@ -50,20 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDOSECsQwoOpEPnvzKEgAbcjxfIzCii5Vo',
-    appId: '1:387040455631:web:78a76f8cae84398c2580ba',
-    messagingSenderId: '387040455631',
-    projectId: 'chattingapp-chitchat',
-    authDomain: 'chattingapp-chitchat.firebaseapp.com',
-    storageBucket: 'chattingapp-chitchat.appspot.com',
+    apiKey: 'AIzaSyAlYmRs5-IX5s3ndkpb9bTomvgMRCFl6BI',
+    appId: '1:20915245638:web:6ef9d3d8b21b058c66b047',
+    messagingSenderId: '20915245638',
+    projectId: 'chitchat-425ea',
+    authDomain: 'chitchat-425ea.firebaseapp.com',
+    storageBucket: 'chitchat-425ea.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA0fprpISYE6kgYwOCXmelCBnabZNBbBwI',
-    appId: '1:387040455631:android:d6b98cc828b877da2580ba',
-    messagingSenderId: '387040455631',
-    projectId: 'chattingapp-chitchat',
-    storageBucket: 'chattingapp-chitchat.appspot.com',
+    apiKey: 'AIzaSyB2U21JtkZkqzZeXuuNRCJAm5bKRtsXq0U',
+    appId: '1:20915245638:android:16d02f741e5462b266b047',
+    messagingSenderId: '20915245638',
+    projectId: 'chitchat-425ea',
+    storageBucket: 'chitchat-425ea.appspot.com',
   );
 
 }
