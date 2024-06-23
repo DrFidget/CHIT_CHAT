@@ -75,7 +75,10 @@ class _MessagingPageState extends State<MessagingPage> {
         final roomId = message.data['roomId'] ?? '';
         final receiverId = message.data['receiverId'] ?? '';
 
-        if (callerId != null && callerName != null && roomId != null && receiverId != null) {
+        if (callerId != null &&
+            callerName != null &&
+            roomId != null &&
+            receiverId != null) {
           navigateToCallPage(callerId, callerName, roomId, receiverId);
         }
       }
@@ -88,90 +91,101 @@ class _MessagingPageState extends State<MessagingPage> {
         final roomId = message.data['roomId'] ?? '';
         final receiverId = message.data['receiverId'] ?? '';
 
-        if (callerId != null && callerName != null && roomId != null && receiverId != null) {
+        if (callerId != null &&
+            callerName != null &&
+            roomId != null &&
+            receiverId != null) {
           navigateToCallPage(callerId, callerName, roomId, receiverId);
         }
       }
     });
     // Handle when the app is launched from a terminated state by a notification
-    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
       if (message != null && message.data['type'] == 'CALL_NOTIFICATION') {
         final callerId = message.data['callerId'] ?? '';
         final callerName = message.data['callerName'] ?? '';
         final roomId = message.data['roomId'] ?? '';
         final receiverId = message.data['receiverId'] ?? '';
 
-        if (callerId != null && callerName != null && roomId != null && receiverId != null) {
+        if (callerId != null &&
+            callerName != null &&
+            roomId != null &&
+            receiverId != null) {
           navigateToCallPage(callerId, callerName, roomId, receiverId);
         }
       }
     });
   }
 
+  void _initiateCall() {
+    final String roomId = widget.ChatRoomId;
+    _firestore.collection('calls').doc(roomId).set({
+      'callerId': widget.SenderId,
+      'receiverId': widget.ReceiverId,
+      'roomId': roomId,
+    });
 
-void _initiateCall() {
-  final String roomId = widget.ChatRoomId;
-  _firestore.collection('calls').doc(roomId).set({
-    'callerId': widget.SenderId,
-    'receiverId': widget.ReceiverId,
-    'roomId': roomId,
-  });
+    final senderName = sender?.name ?? 'Unknown';
+    sendCallNotification(
+        widget.SenderId, senderName, widget.ReceiverId, roomId);
 
-  final senderName = sender?.name ?? 'Unknown';
-  sendCallNotification(widget.SenderId, senderName, widget.ReceiverId,roomId);
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => CallingPage(
-        callerId: widget.SenderId,
-        receiverId: widget.ReceiverId,
-        roomId: roomId,
-        UNAME: widget.UNAME??"",
-        onCallEnd: () {
-          Navigator.pop(context); // This will navigate back to the MessagingPage
-        },
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CallingPage(
+          callerId: widget.SenderId,
+          receiverId: widget.ReceiverId,
+          roomId: roomId,
+          UNAME: widget.UNAME ?? "",
+          onCallEnd: () {
+            Navigator.pop(
+                context); // This will navigate back to the MessagingPage
+          },
+        ),
       ),
-    ),
-  );
-}
-
-void createUserObject() {
-  setState(() {
-    userObject = User1(
-      name: user!.name ?? "",
-      gender: null,
-      phoneNumber: user!.email ?? "",
-      birthDate: null,
-      location: null,
-      username: null,
-      firstName: "",
-      lastName: "",
-      title: "",
-      picture: user!.imageLink ?? "",
-      uuid: user!.ID ?? "",
-      firebaseToken: firebaseToken1,
     );
-  });
-}
-
-Future<void> requestNotificationPermissions() async {
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
-  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    print('User granted permission');
-  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-    print('User granted provisional permission');
-  } else {
-    print('User declined or has not accepted permission');
   }
-}
+
+  void createUserObject() {
+    setState(() {
+      userObject = User1(
+        name: user!.name ?? "",
+        gender: null,
+        phoneNumber: user!.email ?? "",
+        birthDate: null,
+        location: null,
+        username: null,
+        firstName: "",
+        lastName: "",
+        title: "",
+        picture: user!.imageLink ?? "",
+        uuid: user!.ID ?? "",
+        firebaseToken: firebaseToken1,
+      );
+    });
+  }
+
+  Future<void> requestNotificationPermissions() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
+  }
+
   void fetchFirebaseToken() async {
     // Get the FCM token
     try {
@@ -191,6 +205,7 @@ Future<void> requestNotificationPermissions() async {
       // Handle the error accordingly
     }
   }
+
   Future<bool> checkPermission() async {
     if (!await Permission.microphone.isGranted) {
       PermissionStatus status = await Permission.microphone.request();
@@ -229,7 +244,7 @@ Future<void> requestNotificationPermissions() async {
       audioController.isRecording.value = false;
       audioController.isSending.value = true;
       // Play the recorded audio
-      await audioPlayer.play(DeviceFileSource(recordFilePath));
+      // await audioPlayer.play(DeviceFileSource(recordFilePath));
       try {
         final AudioServiceFirestore audioService = AudioServiceFirestore();
         String? uploadedURL = await audioService.uploadAudioFile(
@@ -248,26 +263,25 @@ Future<void> requestNotificationPermissions() async {
     }
   }
 
-void fetchUser() async {
-  // Fetch the user using the provided ReceiverId
-  UserClass? fetchedUser = await userservices.getUserById(widget.ReceiverId);
-  UserClass? senderUser = await userservices.getUserById(widget.SenderId);
-  if (fetchedUser != null) {
-    setState(() {
-      user = fetchedUser;
-      sender = senderUser;
-    });
-    if(firebaseToken1!= null) {
-      createUserObject();
+  void fetchUser() async {
+    // Fetch the user using the provided ReceiverId
+    UserClass? fetchedUser = await userservices.getUserById(widget.ReceiverId);
+    UserClass? senderUser = await userservices.getUserById(widget.SenderId);
+    if (fetchedUser != null) {
+      setState(() {
+        user = fetchedUser;
+        sender = senderUser;
+      });
+      if (firebaseToken1 != null) {
+        createUserObject();
+      }
+    } else {
+      // Handle the case where the user is not found
+      // For example, show an error message or default to a generic user
     }
-  } else {
-    // Handle the case where the user is not found
-    // For example, show an error message or default to a generic user
   }
-}
 
-
-void SendMessage() async {
+  void SendMessage() async {
     if (messageInput.text.isNotEmpty) {
       MessageClass newMessage = MessageClass(
         widget.SenderId,
@@ -282,23 +296,25 @@ void SendMessage() async {
       chatRoomService.updateChatRoomTimestamp(widget.ChatRoomId);
     }
   }
-Future<void> sendCallNotification(String callerId, String callerName, String receiverId, String roomId) async {
-  HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('sendCallNotification');
-  try {
-    final response = await callable.call(<String, dynamic>{
-      'callerId': callerId,
-      'callerName': callerName,
-      'receiverId': receiverId,
-      'roomId': roomId,
-    });
-    if (response.data['success']) {
-      print('Call notification sent successfully.');
-    }
-  } catch (e) {
-    print('Failed to send call notification: $e');
-  }
-}
 
+  Future<void> sendCallNotification(String callerId, String callerName,
+      String receiverId, String roomId) async {
+    HttpsCallable callable =
+        FirebaseFunctions.instance.httpsCallable('sendCallNotification');
+    try {
+      final response = await callable.call(<String, dynamic>{
+        'callerId': callerId,
+        'callerName': callerName,
+        'receiverId': receiverId,
+        'roomId': roomId,
+      });
+      if (response.data['success']) {
+        print('Call notification sent successfully.');
+      }
+    } catch (e) {
+      print('Failed to send call notification: $e');
+    }
+  }
 
   void SendAudioMessage() async {
     if (audioURL.isNotEmpty) {
