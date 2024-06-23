@@ -5,6 +5,7 @@ class ChatRoom {
   String? memberId;
   String? roomName;
   String? roomId;
+  String? roomType;
   Timestamp? timeStamp;
   List<dynamic>? members;
 
@@ -15,6 +16,7 @@ class ChatRoom {
     this.roomId,
     this.timeStamp,
     this.members,
+    this.roomType,
   });
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
@@ -25,6 +27,7 @@ class ChatRoom {
       roomId: json['roomId'],
       timeStamp: json['timeStamp'],
       members: json['members'],
+      roomType: json['roomType'],
     );
   }
   void printDetails() {
@@ -35,5 +38,6 @@ class ChatRoom {
     print('Room ID: $roomId');
     print('Time Stamp: $timeStamp');
     print('Members: $members');
+    print('Room Type: $roomType');
   }
 }

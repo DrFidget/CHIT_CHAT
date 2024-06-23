@@ -19,6 +19,25 @@ class chatBoxFirestoreService {
     });
   }
 
+  Future<void> createGroupChat(String loggedInUserId,
+      List<String> selectedUserIds, String groupName) async {
+    print(groupName);
+    print(loggedInUserId);
+    print(selectedUserIds);
+
+    var allMembers = List<String>.from(selectedUserIds);
+    allMembers.add(loggedInUserId);
+
+    await chatBox.add({
+      'creatorId': loggedInUserId,
+      'members': allMembers,
+      'name': groupName,
+      'timeStamp': Timestamp.now(),
+      'memberId': '',
+      'roomType': "group"
+    });
+  }
+
   Future<void> createChatRoom(String CreatorID, String MemberID) {
     var sortedList = <String>[];
     sortedList.add(CreatorID);
@@ -39,6 +58,7 @@ class chatBoxFirestoreService {
           'members': sortedList,
           'name': name,
           'timeStamp': Timestamp.now(),
+          'roomType': "dm"
         });
       }
     });
@@ -145,6 +165,15 @@ class chatBoxFirestoreService {
   Stream<QuerySnapshot> getChatRoomsOfLoggedInPerson(String loggedInID) {
     return chatBox
         .where('members', arrayContains: loggedInID)
+        .where('roomType', isEqualTo: 'dm')
+        .orderBy('timeStamp', descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getGroupChatRoomsOfLoggedInPerson(String loggedInID) {
+    return chatBox
+        .where('members', arrayContains: loggedInID)
+        .where('roomType', isEqualTo: 'group')
         .orderBy('timeStamp', descending: true)
         .snapshots();
   }
