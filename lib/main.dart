@@ -30,21 +30,22 @@ Future<void> myBackgroundMessageHandler(RemoteMessage message) async {
     final receiverId = message.data['receiverId'] ?? '';
 
     AwesomeNotifications().createNotification(
-        content: NotificationContent(
+      content: NotificationContent(
         id: 10,
         channelKey: 'call_channel',
         title: 'Incoming Call',
         body: '$callerName is calling you',
         payload: {
-        'callerId': callerId,
-        'callerName': callerName,
-        'roomId': roomId,
-        'receiverId': receiverId,
+          'callerId': callerId,
+          'callerName': callerName,
+          'roomId': roomId,
+          'receiverId': receiverId,
         },
-        ),
+      ),
     );
   }
 }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -86,18 +87,19 @@ void main() async {
       final callerName = message.data['callerName'] ?? '';
       final roomId = message.data['roomId'] ?? '';
       final receiverId = message.data['receiverId'] ?? '';
-      navigateToCallPage(callerId, callerName, roomId, receiverId);  }
-
-  });
-    try {
-      await Hive.initFlutter();
-      Hive.registerAdapter(UserClassAdapter());
-      await Hive.openBox<UserClass>('userBox');
-    } catch (e) {
-      print("error loading hive error : $e");
+      navigateToCallPage(callerId, callerName, roomId, receiverId);
     }
-    runApp(const MyApp());
+  });
+  try {
+    await Hive.initFlutter();
+    Hive.registerAdapter(UserClassAdapter());
+    await Hive.openBox<UserClass>('userBox');
+  } catch (e) {
+    print("error loading hive error : $e");
   }
+  runApp(const MyApp());
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -118,7 +120,7 @@ class MyApp extends StatelessWidget {
         '/MainApp': (context) => const AppStructure(),
         '/Settings': (context) => SettingsPage(),
         '/profileSettings': (context) => ProfileScreen(),
-       // '/Dashboard_Page': (context) => Dashboard_Page(),
+        // '/Dashboard_Page': (context) => Dashboard_Page(),
       },
     );
   }

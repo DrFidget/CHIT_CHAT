@@ -4,9 +4,14 @@ import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:http/http.dart' as http;
+
+// Import your services and other dependencies as needed
+import 'package:ourappfyp/services/ImageServiceFireStore/ImageService.dart';
+import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 import 'package:ourappfyp/utils.dart';
 import 'package:ourappfyp/types/UserClass.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:ourappfyp/pages/MainDashboard/MainAppStructureDashBoard.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -17,7 +22,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  // final TextEditingController phoneController = TextEditingController();
   Uint8List? _image;
   late String userId = '';
 
@@ -27,28 +31,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _getUserID();
   }
 
+  // Method to fetch user ID from local storage using Hive
+  void _getUserID() async {
+    try {
+      final _myBox = await Hive.openBox<UserClass>('userBox');
+      final UserClass? user = await _myBox.get(1);
+
+      if (user != null) {
+        setState(() {
+          userId = user.ID as String;
+          print("Logged in user ID is -> $userId");
+          _checkUser(userId); // Fetch user details from Firestore
+        });
+      } else {
+        print("User ID Not Found");
+      }
+    } catch (error) {
+      print('Error fetching user ID: $error');
+    }
+  }
+
+  // Method to retrieve user details from Firestore based on user ID
   void _checkUser(String userId) async {
     try {
-      // Reference to the Firestore collection
       CollectionReference users =
           FirebaseFirestore.instance.collection('users');
 
-      // Get user document based on the user ID
       DocumentSnapshot userSnapshot = await users.doc(userId).get();
 
       if (userSnapshot.exists) {
-        // Extract user data from the document
         Map<String, dynamic> userData =
             userSnapshot.data() as Map<String, dynamic>;
 
-        // Set user details to the corresponding text fields
         setState(() {
           nameController.text = userData['name'] ?? '';
           emailController.text = userData['email'] ?? '';
-          // phoneController.text = userData['phone'] ?? '';
+          String imageLink =
+              userData['profileImageUrl'] ?? ''; // Retrieve imageLink
+          if (imageLink.isNotEmpty) {
+            // Load image from Firebase Storage
+            firebase_storage.FirebaseStorage storage =
+                firebase_storage.FirebaseStorage.instance;
+            firebase_storage.Reference ref = storage.ref().child(imageLink);
+            ref.getDownloadURL().then((url) {
+              setState(() {
+                _image = null; // Clear previously selected image
+                _displayImageFromNetwork(url);
+              });
+            }).catchError((e) {
+              print('Error loading profile image: $e');
+            });
+          }
         });
-
-        // You need to implement image handling as per your application logic
       } else {
         print('User not found in Firestore');
       }
@@ -57,22 +91,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  //GETTING USER ID FROM LOCAL STORAGE
-  void _getUserID() async {
-    final _myBox = await Hive.openBox<UserClass>('userBox');
-    final UserClass? user = await _myBox.get(1);
-
-    if (user != null) {
+  // Method to fetch image from network and update _image state
+  void _displayImageFromNetwork(String imageUrl) async {
+    final http.Response response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
       setState(() {
-        userId = user.ID as String;
-        print("Logged in user ID is -> $userId");
-        _checkUser(userId);
+        _image = response.bodyBytes;
       });
     } else {
-      print("User ID Not Found");
+      print('Error fetching image from network');
     }
   }
 
+  // Method to select an image from gallery using ImagePicker
   void _selectImage() async {
     Uint8List img = await pickImage(ImageSource.gallery);
     setState(() {
@@ -80,87 +111,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  // Method to upload selected image to Firebase Storage and return download URL
   Future<String> uploadImageToStorage(Uint8List image) async {
     try {
-      // Create a reference to the Firebase Storage bucket
-      firebase_storage.Reference storageRef =
-          firebase_storage.FirebaseStorage.instance.ref();
-
-      // Create a unique filename for the image
-      String fileName =
-          'profile_image_${DateTime.now().millisecondsSinceEpoch}.jpg';
-
-      // Upload the image file to Firebase Storage
-      await storageRef.child('profile_images/$fileName').putData(image);
-
-      // Get the download URL of the uploaded image
-      String downloadURL =
-          await storageRef.child('profile_images/$fileName').getDownloadURL();
-
-      // Return the download URL
-      return downloadURL;
+      ImageServiceFirestore imageService = ImageServiceFirestore();
+      String? imageUrl = await imageService.uploadImage(image);
+      // Handle null case if imageUrl is null
+      if (imageUrl != null) {
+        return imageUrl; // Return non-null value
+      } else {
+        throw 'Failed to upload image'; // Handle error or return default URL
+      }
     } catch (error) {
       print('Error uploading image to Firebase Storage: $error');
-
-      return '';
+      return ''; // Return default value or handle error case
     }
   }
 
+  // Method to update user data in Firestore with name, email, and optional image URL
   Future<void> updateUserData(
       String name, String email, String? imageLink) async {
     try {
-      // Reference to the Firestore collection
       CollectionReference users =
           FirebaseFirestore.instance.collection('users');
 
-      // Get reference to the user document
-      DocumentReference userRef = users.doc(userId);
-
-      // Create a map containing the updated user data
-      Map<String, dynamic> userData = {
+      await users.doc(userId).update({
         'name': name,
         'email': email,
-      };
+        if (imageLink != null) 'profileImageUrl': imageLink,
+      });
 
-      // Add imageUrl to userData if it's not null
-      if (imageLink != null) {
-        userData['imageLink'] = imageLink;
-      }
-
-      // Update user document in Firestore
-      await userRef.update(userData);
+      print('User data updated successfully!');
     } catch (error) {
-      print('Error updating user details: $error');
+      print('Error updating user data: $error');
     }
   }
 
+  // Method to save profile changes (name, email, and optionally image)
   void _saveProfile() async {
     String name = nameController.text;
     String email = emailController.text;
+    final UserService = UserFirestoreService();
+    try {
+      String? imageLink;
+      if (_image != null) {
+        imageLink = await uploadImageToStorage(_image!);
+      }
+      await UserService.updateUserCredentials(userId, name, email, imageLink);
 
-    // Check if image is changed
-    if (_image != null) {
-      // Upload image to Firebase Storage
-      String imageLink = await uploadImageToStorage(_image!);
-
-      // Update user details in Firestore with the new image URL
-      await updateUserData(name, email, imageLink);
-    } else {
-      // Update user details in Firestore without changing the image URL
-      await updateUserData(name, email, null);
+      // Navigate back to main dashboard after saving profile
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => AppStructure()),
+      );
+    } catch (error) {
+      print('Error saving profile: $error');
     }
-
-    // Navigate to the main dashboard page after saving profile
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => AppStructure()),
-    );
   }
 
-  Color appBarColor = const Color.fromRGBO(109, 40, 217, 1);
-
+  // Build method for the profile screen UI
   @override
   Widget build(BuildContext context) {
+    Color appBarColor = const Color.fromRGBO(109, 40, 217, 1);
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -168,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Changed from pushNamed to pop
+            Navigator.pop(context); // Navigate back to previous screen
           },
         ),
         title: Text(
@@ -215,7 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             : CircleAvatar(
                                 radius: 65.0,
                                 backgroundImage: AssetImage(
-                                  'assets/avatar.jpg', // Random image of a person
+                                  'assets/avatar.jpg', // Placeholder image
                                 ),
                               ),
                         Positioned(
@@ -230,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               icon: Icon(Icons.add_a_photo),
                               color: Colors.black,
                               onPressed: () {
-                                _selectImage();
+                                _selectImage(); // Open image picker
                               },
                             ),
                           ),
@@ -246,12 +259,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               SizedBox(height: 20),
               _buildProfileField(
                   "Email", Icons.info, "Enter Email", emailController),
-              // SizedBox(height: 20),
-              // _buildProfileField(
-              //     "Phone", Icons.phone, "Enter Phone", phoneController),
               SizedBox(height: 45),
               ElevatedButton(
-                onPressed: _saveProfile,
+                onPressed: _saveProfile, // Save profile changes
                 child: const Text(
                   'Save Profile',
                 ),
@@ -269,6 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Widget to build each profile field (name, email)
   Widget _buildProfileField(String label, IconData icon, String hint,
       TextEditingController controller) {
     return Container(
@@ -312,7 +323,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.edit, color: appBarColor),
+            icon: Icon(Icons.edit, color: Colors.white),
             onPressed: () {
               // Add your edit functionality here
             },

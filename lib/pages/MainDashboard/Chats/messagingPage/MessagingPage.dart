@@ -22,7 +22,6 @@ import 'package:ourappfyp/pages/call/Calling_page.dart';
 import 'package:ourappfyp/models/user.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:ourappfyp/pages/navigator.dart';
-import 'package:ourappfyp/pages/call/call_accept_decline_page.dart';
 
 class MessagingPage extends StatefulWidget {
   final String SenderId;
@@ -243,8 +242,7 @@ class _MessagingPageState extends State<MessagingPage> {
     if (stop) {
       audioController.isRecording.value = false;
       audioController.isSending.value = true;
-      // Play the recorded audio
-      // await audioPlayer.play(DeviceFileSource(recordFilePath));
+
       try {
         final AudioServiceFirestore audioService = AudioServiceFirestore();
         String? uploadedURL = await audioService.uploadAudioFile(
@@ -275,10 +273,7 @@ class _MessagingPageState extends State<MessagingPage> {
       if (firebaseToken1 != null) {
         createUserObject();
       }
-    } else {
-      // Handle the case where the user is not found
-      // For example, show an error message or default to a generic user
-    }
+    } else {}
   }
 
   void SendMessage() async {

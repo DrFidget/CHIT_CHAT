@@ -1,9 +1,33 @@
-
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:ourappfyp/Components/Button.dart';
+import 'package:ourappfyp/types/UserClass.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key});
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Call your method here using postFrameCallback
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      onMount();
+    });
+  }
+
+  void onMount() {
+    final userBox = Hive.box<UserClass>('userBox');
+    if (userBox.isEmpty) {
+      // Navigator.pushNamed(context, '/login');
+    } else {
+      Navigator.pushNamed(context, '/MainApp');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +54,17 @@ class HomePage extends StatelessWidget {
           Button(
             text: 'Login',
             // ignore: avoid_print
-            onPressed: () => {Navigator.pushNamed((context), '/login')},
+            onPressed: () => Navigator.pushNamed(context, '/login'),
             width: imageSize,
-            height: (screenSize.height * .06),
+            height: screenSize.height * .06,
           ),
           const SizedBox(height: 20), // Passing text to the button
           Button(
             text: 'Register',
             // ignore: avoid_print
-            onPressed: () => {Navigator.pushNamed((context), '/register')},
+            onPressed: () => Navigator.pushNamed(context, '/register'),
             width: imageSize,
-            height: (screenSize.height * .06),
+            height: screenSize.height * .06,
           ), // Passing text to the button
         ],
       ),

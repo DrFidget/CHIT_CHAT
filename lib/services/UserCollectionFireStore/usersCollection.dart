@@ -5,7 +5,8 @@ class UserFirestoreService {
   final CollectionReference users =
       FirebaseFirestore.instance.collection('users');
 
-  Future<void> addUser(String name, String email, String password, String? fcmToken) {
+  Future<void> addUser(
+      String name, String email, String password, String? fcmToken) {
     return users.add({
       'name': name,
       'email': email,
@@ -13,7 +14,7 @@ class UserFirestoreService {
       'fcmToken': fcmToken, // Add FCM token to the user document
       'timeStamp': Timestamp.now().toString(),
       'imageLink':
-      'https://firebasestorage.googleapis.com/v0/b/chattingapp-chitchat.appspot.com/o/profileImage?alt=media&token=3bc23625-b6af-4e67-a541-e28fce9b2985',
+          'https://firebasestorage.googleapis.com/v0/b/chattingapp-chitchat.appspot.com/o/profileImage?alt=media&token=3bc23625-b6af-4e67-a541-e28fce9b2985',
     });
   }
 
@@ -85,5 +86,19 @@ class UserFirestoreService {
       print("Error fetching user stream: $e");
       throw e; // Rethrow the error so it can be caught where the stream is used.
     }
+  }
+
+  Future<void> updateUserCredentials(
+      String id, String name, String email, String? imageLink) {
+    Map<String, dynamic> updateData = {
+      'name': name,
+      'email': email,
+    };
+
+    if (imageLink != null) {
+      updateData['imageLink'] = imageLink;
+    }
+
+    return users.doc(id).update(updateData);
   }
 }
