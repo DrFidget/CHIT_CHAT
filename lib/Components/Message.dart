@@ -42,12 +42,71 @@ class MessageWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(
                       20), // Increased border radius for rounder shape
                 ),
-                child: Text(
-                  text,
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 16,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        text,
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    PopupMenuButton(
+                      icon: Icon(
+                        Icons.more_vert, // Using three dots icon for menu
+                        color:
+                            Colors.white, // Customize the icon color as needed
+                        size: 20, // Adjust the size of the icon
+                      ),
+                      iconSize:
+                          18, // Adjust the size of the PopupMenuButton icon
+                      offset: Offset(
+                          0, 0), // Adjust the position of the menu if needed
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                        PopupMenuItem(
+                          child: TextButton(
+                            onPressed: () {
+                              // Implement translate functionality
+                              Navigator.pop(context); // Close the menu
+                            },
+                            child: Row(
+                              children: [
+                                Icon(Icons.translate,
+                                    size: 18), // Customize size if needed
+                                // SizedBox(width: 8), // Adjust spacing as needed
+                                Text('Translate',
+                                    style: TextStyle(
+                                        fontSize:
+                                            14)), // Adjust fontSize as needed
+                              ],
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          child: TextButton(
+                            onPressed: () {
+                              // Implement text-to-speech functionality
+                              Navigator.pop(context); // Close the menu
+                            },
+                            child: Row(
+                              children: [
+                                Icon(Icons.volume_up,
+                                    size: 18), // Customize size if needed
+                                SizedBox(width: 8), // Adjust spacing as needed
+                                Text('Convert to Speech',
+                                    style: TextStyle(
+                                        fontSize:
+                                            14)), // Adjust fontSize as needed
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               SizedBox(
