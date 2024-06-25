@@ -32,6 +32,7 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   double _playbackSpeed = 1.0;
+  TextEditingController transcriptionText = TextEditingController(text: '');
 
   @override
   void initState() {
@@ -84,13 +85,9 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
 
   void _transcribeAudio() async {
     try {
-      // Replace with your audio file loading logic if using network URL
-      final audioBytes = await http.readBytes(Uri.parse(widget.audioUrl));
-
       // Replace with appropriate language code if known
-      final transcription =
-          await ApiService.transcribeAudio('en-US', audioBytes);
-
+      final transcription = await ApiService.transcribeFromUrl(widget.audioUrl);
+      transcriptionText.text = transcription;
       print('Transcription: $transcription');
       // Handle transcription result as needed
     } catch (e) {
@@ -162,6 +159,16 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                   });
                 },
               ),
+              //display transcribed text
+              transcriptionText.text == ''
+                  ? SizedBox()
+                  : Text(
+                      // Display transcribed text when available
+                      "Transcribed Text : ${transcriptionText.text}",
+                      style: TextStyle(color: widget.textColor),
+                    ),
+
+              // transcriptionText.text===''?
             ],
           ),
         ),
