@@ -101,6 +101,8 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final maxWidth = MediaQuery.of(context).size.width * 0.8;
+
     return Align(
       alignment:
           widget.alignLeft ? Alignment.centerLeft : Alignment.centerRight,
