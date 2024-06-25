@@ -44,6 +44,8 @@ class MessagingPage extends StatefulWidget {
 }
 
 class _MessagingPageState extends State<MessagingPage> {
+  final ScrollController _scrollController =
+      ScrollController(); // Create ScrollController
   final TextEditingController messageInput = TextEditingController();
   final MessagesFirestoreServices ChatService = MessagesFirestoreServices();
   final chatBoxFirestoreService chatRoomService = chatBoxFirestoreService();
@@ -59,6 +61,11 @@ class _MessagingPageState extends State<MessagingPage> {
   AudioPlayer audioPlayer = AudioPlayer();
   String audioURL = "";
   late String recordFilePath;
+  @override
+  void dispose() {
+    _scrollController.dispose(); // Dispose ScrollController
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -329,17 +336,17 @@ class _MessagingPageState extends State<MessagingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userName = user != null ? user!.name ?? "Unknown User" : "Loading...";
+    final userName =
+        widget.UNAME ?? "Unknown User"; // Use widget.UNAME directly
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 3, 7, 10),
       appBar: AppBar(
         title: Text(
-          widget.UNAME ?? userName,
-          style: GoogleFonts.jockeyOne(
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-            ),
+          userName,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
           ),
         ),
         backgroundColor: const Color.fromRGBO(109, 40, 217, 1.0),
@@ -355,10 +362,22 @@ class _MessagingPageState extends State<MessagingPage> {
           SizedBox(height: 15),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: ChatService.getChatRoomMEssages(widget.ChatRoomId),
+              stream: ChatService.getChatRoomMEssages(widget
+                  .ChatRoomId), // Assuming ChatService is your service to get messages
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  // Scroll to bottom whenever new data arrives
+                  WidgetsBinding.instance?.addPostFrameCallback((_) {
+                    _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  });
+
                   return ListView.builder(
+                    controller:
+                        _scrollController, // Assign ScrollController to ListView
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       var messageData = snapshot.data!.docs[index].data()
@@ -395,7 +414,7 @@ class _MessagingPageState extends State<MessagingPage> {
                               alignLeft:
                                   widget.SenderId != messageData['senderID'],
                               callback: () => {},
-                            ); //null ki jagha audio message player ana ha
+                            ); // Replace with your AudioMessageWidget
                     },
                   );
                 } else if (snapshot.hasError) {

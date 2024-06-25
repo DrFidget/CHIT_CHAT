@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:http/http.dart'
+    as http; // Only if not already imported in ApiService
+import 'package:ourappfyp/APIS/api_service.dart';
 
 class AudioMessageWidget extends StatefulWidget {
   final DateTime dateTime;
@@ -79,6 +82,23 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     setState(() {});
   }
 
+  void _transcribeAudio() async {
+    try {
+      // Replace with your audio file loading logic if using network URL
+      final audioBytes = await http.readBytes(Uri.parse(widget.audioUrl));
+
+      // Replace with appropriate language code if known
+      final transcription =
+          await ApiService.transcribeAudio('en-US', audioBytes);
+
+      print('Transcription: $transcription');
+      // Handle transcription result as needed
+    } catch (e) {
+      print('Failed to transcribe audio: $e');
+      // Handle error
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -118,6 +138,13 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                       style: TextStyle(color: widget.textColor),
                     ),
                     onPressed: _changePlaybackSpeed,
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.text_fields,
+                      color: widget.textColor,
+                    ),
+                    onPressed: _transcribeAudio,
                   ),
                 ],
               ),
