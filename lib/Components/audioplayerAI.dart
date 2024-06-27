@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:http/http.dart'
-    as http; // Only if not already imported in ApiService
-import 'package:ourappfyp/APIS/api_service.dart';
 
-class AudioMessageWidget extends StatefulWidget {
+class AudioPLayerForAi extends StatefulWidget {
   final DateTime dateTime;
   final Color backgroundColor;
   final Color textColor;
@@ -12,7 +9,7 @@ class AudioMessageWidget extends StatefulWidget {
   final bool alignLeft;
   final VoidCallback callback;
 
-  const AudioMessageWidget({
+  const AudioPLayerForAi({
     Key? key,
     required this.dateTime,
     required this.backgroundColor,
@@ -23,16 +20,15 @@ class AudioMessageWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AudioMessageWidgetState createState() => _AudioMessageWidgetState();
+  _AudioPLayerForAiState createState() => _AudioPLayerForAiState();
 }
 
-class _AudioMessageWidgetState extends State<AudioMessageWidget> {
+class _AudioPLayerForAiState extends State<AudioPLayerForAi> {
   late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
   double _playbackSpeed = 1.0;
-  TextEditingController transcriptionText = TextEditingController(text: '');
   bool _isLoadingAudio = false;
 
   @override
@@ -98,9 +94,6 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     if (_isPlaying) {
       await _audioPlayer.pause();
     } else {
-      if (_position == _duration) {
-        await _audioPlayer.seek(Duration.zero);
-      }
       await _audioPlayer.resume();
     }
   }
@@ -117,25 +110,8 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     setState(() {});
   }
 
-  void _transcribeAudio() async {
-    try {
-      // Replace with appropriate language code if known
-      final transcription = await ApiService.transcribeFromUrl(widget.audioUrl);
-      setState(() {
-        transcriptionText.text = transcription;
-      });
-      print('Transcription: $transcription');
-      // Handle transcription result as needed
-    } catch (e) {
-      print('Failed to transcribe audio: $e');
-      // Handle error
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final maxWidth = MediaQuery.of(context).size.width * 0.8;
-
     return Align(
       alignment:
           widget.alignLeft ? Alignment.centerLeft : Alignment.centerRight,
@@ -180,13 +156,6 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                       ),
                       onPressed: _changePlaybackSpeed,
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.text_fields,
-                        color: widget.textColor,
-                      ),
-                      onPressed: _transcribeAudio,
-                    ),
                   ],
                 ),
               Slider(
@@ -201,21 +170,6 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                   });
                 },
               ),
-              if (transcriptionText.text.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: widget.backgroundColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Text(
-                      "Transcribed Text: ${transcriptionText.text}",
-                      style: TextStyle(color: widget.textColor),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

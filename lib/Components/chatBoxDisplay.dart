@@ -51,7 +51,15 @@ class ChatBoxDisplayWidget extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage: NetworkImage(chatMessage.profilePicUrl),
+                // Use FadeInImage to show a placeholder image while loading
+                child: FadeInImage.assetNetwork(
+                  placeholder:
+                      'assets/avatar.jpg', // Path to your placeholder image asset
+                  image: chatMessage.profilePicUrl,
+                  fit: BoxFit.cover,
+                  width: 40,
+                  height: 40,
+                ),
               ),
               SizedBox(width: 12),
               Expanded(
@@ -67,8 +75,9 @@ class ChatBoxDisplayWidget extends StatelessWidget {
                             Text(
                               chatMessage.name,
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                             SizedBox(height: 2),
                             Text(

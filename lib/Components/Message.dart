@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ourappfyp/APIS/api_service.dart'; // Make sure to import your API service
+import 'package:ourappfyp/APIS/api_service.dart';
+import 'package:ourappfyp/Components/audioplayerAI.dart';
 
 class MessageWidget extends StatefulWidget {
   final Color backgroundColor;
@@ -27,6 +28,8 @@ class _MessageWidgetState extends State<MessageWidget> {
   String? translatedText;
   String sourceLang = 'ur';
   String targetLang = 'en';
+  bool isConvertedToVoice = false;
+  String URL = '';
 
   Future<void> _translateMessage(
       String sourceLanguage, String targetLanguage) async {
@@ -49,6 +52,23 @@ class _MessageWidgetState extends State<MessageWidget> {
       print('Translated Text: $translation');
     } catch (error) {
       print('Error translating text: $error');
+    }
+  }
+
+  Future<void> _synthesizeSpeech(String text, String languageCode) async {
+    try {
+      // Call the text-to-speech API
+      URL = await ApiService.synthesizeSpeech(text, languageCode: languageCode);
+
+      // Update state variables
+      setState(() {
+        isConvertedToVoice = true;
+      });
+
+      // Print the synthesized speech file path to the console
+      print('Synthesized Speech File Path: $URL');
+    } catch (error) {
+      print('Error synthesizing speech: $error');
     }
   }
 
@@ -116,8 +136,9 @@ class _MessageWidgetState extends State<MessageWidget> {
                                 Icon(Icons.translate, size: 18),
                                 SizedBox(width: 8),
                                 Text(
-                                    'Translate to ${sourceLang == 'en' ? 'English' : 'Urdu'}',
-                                    style: TextStyle(fontSize: 14)),
+                                  'Translate to ${sourceLang == 'en' ? 'English' : 'Urdu'}',
+                                  style: TextStyle(fontSize: 14),
+                                ),
                               ],
                             ),
                           ),
@@ -125,15 +146,19 @@ class _MessageWidgetState extends State<MessageWidget> {
                         PopupMenuItem(
                           child: TextButton(
                             onPressed: () {
-                              // Implement text-to-speech functionality
+                              // Call the text-to-speech API and print the path to the console
+                              _synthesizeSpeech(widget.text,
+                                  sourceLang == 'ur' ? 'en-US' : 'ur-PK');
                               Navigator.pop(context); // Close the menu
                             },
                             child: Row(
                               children: [
                                 Icon(Icons.volume_up, size: 18),
                                 SizedBox(width: 8),
-                                Text('Convert to Speech',
-                                    style: TextStyle(fontSize: 14)),
+                                Text(
+                                  'Convert to Speech',
+                                  style: TextStyle(fontSize: 14),
+                                ),
                               ],
                             ),
                           ),
@@ -161,6 +186,16 @@ class _MessageWidgetState extends State<MessageWidget> {
                   fontSize: 12,
                 ),
               ),
+              // Render AudioPlayerForAi if isConvertedToVoice is true
+              if (isConvertedToVoice)
+                AudioPLayerForAi(
+                  dateTime: widget.dateTime,
+                  backgroundColor: widget.backgroundColor,
+                  textColor: widget.textColor,
+                  audioUrl: URL,
+                  alignLeft: widget.alignLeft,
+                  callback: () => {}, // You can define callback if needed
+                ),
             ],
           ),
         ),
