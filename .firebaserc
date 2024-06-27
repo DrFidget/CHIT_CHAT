@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "chattingapp-chitchat"
-  }
+    "default": "chattingapp-chitchat",
+    "chitchat": "chitchat-425ea"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

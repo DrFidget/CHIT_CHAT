@@ -27,6 +27,7 @@ class UserClass {
     this.timeStamp,
     this.ID,
     this.imageLink,
+
   });
   factory UserClass.fromJson(Map<String, dynamic> json) {
     return UserClass(
