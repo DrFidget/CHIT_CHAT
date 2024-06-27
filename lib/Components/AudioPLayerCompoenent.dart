@@ -33,11 +33,13 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
   Duration _position = Duration.zero;
   double _playbackSpeed = 1.0;
   TextEditingController transcriptionText = TextEditingController(text: '');
+  bool _isLoadingAudio = false;
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
+
     _audioPlayer.onDurationChanged.listen((Duration d) {
       setState(() {
         _duration = d;
@@ -53,8 +55,38 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     _audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
       setState(() {
         _isPlaying = s == PlayerState.playing;
+        _isLoadingAudio = false; // Turn off loading when audio starts playing
       });
     });
+
+    _audioPlayer.onPlayerComplete.listen((_) {
+      setState(() {
+        _isPlaying = false;
+        _position = Duration.zero;
+      });
+    });
+
+    // Preload the audio
+    _loadAudio();
+  }
+
+  Future<void> _loadAudio() async {
+    try {
+      setState(() {
+        _isLoadingAudio = true; // Set loading state while audio is loading
+      });
+      await _audioPlayer.setSource(UrlSource(widget.audioUrl));
+    } catch (e) {
+      print('Failed to load audio: $e');
+      // Handle error loading audio
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingAudio =
+              false; // Turn off loading regardless of success or failure
+        });
+      }
+    }
   }
 
   @override
@@ -67,7 +99,11 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     if (_isPlaying) {
       await _audioPlayer.pause();
     } else {
-      await _audioPlayer.play(UrlSource(widget.audioUrl));
+      if (_position == _duration) {
+        // await _audioPlayer.setSource(UrlSource(widget.audioUrl));
+        await _audioPlayer.seek(Duration.zero);
+      }
+      await _audioPlayer.resume();
     }
   }
 
@@ -87,7 +123,9 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     try {
       // Replace with appropriate language code if known
       final transcription = await ApiService.transcribeFromUrl(widget.audioUrl);
-      transcriptionText.text = transcription;
+      setState(() {
+        transcriptionText.text = transcription;
+      });
       print('Transcription: $transcription');
       // Handle transcription result as needed
     } catch (e) {
@@ -115,38 +153,44 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      _isPlaying ? Icons.pause : Icons.play_arrow,
-                      color: widget.textColor,
+              if (_isLoadingAudio)
+                Center(
+                    child: CircularProgressIndicator(
+                  color: Colors.white,
+                ))
+              else
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        _isPlaying ? Icons.pause : Icons.play_arrow,
+                        color: widget.textColor,
+                      ),
+                      onPressed: _togglePlayback,
                     ),
-                    onPressed: _togglePlayback,
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Audio Message',
-                      style: TextStyle(color: widget.textColor),
+                    Expanded(
+                      child: Text(
+                        'Audio Message',
+                        style: TextStyle(color: widget.textColor),
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: Text(
-                      '${_playbackSpeed}x',
-                      style: TextStyle(color: widget.textColor),
+                    IconButton(
+                      icon: Text(
+                        '${_playbackSpeed}x',
+                        style: TextStyle(color: widget.textColor),
+                      ),
+                      onPressed: _changePlaybackSpeed,
                     ),
-                    onPressed: _changePlaybackSpeed,
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.text_fields,
-                      color: widget.textColor,
+                    IconButton(
+                      icon: Icon(
+                        Icons.text_fields,
+                        color: widget.textColor,
+                      ),
+                      onPressed: _transcribeAudio,
                     ),
-                    onPressed: _transcribeAudio,
-                  ),
-                ],
-              ),
+                  ],
+                ),
               Slider(
                 activeColor: widget.textColor,
                 inactiveColor: widget.textColor.withOpacity(0.5),
@@ -159,16 +203,21 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                   });
                 },
               ),
-              //display transcribed text
-              transcriptionText.text == ''
-                  ? SizedBox()
-                  : Text(
-                      // Display transcribed text when available
-                      "Transcribed Text : ${transcriptionText.text}",
+              if (transcriptionText.text.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: widget.backgroundColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Text(
+                      "Transcribed Text: ${transcriptionText.text}",
                       style: TextStyle(color: widget.textColor),
                     ),
-
-              // transcriptionText.text===''?
+                  ),
+                ),
             ],
           ),
         ),
