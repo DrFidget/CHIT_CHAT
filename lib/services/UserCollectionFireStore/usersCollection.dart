@@ -14,7 +14,7 @@ class UserFirestoreService {
       'fcmToken': fcmToken, // Add FCM token to the user document
       'timeStamp': Timestamp.now().toString(),
       'imageLink':
-          'https://firebasestorage.googleapis.com/v0/b/chattingapp-chitchat.appspot.com/o/profileImage?alt=media&token=3bc23625-b6af-4e67-a541-e28fce9b2985',
+      'https://firebasestorage.googleapis.com/v0/b/chitchat-425ea.appspot.com/o/images%2Fimage_1719167710606.jpg?alt=media&token=ec9ed759-2947-4ff9-891e-7afb8f87e297',
     });
   }
 
