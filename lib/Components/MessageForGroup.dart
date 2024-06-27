@@ -3,15 +3,16 @@ import 'package:ourappfyp/APIS/api_service.dart';
 import 'package:ourappfyp/Components/audioplayerAI.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 
-class MessageWidget extends StatefulWidget {
+class MessageForGroup extends StatefulWidget {
   final Color backgroundColor;
   final Color textColor;
   final String text;
   final bool alignLeft;
   final Function callback;
   final DateTime dateTime;
+  final String userWhoSent;
 
-  const MessageWidget({
+  const MessageForGroup({
     Key? key,
     required this.backgroundColor,
     required this.textColor,
@@ -19,13 +20,14 @@ class MessageWidget extends StatefulWidget {
     required this.alignLeft,
     required this.callback,
     required this.dateTime,
+    required this.userWhoSent,
   }) : super(key: key);
 
   @override
-  _MessageWidgetState createState() => _MessageWidgetState();
+  _MessageForGroupState createState() => _MessageForGroupState();
 }
 
-class _MessageWidgetState extends State<MessageWidget> {
+class _MessageForGroupState extends State<MessageForGroup> {
   String? translatedText;
   String sourceLang = 'ur';
   String targetLang = 'en';
@@ -36,27 +38,28 @@ class _MessageWidgetState extends State<MessageWidget> {
   @override
   void initState() {
     super.initState();
+    setUserFromID();
+  }
+
+  void setUserFromID() async {
+    UserFirestoreService userService = UserFirestoreService();
+    dynamic user =
+        await userService.getUserNameAndEmailById(widget.userWhoSent);
+    setState(() {
+      User = user;
+    });
   }
 
   Future<void> _translateMessage(
       String sourceLanguage, String targetLanguage) async {
     try {
-      // Call the translation API
       String translation = await ApiService.translateText(
-        widget.text,
-        sourceLanguage,
-        targetLanguage,
-      );
-
-      // Update the state with the translated text
+          widget.text, sourceLanguage, targetLanguage);
       setState(() {
         translatedText = translation;
         sourceLang = sourceLanguage;
         targetLang = targetLanguage;
       });
-
-      // Print the translated text to the console
-      print('Translated Text: $translation');
     } catch (error) {
       print('Error translating text: $error');
     }
@@ -64,16 +67,10 @@ class _MessageWidgetState extends State<MessageWidget> {
 
   Future<void> _synthesizeSpeech(String text, String languageCode) async {
     try {
-      // Call the text-to-speech API
       URL = await ApiService.synthesizeSpeech(text, languageCode: languageCode);
-
-      // Update state variables
       setState(() {
         isConvertedToVoice = true;
       });
-
-      // Print the synthesized speech file path to the console
-      print('Synthesized Speech File Path: $URL');
     } catch (error) {
       print('Error synthesizing speech: $error');
     }
@@ -138,7 +135,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                 User['name'],
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: Colors.grey,
                 ),
               ),

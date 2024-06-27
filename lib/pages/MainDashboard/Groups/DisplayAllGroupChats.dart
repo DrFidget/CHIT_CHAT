@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ourappfyp/pages/MainDashboard/Chats/messagingPage/MessagingPage.dart';
+import 'package:ourappfyp/pages/MainDashboard/Chats/messagingPage/MessagingPageGroup.dart';
 import 'package:ourappfyp/services/ChatBoxCollectionFireStore/chatCollection.dart';
 import 'package:ourappfyp/Components/GroupChatBoxDsiplay.dart';
 import 'package:ourappfyp/types/UserClass.dart';
@@ -35,7 +35,7 @@ Widget DisplayAllGroupChats(
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MessagingPage(
+                            builder: (context) => MessagingPageGroup(
                               SenderId: loggedInUserId,
                               ReceiverId: chatRoomID,
                               ChatRoomId: chatRoomID,

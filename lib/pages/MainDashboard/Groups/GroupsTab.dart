@@ -35,7 +35,6 @@ class _GroupsTabState extends State<GroupsTab> {
       if (user != null) {
         setState(() {
           loggedInUserId = user.ID as String;
-          // print("logged in user id is ->${loggedInUserId} and name is ");
           isLoading = false;
         });
       } else {

@@ -6,7 +6,7 @@ class MessagesFirestoreServices {
       FirebaseFirestore.instance.collection('messages');
 
   Future<void> addMessage(MessageClass message) {
-    message.printMessageDetails(message);
+    // message.printMessageDetails(message);
 
     final Timestamp ts = Timestamp.now();
     return messages.add({

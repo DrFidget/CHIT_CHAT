@@ -14,7 +14,7 @@ class UserFirestoreService {
       'fcmToken': fcmToken, // Add FCM token to the user document
       'timeStamp': Timestamp.now().toString(),
       'imageLink':
-      'https://firebasestorage.googleapis.com/v0/b/chitchat-425ea.appspot.com/o/images%2Fimage_1719167710606.jpg?alt=media&token=ec9ed759-2947-4ff9-891e-7afb8f87e297',
+          'https://firebasestorage.googleapis.com/v0/b/chitchat-425ea.appspot.com/o/images%2Fimage_1719167710606.jpg?alt=media&token=ec9ed759-2947-4ff9-891e-7afb8f87e297',
     });
   }
 
@@ -100,5 +100,21 @@ class UserFirestoreService {
     }
 
     return users.doc(id).update(updateData);
+  }
+
+  Future<Map<String, String?>?> getUserNameAndEmailById(String id) async {
+    try {
+      DocumentSnapshot docSnapshot = await users.doc(id).get();
+      if (docSnapshot.exists) {
+        Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+        String? name = data['name'];
+        String? email = data['email'];
+        return {'name': name, 'email': email};
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+    return null;
   }
 }
