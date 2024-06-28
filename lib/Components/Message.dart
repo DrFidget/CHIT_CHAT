@@ -108,6 +108,13 @@ class _MessageWidgetState extends State<MessageWidget> {
                 Navigator.pop(context);
               },
             ),
+            ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('Delete the Message'),
+              onTap: () {
+                widget.callback();
+              },
+            ),
           ],
         );
       },

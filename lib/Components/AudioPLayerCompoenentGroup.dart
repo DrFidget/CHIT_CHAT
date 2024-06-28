@@ -148,6 +148,34 @@ class _AudioMessageWidgetGroupState extends State<AudioMessageWidgetGroup> {
     }
   }
 
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.text_fields),
+              title: Text('Convert to Text'),
+              onTap: () {
+                _transcribeAudio();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('Delete the Message'),
+              onTap: () {
+                widget.callback();
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final maxWidth = MediaQuery.of(context).size.width * 0.8;
@@ -155,7 +183,11 @@ class _AudioMessageWidgetGroupState extends State<AudioMessageWidgetGroup> {
     return Align(
       alignment:
           widget.alignLeft ? Alignment.centerLeft : Alignment.centerRight,
-      child: FractionallySizedBox(
+      child: GestureDetector(
+        onLongPress: () {
+          _showBottomSheet(context);
+        },
+        child: FractionallySizedBox(
           widthFactor: .8,
           child: Column(
             children: [
@@ -182,9 +214,10 @@ class _AudioMessageWidgetGroupState extends State<AudioMessageWidgetGroup> {
                   children: [
                     if (_isLoadingAudio)
                       Center(
-                          child: CircularProgressIndicator(
-                        color: widget.textColor,
-                      ))
+                        child: CircularProgressIndicator(
+                          color: widget.textColor,
+                        ),
+                      )
                     else
                       Row(
                         mainAxisSize: MainAxisSize.min,
@@ -199,13 +232,17 @@ class _AudioMessageWidgetGroupState extends State<AudioMessageWidgetGroup> {
                           Expanded(
                             child: Text(
                               'Audio Message',
-                              style: TextStyle(color: widget.textColor),
+                              style: GoogleFonts.jockeyOne(
+                                color: widget.textColor,
+                              ),
                             ),
                           ),
                           IconButton(
                             icon: Text(
                               '${_playbackSpeed}x',
-                              style: TextStyle(color: widget.textColor),
+                              style: GoogleFonts.jockeyOne(
+                                color: widget.textColor,
+                              ),
                             ),
                             onPressed: _changePlaybackSpeed,
                           ),
@@ -241,7 +278,9 @@ class _AudioMessageWidgetGroupState extends State<AudioMessageWidgetGroup> {
                           ),
                           child: Text(
                             "Transcribed Text: ${transcriptionText.text}",
-                            style: TextStyle(color: widget.textColor),
+                            style: GoogleFonts.jockeyOne(
+                              color: widget.textColor,
+                            ),
                           ),
                         ),
                       ),
@@ -249,7 +288,9 @@ class _AudioMessageWidgetGroupState extends State<AudioMessageWidgetGroup> {
                 ),
               ),
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

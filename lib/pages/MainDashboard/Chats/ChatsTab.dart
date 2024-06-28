@@ -64,7 +64,12 @@ class _ChatsTabState extends State<ChatsTab> {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showAllUsers(context, userServices, loggedInUserId),
-        child: const Icon(Icons.add),
+        backgroundColor:
+            Color.fromRGBO(109, 40, 217, 1.0), // Purple background color
+        child: const Icon(
+          Icons.add,
+          color: Colors.white, // White icon color
+        ),
       ),
     );
   }

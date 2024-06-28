@@ -35,4 +35,8 @@ class MessagesFirestoreServices {
         //  .limit(10)
         .snapshots();
   }
+
+  void deketeDocFromID(String id) {
+    messages.doc(id).delete();
+  }
 }

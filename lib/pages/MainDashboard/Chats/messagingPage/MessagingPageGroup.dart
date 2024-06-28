@@ -389,6 +389,7 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
                       var typeOfMessage = messageData['type'] as String;
                       var userWhoSentTheMessage =
                           messageData['senderID'] as String;
+                      var messageID = snapshot.data!.docs[index].id as String;
                       return typeOfMessage == 'text'
                           ? MessageForGroup(
                               dateTime: time.toDate(),
@@ -403,7 +404,11 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
                               text: messageData['message'],
                               alignLeft:
                                   widget.SenderId != messageData['senderID'],
-                              callback: () => {},
+                              callback: () {
+                                try {
+                                  ChatService.deketeDocFromID(messageID);
+                                } catch (e) {}
+                              },
                               userWhoSent: userWhoSentTheMessage,
                             )
                           : AudioMessageWidgetGroup(
@@ -419,7 +424,11 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
                               audioUrl: messageData['message'],
                               alignLeft:
                                   widget.SenderId != messageData['senderID'],
-                              callback: () => {},
+                              callback: () {
+                                try {
+                                  ChatService.deketeDocFromID(messageID);
+                                } catch (e) {}
+                              },
                               userWhoSent: userWhoSentTheMessage,
                             ); // Replace with your AudioMessageWidget
                     },

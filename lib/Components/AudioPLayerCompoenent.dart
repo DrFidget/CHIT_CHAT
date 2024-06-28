@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
-import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts package
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/APIS/api_service.dart';
 
 class AudioMessageWidget extends StatefulWidget {
@@ -131,6 +131,33 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     }
   }
 
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.text_fields),
+              title: Text('Convert to Text'),
+              onTap: () {
+                _transcribeAudio();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('Delete the Message'),
+              onTap: () {
+                widget.callback();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final maxWidth = MediaQuery.of(context).size.width * 0.8;
@@ -138,91 +165,96 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     return Align(
       alignment:
           widget.alignLeft ? Alignment.centerLeft : Alignment.centerRight,
-      child: FractionallySizedBox(
-        widthFactor: .8,
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-          padding: const EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            color: widget.backgroundColor,
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (_isLoadingAudio)
-                Center(
-                  child: CircularProgressIndicator(
-                    color: widget.textColor,
-                  ),
-                )
-              else
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        _isPlaying ? Icons.pause : Icons.play_arrow,
-                        color: widget.textColor,
-                      ),
-                      onPressed: _togglePlayback,
+      child: GestureDetector(
+        onLongPress: () {
+          _showBottomSheet(context);
+        },
+        child: FractionallySizedBox(
+          widthFactor: .8,
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+            padding: const EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: widget.backgroundColor,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (_isLoadingAudio)
+                  Center(
+                    child: CircularProgressIndicator(
+                      color: widget.textColor,
                     ),
-                    Expanded(
+                  )
+                else
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          _isPlaying ? Icons.pause : Icons.play_arrow,
+                          color: widget.textColor,
+                        ),
+                        onPressed: _togglePlayback,
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Audio Message',
+                          style: GoogleFonts.jockeyOne(
+                            color: widget.textColor,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Text(
+                          '${_playbackSpeed}x',
+                          style: GoogleFonts.jockeyOne(
+                            color: widget.textColor,
+                          ),
+                        ),
+                        onPressed: _changePlaybackSpeed,
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.text_fields,
+                          color: widget.textColor,
+                        ),
+                        onPressed: _transcribeAudio,
+                      ),
+                    ],
+                  ),
+                Slider(
+                  activeColor: widget.textColor,
+                  inactiveColor: widget.textColor.withOpacity(0.5),
+                  value: _position.inSeconds.toDouble(),
+                  min: 0.0,
+                  max: _duration.inSeconds.toDouble(),
+                  onChanged: (double value) {
+                    setState(() {
+                      _audioPlayer.seek(Duration(seconds: value.toInt()));
+                    });
+                  },
+                ),
+                if (transcriptionText.text.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        color: widget.backgroundColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                       child: Text(
-                        'Audio Message',
+                        "Transcribed Text: ${transcriptionText.text}",
                         style: GoogleFonts.jockeyOne(
                           color: widget.textColor,
                         ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: Text(
-                        '${_playbackSpeed}x',
-                        style: GoogleFonts.jockeyOne(
-                          color: widget.textColor,
-                        ),
-                      ),
-                      onPressed: _changePlaybackSpeed,
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.text_fields,
-                        color: widget.textColor,
-                      ),
-                      onPressed: _transcribeAudio,
-                    ),
-                  ],
-                ),
-              Slider(
-                activeColor: widget.textColor,
-                inactiveColor: widget.textColor.withOpacity(0.5),
-                value: _position.inSeconds.toDouble(),
-                min: 0.0,
-                max: _duration.inSeconds.toDouble(),
-                onChanged: (double value) {
-                  setState(() {
-                    _audioPlayer.seek(Duration(seconds: value.toInt()));
-                  });
-                },
-              ),
-              if (transcriptionText.text.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                      color: widget.backgroundColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Text(
-                      "Transcribed Text: ${transcriptionText.text}",
-                      style: GoogleFonts.jockeyOne(
-                        color: widget.textColor,
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

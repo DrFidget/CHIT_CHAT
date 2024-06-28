@@ -385,6 +385,7 @@ class _MessagingPageState extends State<MessagingPage> {
                           as Map<String, dynamic>;
                       var time = messageData['timeStamp'] as Timestamp;
                       var typeOfMessage = messageData['type'] as String;
+                      var messageID = snapshot.data!.docs[index].id as String;
                       return typeOfMessage == 'text'
                           ? MessageWidget(
                               dateTime: time.toDate(),
@@ -399,7 +400,11 @@ class _MessagingPageState extends State<MessagingPage> {
                               text: messageData['message'],
                               alignLeft:
                                   widget.SenderId != messageData['senderID'],
-                              callback: () => {},
+                              callback: () {
+                                try {
+                                  ChatService.deketeDocFromID(messageID);
+                                } catch (e) {}
+                              },
                             )
                           : AudioMessageWidget(
                               dateTime: time.toDate(),
@@ -414,8 +419,11 @@ class _MessagingPageState extends State<MessagingPage> {
                               audioUrl: messageData['message'],
                               alignLeft:
                                   widget.SenderId != messageData['senderID'],
-                              callback: () => {},
-                            ); // Replace with your AudioMessageWidget
+                              callback: () {
+                                try {
+                                  ChatService.deketeDocFromID(messageID);
+                                } catch (e) {}
+                              }); // Replace with your AudioMessageWidget
                     },
                   );
                 } else if (snapshot.hasError) {

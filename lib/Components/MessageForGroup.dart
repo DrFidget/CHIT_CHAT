@@ -105,6 +105,13 @@ class _MessageForGroupState extends State<MessageForGroup> {
                 Navigator.pop(context);
               },
             ),
+            ListTile(
+              leading: Icon(Icons.delete),
+              title: Text('Delete the Message'),
+              onTap: () {
+                widget.callback();
+              },
+            ),
           ],
         );
       },
