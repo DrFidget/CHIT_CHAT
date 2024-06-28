@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/APIS/api_service.dart';
 import 'package:ourappfyp/Components/audioplayerAI.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
@@ -136,7 +137,7 @@ class _MessageWidgetState extends State<MessageWidget> {
             children: [
               Text(
                 User['name'],
-                style: TextStyle(
+                style: GoogleFonts.jockeyOne(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey,
@@ -160,7 +161,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                 ),
                 child: Text(
                   translatedText ?? widget.text,
-                  style: TextStyle(
+                  style: GoogleFonts.jockeyOne(
                     color: widget.textColor,
                     fontSize: 16,
                   ),
@@ -169,7 +170,7 @@ class _MessageWidgetState extends State<MessageWidget> {
               SizedBox(height: 4),
               Text(
                 '${widget.dateTime.hour}:${widget.dateTime.minute}',
-                style: TextStyle(
+                style: GoogleFonts.jockeyOne(
                   color: Colors.grey,
                   fontSize: 12,
                 ),

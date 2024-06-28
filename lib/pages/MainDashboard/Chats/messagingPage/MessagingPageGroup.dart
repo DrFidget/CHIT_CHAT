@@ -346,7 +346,7 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
       appBar: AppBar(
         title: Text(
           userName,
-          style: TextStyle(
+          style: GoogleFonts.jockeyOne(
             color: Colors.white,
             fontSize: 24,
           ),
@@ -494,7 +494,7 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       'Recording Audio...',
-                      style: TextStyle(
+                      style: GoogleFonts.jockeyOne(
                           color: const Color.fromRGBO(109, 40, 217, 1.0)),
                     ),
                   )

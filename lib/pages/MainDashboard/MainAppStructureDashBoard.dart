@@ -70,25 +70,24 @@ class _AppStructureState extends State<AppStructure> {
               icon: const Icon(Icons.more_vert, color: Colors.white),
               color: Color.fromARGB(100, 31, 41, 55),
               itemBuilder: (BuildContext context) => [
-                // const PopupMenuItem(
-                //   value: "Settings",
-                //   child: Text(
-                //     "Empty",
-                //     style: TextStyle(color: Colors.white),
-                //   ),
-                // ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: "Profile Settings",
                   child: Text(
                     "Profile Settings",
-                    style: TextStyle(color: Colors.white),
+                    style: GoogleFonts.jockeyOne(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: "Log out",
                   child: Text(
                     "Log out",
-                    style: TextStyle(color: Colors.white),
+                    style: GoogleFonts.jockeyOne(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               ],
@@ -100,7 +99,7 @@ class _AppStructureState extends State<AppStructure> {
               Tab(
                 child: Text(
                   "Chats",
-                  style: TextStyle(
+                  style: GoogleFonts.jockeyOne(
                     color: Colors.white,
                     fontSize: 20,
                   ),
@@ -109,7 +108,7 @@ class _AppStructureState extends State<AppStructure> {
               Tab(
                 child: Text(
                   "Groups",
-                  style: TextStyle(
+                  style: GoogleFonts.jockeyOne(
                     color: Colors.white,
                     fontSize: 20,
                   ),
@@ -118,7 +117,7 @@ class _AppStructureState extends State<AppStructure> {
               Tab(
                 child: Text(
                   "Calls",
-                  style: TextStyle(
+                  style: GoogleFonts.jockeyOne(
                     color: Colors.white,
                     fontSize: 20,
                   ),

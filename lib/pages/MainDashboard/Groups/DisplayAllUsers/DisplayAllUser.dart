@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/services/ChatBoxCollectionFireStore/chatCollection.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 
@@ -25,60 +26,92 @@ void showAllGroupUsers(BuildContext context, UserFirestoreService userServices,
         expand: false,
         builder: (context, scrollController) => StatefulBuilder(
           builder: (context, setState) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: groupNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Group Name',
-                      suffixIcon: Icon(Icons.group),
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: groupNameController,
+                      decoration: InputDecoration(
+                        labelText: 'Enter Group Name...',
+                        labelStyle: GoogleFonts.jockeyOne(color: Colors.white),
+                        suffixIcon: Icon(Icons.group, color: Colors.white),
+                        filled: true,
+                        fillColor: const Color.fromRGBO(109, 40, 217, 1.0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: const Color.fromRGBO(109, 40, 217, 1.0)),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: const Color.fromRGBO(109, 40, 217, 1.0)),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      style: TextStyle(
+                          color: Colors.white), // Set the text color to white
                     ),
                   ),
-                ),
-                Expanded(
-                  child: AllUsers(
-                    userServices: userServices,
-                    scrollController: scrollController,
-                    loggedInUserId: loggedInUserId,
-                    onSelectUser: (userId) {
-                      setState(() {
-                        if (selectedUserIds.contains(userId)) {
-                          selectedUserIds.remove(userId);
+                  Expanded(
+                    child: AllUsers(
+                      userServices: userServices,
+                      scrollController: scrollController,
+                      loggedInUserId: loggedInUserId,
+                      onSelectUser: (userId) {
+                        setState(() {
+                          if (selectedUserIds.contains(userId)) {
+                            selectedUserIds.remove(userId);
+                          } else {
+                            selectedUserIds.add(userId);
+                          }
+                        });
+                      },
+                      selectedUserIds: selectedUserIds,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromRGBO(109, 40, 217, 1.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (groupNameController.text.isNotEmpty &&
+                            selectedUserIds.isNotEmpty) {
+                          chatBoxFirestoreService().createGroupChat(
+                            loggedInUserId,
+                            selectedUserIds,
+                            groupNameController.text,
+                          );
+                          Navigator.pop(context);
                         } else {
-                          selectedUserIds.add(userId);
+                          // Show error message if group name or selected users are empty
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Please enter a group name and select members')),
+                          );
                         }
-                      });
-                    },
-                    selectedUserIds: selectedUserIds,
+                      },
+                      child: Text('Create Group',
+                          style: GoogleFonts.jockeyOne(color: Colors.white)),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (groupNameController.text.isNotEmpty &&
-                          selectedUserIds.isNotEmpty) {
-                        chatBoxFirestoreService().createGroupChat(
-                          loggedInUserId,
-                          selectedUserIds,
-                          groupNameController.text,
-                        );
-                        Navigator.pop(context);
-                      } else {
-                        // Show error message if group name or selected users are empty
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(
-                                  'Please enter a group name and select members')),
-                        );
-                      }
-                    },
-                    child: Text('Create Group'),
-                  ),
-                ),
-              ],
+                ],
+              ),
             );
           },
         ),
@@ -125,9 +158,27 @@ class _AllUsersState extends State<AllUsers> {
               });
             },
             decoration: InputDecoration(
-              labelText: 'Search',
-              suffixIcon: Icon(Icons.search),
+              labelText: 'Search...',
+              labelStyle: GoogleFonts.jockeyOne(color: Colors.white),
+              suffixIcon: Icon(Icons.search, color: Colors.white),
+              filled: true,
+              fillColor: const Color.fromRGBO(109, 40, 217, 1.0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: const Color.fromRGBO(109, 40, 217, 1.0)),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide:
+                    BorderSide(color: const Color.fromRGBO(109, 40, 217, 1.0)),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
             ),
+            style:
+                TextStyle(color: Colors.white), // Set the text color to white
           ),
         ),
         Expanded(
@@ -150,11 +201,14 @@ class _AllUsersState extends State<AllUsers> {
 
                     if (userId != widget.loggedInUserId) {
                       return ListTile(
-                        title: Text(user['name'] as String),
-                        subtitle: Text(user['email'] as String),
+                        title: Text(user['name'] as String,
+                            style: GoogleFonts.jockeyOne(color: Colors.white)),
+                        subtitle: Text(user['email'] as String,
+                            style: GoogleFonts.jockeyOne(color: Colors.white)),
                         trailing: widget.selectedUserIds.contains(userId)
-                            ? Icon(Icons.check_box)
-                            : Icon(Icons.check_box_outline_blank),
+                            ? Icon(Icons.check_box, color: Colors.white)
+                            : Icon(Icons.check_box_outline_blank,
+                                color: Colors.white),
                         onTap: () {
                           widget.onSelectUser(userId);
                         },
@@ -166,7 +220,8 @@ class _AllUsersState extends State<AllUsers> {
                 );
               } else if (snapshot.hasError) {
                 print(snapshot.error);
-                return Text('Error: ${snapshot.error}');
+                return Text('Error: ${snapshot.error}',
+                    style: TextStyle(color: Colors.white));
               } else {
                 return const Center(child: CircularProgressIndicator());
               }

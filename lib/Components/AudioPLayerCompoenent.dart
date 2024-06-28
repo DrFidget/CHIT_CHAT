@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:http/http.dart'
-    as http; // Only if not already imported in ApiService
+import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts package
 import 'package:ourappfyp/APIS/api_service.dart';
 
 class AudioMessageWidget extends StatefulWidget {
@@ -119,7 +119,6 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
 
   void _transcribeAudio() async {
     try {
-      // Replace with appropriate language code if known
       final transcription = await ApiService.transcribeFromUrl(widget.audioUrl);
       setState(() {
         transcriptionText.text = transcription;
@@ -153,9 +152,10 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
             children: [
               if (_isLoadingAudio)
                 Center(
-                    child: CircularProgressIndicator(
-                  color: widget.textColor,
-                ))
+                  child: CircularProgressIndicator(
+                    color: widget.textColor,
+                  ),
+                )
               else
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -170,13 +170,17 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                     Expanded(
                       child: Text(
                         'Audio Message',
-                        style: TextStyle(color: widget.textColor),
+                        style: GoogleFonts.jockeyOne(
+                          color: widget.textColor,
+                        ),
                       ),
                     ),
                     IconButton(
                       icon: Text(
                         '${_playbackSpeed}x',
-                        style: TextStyle(color: widget.textColor),
+                        style: GoogleFonts.jockeyOne(
+                          color: widget.textColor,
+                        ),
                       ),
                       onPressed: _changePlaybackSpeed,
                     ),
@@ -212,7 +216,9 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                     ),
                     child: Text(
                       "Transcribed Text: ${transcriptionText.text}",
-                      style: TextStyle(color: widget.textColor),
+                      style: GoogleFonts.jockeyOne(
+                        color: widget.textColor,
+                      ),
                     ),
                   ),
                 ),

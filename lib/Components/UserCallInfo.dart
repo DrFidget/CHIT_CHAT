@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 enum CallType { missed, received, outgoing }
 
@@ -62,7 +63,7 @@ class UserCallInfo extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: TextStyle(
+                      style: GoogleFonts.jockeyOne(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 18.0,
@@ -78,7 +79,7 @@ class UserCallInfo extends StatelessWidget {
                       width: 100.0, // Fixed width for call type text
                       child: Text(
                         callTypeText,
-                        style: TextStyle(color: Colors.white),
+                        style: GoogleFonts.jockeyOne(color: Colors.white),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -87,10 +88,16 @@ class UserCallInfo extends StatelessWidget {
                 SizedBox(height: 8), // Add some spacing between rows
                 Row(
                   children: [
-                    Text(phoneNumber, style: TextStyle(color: Colors.white)),
-                    SizedBox(width:100),
+                    Text(
+                      phoneNumber,
+                      style: GoogleFonts.jockeyOne(color: Colors.white),
+                    ),
+                    SizedBox(width: 100),
                     // Spacer(), // Occupy the remaining space
-                    Text(timestamp, style: TextStyle(color: Colors.white)),
+                    Text(
+                      timestamp,
+                      style: GoogleFonts.jockeyOne(color: Colors.white),
+                    ),
                   ],
                 ),
               ],
@@ -101,6 +108,3 @@ class UserCallInfo extends StatelessWidget {
     );
   }
 }
-
-
-

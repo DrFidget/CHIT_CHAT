@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:ourappfyp/manager/webrtc_manager.dart';
 import 'package:ourappfyp/pages/call/Calling_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CallAcceptDeclinePage extends StatefulWidget {
   final String callerId;
@@ -22,7 +23,6 @@ class CallAcceptDeclinePage extends StatefulWidget {
 }
 
 class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
-
   void _acceptCall() {
     FirebaseFirestore.instance.collection('calls').doc(widget.roomId).update({
       'status': 'Accepted',
@@ -61,12 +61,13 @@ class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage('https://via.placeholder.com/150'), // Replace with actual caller image URL
+              backgroundImage: NetworkImage(
+                  'https://via.placeholder.com/150'), // Replace with actual caller image URL
             ),
             SizedBox(height: 20),
             Text(
               'Incoming call from ${widget.callername}',
-              style: TextStyle(
+              style: GoogleFonts.jockeyOne(
                 color: Colors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

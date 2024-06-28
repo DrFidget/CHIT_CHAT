@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ChatBoxDisplay {
   final String profilePicUrl;
@@ -51,10 +52,8 @@ class ChatBoxDisplayWidget extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                // Use FadeInImage to show a placeholder image while loading
                 child: FadeInImage.assetNetwork(
-                  placeholder:
-                      'assets/avatar.jpg', // Path to your placeholder image asset
+                  placeholder: 'assets/avatar.jpg',
                   image: chatMessage.profilePicUrl,
                   fit: BoxFit.cover,
                   width: 40,
@@ -74,15 +73,16 @@ class ChatBoxDisplayWidget extends StatelessWidget {
                           children: [
                             Text(
                               chatMessage.name,
-                              style: TextStyle(
+                              style: GoogleFonts.jockeyOne(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
+                                fontSize: 17,
                               ),
                             ),
                             SizedBox(height: 2),
                             Text(
                               chatMessage.email,
-                              style: TextStyle(
+                              style: GoogleFonts.jockeyOne(
                                 color: Color.fromARGB(255, 255, 255, 255),
                                 fontSize: 14,
                               ),
@@ -91,7 +91,7 @@ class ChatBoxDisplayWidget extends StatelessWidget {
                         ),
                         Text(
                           formattedTimestamp(chatMessage.timestamp),
-                          style: TextStyle(
+                          style: GoogleFonts.jockeyOne(
                             color: Color.fromARGB(255, 255, 255, 255),
                             fontSize: 12,
                           ),

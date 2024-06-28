@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GroupChatBoxDisplay {
   final String groupPicUrl;
@@ -64,15 +65,17 @@ class GroupChatBoxDisplayWidget extends StatelessWidget {
                           children: [
                             Text(
                               groupChat.groupName,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                              style: GoogleFonts.jockeyOne(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 17,
+                              ),
                             ),
                           ],
                         ),
                         Text(
                           formattedTimestamp(groupChat.timestamp),
-                          style: TextStyle(
+                          style: GoogleFonts.jockeyOne(
                             color: Color.fromARGB(255, 255, 255, 255),
                             fontSize: 12,
                           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class AudioPLayerForAi extends StatefulWidget {
@@ -129,9 +130,10 @@ class _AudioPLayerForAiState extends State<AudioPLayerForAi> {
             children: [
               if (_isLoadingAudio)
                 Center(
-                    child: CircularProgressIndicator(
-                  color: widget.textColor,
-                ))
+                  child: CircularProgressIndicator(
+                    color: widget.textColor,
+                  ),
+                )
               else
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -146,13 +148,17 @@ class _AudioPLayerForAiState extends State<AudioPLayerForAi> {
                     Expanded(
                       child: Text(
                         'Audio Message',
-                        style: TextStyle(color: widget.textColor),
+                        style: GoogleFonts.jockeyOne(
+                          color: widget.textColor,
+                        ),
                       ),
                     ),
                     IconButton(
                       icon: Text(
                         '${_playbackSpeed}x',
-                        style: TextStyle(color: widget.textColor),
+                        style: GoogleFonts.jockeyOne(
+                          color: widget.textColor,
+                        ),
                       ),
                       onPressed: _changePlaybackSpeed,
                     ),

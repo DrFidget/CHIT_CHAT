@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:ourappfyp/Components/Button.dart';
 import 'package:ourappfyp/types/UserClass.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -53,6 +54,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(height: verticalSpacing),
           Button(
             text: 'Login',
+
             // ignore: avoid_print
             onPressed: () => Navigator.pushNamed(context, '/login'),
             width: imageSize,
@@ -65,6 +67,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: () => Navigator.pushNamed(context, '/register'),
             width: imageSize,
             height: screenSize.height * .06,
+            // Apply Jockey One font
           ), // Passing text to the button
         ],
       ),

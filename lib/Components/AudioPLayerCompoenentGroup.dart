@@ -4,6 +4,7 @@ import 'package:http/http.dart'
     as http; // Only if not already imported in ApiService
 import 'package:ourappfyp/APIS/api_service.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AudioMessageWidgetGroup extends StatefulWidget {
   final DateTime dateTime;
@@ -160,7 +161,7 @@ class _AudioMessageWidgetGroupState extends State<AudioMessageWidgetGroup> {
             children: [
               Text(
                 User['name'],
-                style: TextStyle(
+                style: GoogleFonts.jockeyOne(
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                   color: Colors.grey,

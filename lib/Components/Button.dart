@@ -1,11 +1,12 @@
-
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Button extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final double? width;
   final double? height;
+
   const Button({
     required this.text,
     required this.onPressed,
@@ -34,7 +35,7 @@ class Button extends StatelessWidget {
         child: Center(
           child: Text(
             text,
-            style: const TextStyle(
+            style: GoogleFonts.jockeyOne(
               fontSize: 24,
               fontWeight: FontWeight.w900,
               color: Colors.white,

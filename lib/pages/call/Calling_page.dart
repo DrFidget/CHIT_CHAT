@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:ourappfyp/manager/webrtc_manager.dart';
 import 'package:flutter/services.dart';
@@ -13,14 +14,12 @@ import '../../services/UserCollectionFireStore/usersCollection.dart';
 import '../../services/permission/permission.dart';
 import '../../types/UserClass.dart';
 
-
 class CallingPage extends StatefulWidget {
   final String callerId;
   final String receiverId;
   final String roomId;
   final VoidCallback onCallEnd;
   final String UNAME;
-
 
   const CallingPage({
     Key? key,
@@ -56,7 +55,6 @@ class _CallingPageState extends State<CallingPage> {
   }
 
   Future<void> _initialize() async {
-
     _localRenderer.initialize();
     _remoteRenderer.initialize();
     _webRTCManager.onAddRemoteStream = ((stream) {
@@ -86,6 +84,7 @@ class _CallingPageState extends State<CallingPage> {
       }
     });
   }
+
   Future<void> _startCall() async {
     // Initialize Firestore service
 
@@ -96,8 +95,10 @@ class _CallingPageState extends State<CallingPage> {
     await _webRTCManager.openUserMedia(_localRenderer, _remoteRenderer);
 
     // Fetch current user's document by email
-    final String currentUserEmail = FirebaseAuth.instance.currentUser?.email ?? '';
-    UserClass? currentUser = await userFirestoreService.getUserByEmail(currentUserEmail);
+    final String currentUserEmail =
+        FirebaseAuth.instance.currentUser?.email ?? '';
+    UserClass? currentUser =
+        await userFirestoreService.getUserByEmail(currentUserEmail);
     if (currentUser == null) {
       print("User not found");
       return;
@@ -110,7 +111,10 @@ class _CallingPageState extends State<CallingPage> {
       print("roomID: $room");
       textEditingController.text = room!;
       // Store room ID in Firestore
-      await FirebaseFirestore.instance.collection('calls').doc(widget.roomId).set({
+      await FirebaseFirestore.instance
+          .collection('calls')
+          .doc(widget.roomId)
+          .set({
         'roomId': room,
         'callerId': currentUserId,
         'receiverId': widget.receiverId,
@@ -119,12 +123,18 @@ class _CallingPageState extends State<CallingPage> {
       _updateCallStatus('Calling');
     } else {
       // Retrieve room ID from Firestore
-      DocumentSnapshot callDoc = await FirebaseFirestore.instance.collection('calls').doc(widget.roomId).get();
+      DocumentSnapshot callDoc = await FirebaseFirestore.instance
+          .collection('calls')
+          .doc(widget.roomId)
+          .get();
       if (callDoc.exists) {
         String? roomId = callDoc['roomId'];
         print("Room ID: $roomId");
         if (roomId != null) {
-          await _webRTCManager.joinRoom(roomId,_remoteRenderer,);
+          await _webRTCManager.joinRoom(
+            roomId,
+            _remoteRenderer,
+          );
         } else {
           print("Room ID not found in Firestore");
         }
@@ -134,9 +144,6 @@ class _CallingPageState extends State<CallingPage> {
     }
     _webRTCManager.toggleSpeaker(false);
   }
-
-
-
 
   void _startCallTimer() {
     if (_startTime != null) {
@@ -161,12 +168,18 @@ class _CallingPageState extends State<CallingPage> {
       'status': status,
     });
   }
+
   void _listenToCallStatus() {
-    FirebaseFirestore.instance.collection('calls').doc(widget.roomId).snapshots().listen((snapshot) async {
+    FirebaseFirestore.instance
+        .collection('calls')
+        .doc(widget.roomId)
+        .snapshots()
+        .listen((snapshot) async {
       if (snapshot.exists && snapshot.data() != null) {
         setState(() {
           _callStatus = snapshot.data()!['status'] ?? 'Ringing';
-          if (_callStatus == 'Accepted' && snapshot.data()!['startTime'] != null) {
+          if (_callStatus == 'Accepted' &&
+              snapshot.data()!['startTime'] != null) {
             _startTime = (snapshot.data()!['startTime'] as Timestamp).toDate();
             _startCallTimer();
           }
@@ -197,10 +210,12 @@ class _CallingPageState extends State<CallingPage> {
     });
     _webRTCManager?.toggleSpeaker(_speakerOn);
   }
+
   Future<void> _releaseAudioFocus() async {
     final session = await AudioSession.instance;
     await session.setActive(false);
   }
+
   void _endCall() {
     _stopCallTimer();
     _updateCallStatus('Ended');
@@ -235,12 +250,13 @@ class _CallingPageState extends State<CallingPage> {
               SizedBox(height: 50),
               CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage('https://via.placeholder.com/150'), // Replace with actual caller image URL
+                backgroundImage: NetworkImage(
+                    'https://via.placeholder.com/150'), // Replace with actual caller image URL
               ),
               SizedBox(height: 20),
               Text(
                 widget.UNAME,
-                style: TextStyle(
+                style: GoogleFonts.jockeyOne(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -249,14 +265,14 @@ class _CallingPageState extends State<CallingPage> {
               SizedBox(height: 10),
               Text(
                 'Status: $_callStatus',
-                style: TextStyle(
+                style: GoogleFonts.jockeyOne(
                   color: Colors.white,
                   fontSize: 18,
                 ),
               ),
               Text(
                 'Call Duration: ${_formatDuration(_callDuration)}',
-                style: TextStyle(color: Colors.white),
+                style: GoogleFonts.jockeyOne(color: Colors.white),
               ),
             ],
           ),
