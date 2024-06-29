@@ -14,12 +14,14 @@ import '../../services/UserCollectionFireStore/usersCollection.dart';
 import '../../services/permission/permission.dart';
 import '../../types/UserClass.dart';
 
+
 class CallingPage extends StatefulWidget {
   final String callerId;
   final String receiverId;
   final String roomId;
   final VoidCallback onCallEnd;
   final String UNAME;
+
 
   const CallingPage({
     Key? key,
@@ -47,6 +49,9 @@ class _CallingPageState extends State<CallingPage> {
   TextEditingController textEditingController = TextEditingController(text: '');
   UserFirestoreService userFirestoreService = UserFirestoreService();
   String? room;
+  String? callDocId;
+  String? image;
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +60,7 @@ class _CallingPageState extends State<CallingPage> {
   }
 
   Future<void> _initialize() async {
+
     _localRenderer.initialize();
     _remoteRenderer.initialize();
     _webRTCManager.onAddRemoteStream = ((stream) {
@@ -93,42 +99,41 @@ class _CallingPageState extends State<CallingPage> {
 
     // Open user media to initialize local video and audio streams
     await _webRTCManager.openUserMedia(_localRenderer, _remoteRenderer);
-
-    // Fetch current user's document by email
-    final String currentUserEmail =
-        FirebaseAuth.instance.currentUser?.email ?? '';
-    UserClass? currentUser =
-        await userFirestoreService.getUserByEmail(currentUserEmail);
+    final String currentUserEmail = FirebaseAuth.instance.currentUser?.email ?? '';
+    UserClass? currentUser = await userFirestoreService.getUserByEmail(currentUserEmail);
+    UserClass? otherUser = await userFirestoreService.getUserById(widget.receiverId);
+    UserClass? joinperson = await userFirestoreService.getUserById(widget.callerId);
     if (currentUser == null) {
       print("User not found");
       return;
     }
     final String? currentUserId = currentUser.ID;
-
-    // Handle room creation or joining
     if (currentUserId == widget.callerId) {
+      image = otherUser?.imageLink;
       room = await _webRTCManager.createRoom(_remoteRenderer);
       print("roomID: $room");
       textEditingController.text = room!;
-      // Store room ID in Firestore
-      await FirebaseFirestore.instance
-          .collection('calls')
-          .doc(widget.roomId)
-          .set({
-        'roomId': room,
+      DocumentReference callDocRef = FirebaseFirestore.instance.collection('calls').doc(widget.roomId);
+      callDocId = callDocRef.id;
+      await callDocRef.set({
+        'roomId':widget.roomId,
+        'room': room,
         'callerId': currentUserId,
         'receiverId': widget.receiverId,
+        'participants': [currentUserId, widget.receiverId],
         'status': 'Calling',
-      });
+        'startTime': FieldValue.serverTimestamp(),
+        'duration': 0,
+      }, SetOptions(merge: true));
+      callDocId = callDocRef.id;
       _updateCallStatus('Calling');
     } else {
-      // Retrieve room ID from Firestore
-      DocumentSnapshot callDoc = await FirebaseFirestore.instance
-          .collection('calls')
-          .doc(widget.roomId)
-          .get();
+      image = joinperson?.imageLink;
+      print("joincall");
+      print(image);
+      DocumentSnapshot callDoc = await FirebaseFirestore.instance.collection('calls').doc(widget.roomId).get();
       if (callDoc.exists) {
-        String? roomId = callDoc['roomId'];
+        String? roomId = callDoc['room'];
         print("Room ID: $roomId");
         if (roomId != null) {
           await _webRTCManager.joinRoom(
@@ -150,6 +155,7 @@ class _CallingPageState extends State<CallingPage> {
       _callTimer = Timer.periodic(Duration(seconds: 1), (timer) {
         setState(() {
           _callDuration = DateTime.now().difference(_startTime!).inSeconds;
+          _updateCallDuration(_callDuration);
         });
       });
     }
@@ -160,13 +166,23 @@ class _CallingPageState extends State<CallingPage> {
   }
 
   void _updateCallStatus(String status) {
-    if (!mounted) return; // Ensure the widget is still mounted
+    if (!mounted) return;
     setState(() {
       _callStatus = status;
     });
-    FirebaseFirestore.instance.collection('calls').doc(widget.roomId).update({
-      'status': status,
-    });
+    if (callDocId != null) {
+      FirebaseFirestore.instance.collection('calls').doc(callDocId).update({
+        'status': status,
+      });
+    }
+  }
+
+  void _updateCallDuration(int duration) {
+    if (callDocId != null) {
+      FirebaseFirestore.instance.collection('calls').doc(callDocId).update({
+        'duration': duration,
+      });
+    }
   }
 
   void _listenToCallStatus() {
@@ -250,8 +266,7 @@ class _CallingPageState extends State<CallingPage> {
               SizedBox(height: 50),
               CircleAvatar(
                 radius: 50,
-                backgroundImage: NetworkImage(
-                    'https://via.placeholder.com/150'), // Replace with actual caller image URL
+                backgroundImage: NetworkImage(image ?? 'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg'), // Default image if URL is null
               ),
               SizedBox(height: 20),
               Text(

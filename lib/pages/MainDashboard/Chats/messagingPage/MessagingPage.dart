@@ -74,55 +74,55 @@ class _MessagingPageState extends State<MessagingPage> {
     fetchFirebaseToken();
     requestNotificationPermissions();
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.data['type'] == 'CALL_NOTIFICATION') {
-        final callerId = message.data['callerId'] ?? '';
-        final callerName = message.data['callerName'] ?? '';
-        final roomId = message.data['roomId'] ?? '';
-        final receiverId = message.data['receiverId'] ?? '';
-
-        if (callerId != null &&
-            callerName != null &&
-            roomId != null &&
-            receiverId != null) {
-          navigateToCallPage(callerId, callerName, roomId, receiverId);
-        }
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (message.data['type'] == 'CALL_NOTIFICATION') {
-        final callerId = message.data['callerId'] ?? '';
-        final callerName = message.data['callerName'] ?? '';
-        final roomId = message.data['roomId'] ?? '';
-        final receiverId = message.data['receiverId'] ?? '';
-
-        if (callerId != null &&
-            callerName != null &&
-            roomId != null &&
-            receiverId != null) {
-          navigateToCallPage(callerId, callerName, roomId, receiverId);
-        }
-      }
-    });
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   if (message.data['type'] == 'CALL_NOTIFICATION') {
+    //     final callerId = message.data['callerId'] ?? '';
+    //     final callerName = message.data['callerName'] ?? '';
+    //     final roomId = message.data['roomId'] ?? '';
+    //     final receiverId = message.data['receiverId'] ?? '';
+    //
+    //     if (callerId != null &&
+    //         callerName != null &&
+    //         roomId != null &&
+    //         receiverId != null) {
+    //       navigateToCallPage(callerId, callerName, roomId, receiverId);
+    //     }
+    //   }
+    // });
+    //
+    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    //   if (message.data['type'] == 'CALL_NOTIFICATION') {
+    //     final callerId = message.data['callerId'] ?? '';
+    //     final callerName = message.data['callerName'] ?? '';
+    //     final roomId = message.data['roomId'] ?? '';
+    //     final receiverId = message.data['receiverId'] ?? '';
+    //
+    //     if (callerId != null &&
+    //         callerName != null &&
+    //         roomId != null &&
+    //         receiverId != null) {
+    //       navigateToCallPage(callerId, callerName, roomId, receiverId);
+    //     }
+    //   }
+    // });
     // Handle when the app is launched from a terminated state by a notification
-    FirebaseMessaging.instance
-        .getInitialMessage()
-        .then((RemoteMessage? message) {
-      if (message != null && message.data['type'] == 'CALL_NOTIFICATION') {
-        final callerId = message.data['callerId'] ?? '';
-        final callerName = message.data['callerName'] ?? '';
-        final roomId = message.data['roomId'] ?? '';
-        final receiverId = message.data['receiverId'] ?? '';
-
-        if (callerId != null &&
-            callerName != null &&
-            roomId != null &&
-            receiverId != null) {
-          navigateToCallPage(callerId, callerName, roomId, receiverId);
-        }
-      }
-    });
+    // FirebaseMessaging.instance
+    //     .getInitialMessage()
+    //     .then((RemoteMessage? message) {
+    //   if (message != null && message.data['type'] == 'CALL_NOTIFICATION') {
+    //     final callerId = message.data['callerId'] ?? '';
+    //     final callerName = message.data['callerName'] ?? '';
+    //     final roomId = message.data['roomId'] ?? '';
+    //     final receiverId = message.data['receiverId'] ?? '';
+    //
+    //     if (callerId != null &&
+    //         callerName != null &&
+    //         roomId != null &&
+    //         receiverId != null) {
+    //       navigateToCallPage(callerId, callerName, roomId, receiverId);
+    //     }
+    //   }
+    // });
   }
 
   void _initiateCall() {

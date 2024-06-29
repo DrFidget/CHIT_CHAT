@@ -1,9 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:ourappfyp/manager/webrtc_manager.dart';
 import 'package:ourappfyp/pages/call/Calling_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/UserCollectionFireStore/usersCollection.dart';
+
+import '../../types/UserClass.dart';
+import 'package:flutter/services.dart';
 
 class CallAcceptDeclinePage extends StatefulWidget {
   final String callerId;
@@ -23,11 +28,19 @@ class CallAcceptDeclinePage extends StatefulWidget {
 }
 
 class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
-  void _acceptCall() {
+
+  var image;
+  Future<void> _acceptCall() async {
+    UserFirestoreService userFirestoreService = UserFirestoreService();
+    UserClass? currentUser = await userFirestoreService.getUserById(widget.callerId);
+    image = currentUser?.imageLink;
+    print("image");
+    print(image);
     FirebaseFirestore.instance.collection('calls').doc(widget.roomId).update({
       'status': 'Accepted',
       'startTime': FieldValue.serverTimestamp(),
     });
+    print(widget.callerId);
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -61,8 +74,7 @@ class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: NetworkImage(
-                  'https://via.placeholder.com/150'), // Replace with actual caller image URL
+              backgroundImage:NetworkImage(image ?? 'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg'), // Default image if URL is null// Replace with actual caller image URL
             ),
             SizedBox(height: 20),
             Text(
