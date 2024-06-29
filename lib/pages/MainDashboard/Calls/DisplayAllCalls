@@ -1,0 +1,104 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
+import 'package:ourappfyp/types/UserClass.dart';
+import 'package:intl/intl.dart'; // For date formatting
+
+Widget DisplayAllCallLogs(String loggedInUserId) {
+  final UserFirestoreService userServices = UserFirestoreService();
+
+  return Column(
+    children: [
+      Expanded(
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('calls')
+              .where('callerId', isEqualTo: loggedInUserId)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var callLogs = snapshot.data!.docs;
+              return ListView.builder(
+                itemCount: callLogs.length,
+                itemBuilder: (context, index) {
+                  var callLog = callLogs[index];
+                  var callData = callLog.data() as Map<String, dynamic>;
+                  var timeStamp = callData['startTime'] as Timestamp?;
+                  var duration = callData['duration'] as int?;
+                  var callerId = callData['callerId'] as String;
+                  var receiverId = callData['receiverId'] as String;
+                  var callId = snapshot.data!.docs[index].id;
+                  var displayNameID =
+                  loggedInUserId == callerId ? receiverId : callerId;
+                  String formattedTime = timeStamp != null
+                      ? DateFormat('hh:mm a').format(timeStamp.toDate())
+                      : '';
+                  String formattedDate = timeStamp != null
+                      ? DateFormat('EEEE, MMMM d, yyyy').format(timeStamp.toDate())
+                      : '';
+                  return FutureBuilder(
+                    future: userServices.getUserById(displayNameID as String),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        UserClass user = snapshot.data!;
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(user.imageLink ??
+                                'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg'),
+                          ),
+                          title: Text(
+                            user.name ?? "",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (callData.containsKey('startTime') && callData.containsKey('duration')) ...[
+                                Text(
+                                  'Status: ${callData['status'] ?? 'Unknown'}',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                Text(
+                                  'Duration: ${duration ?? 0} seconds',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                Text(
+                                  'Timestamp: ${timeStamp?.toDate() ?? DateTime.now()}',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ] else ...[
+                                Text(
+                                  'Missed Call',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                                Text(
+                                'Missed on: ${formattedDate} at ${formattedTime}',
+                                   style: TextStyle(color: Colors.red),
+                                 ),
+                              ],
+                            ],
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  );
+                },
+              );
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
+      ),
+    ],
+  );
+}
