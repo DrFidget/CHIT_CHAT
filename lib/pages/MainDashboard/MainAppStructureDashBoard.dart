@@ -135,7 +135,7 @@ class _AppStructureState extends State<AppStructure> {
               child: ChatsTab(),
             ),
             Container(color: Colors.green, child: GroupsTab()),
-            Container(color: Colors.blue, child: CallsTab()),
+            Container(color: Colors.blue, child: CallLogsTab()),
           ],
         ),
       ),

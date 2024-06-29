@@ -205,6 +205,7 @@ class WebRTCManager {
   Future<void> joinRoom(String roomId, RTCVideoRenderer remoteVideo) async {
    // await initialize();
     FirebaseFirestore db = FirebaseFirestore.instance;
+    print("join");
     print(roomId);
     DocumentReference roomRef = db.collection('rooms').doc('$roomId');
     var roomSnapshot = await roomRef.get();
