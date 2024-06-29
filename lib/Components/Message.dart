@@ -130,7 +130,7 @@ class _MessageWidgetState extends State<MessageWidget> {
           widget.alignLeft ? Alignment.centerLeft : Alignment.centerRight,
       child: GestureDetector(
         onTap: () {
-          widget.callback();
+          // widget.callback();
         },
         onLongPress: () {
           _showBottomSheet(context);

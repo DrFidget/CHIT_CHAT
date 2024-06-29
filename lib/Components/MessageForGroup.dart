@@ -127,7 +127,7 @@ class _MessageForGroupState extends State<MessageForGroup> {
           widget.alignLeft ? Alignment.centerLeft : Alignment.centerRight,
       child: GestureDetector(
         onTap: () {
-          widget.callback();
+          // widget.callback();
         },
         onLongPress: () {
           _showBottomSheet(context);
