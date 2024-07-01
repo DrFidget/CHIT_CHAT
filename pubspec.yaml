@@ -75,6 +75,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.13.1
+  flutter_local_notifications:
   build_runner: ^2.4.9
 
 flutter_icons:

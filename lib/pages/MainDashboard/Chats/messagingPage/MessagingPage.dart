@@ -1,11 +1,11 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:ourappfyp/Components/AudioPLayerCompoenent.dart';
 import 'package:ourappfyp/Components/Message.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ourappfyp/noti.dart';
 import 'package:ourappfyp/services/AudioServiceFirestore/AudioServiceFirestore.dart';
 import 'package:ourappfyp/services/ChatBoxCollectionFireStore/chatCollection.dart';
 import 'package:ourappfyp/services/MessagesCollectionFireStore/messageCollection.dart';
@@ -22,6 +22,10 @@ import 'package:ourappfyp/pages/call/Calling_page.dart';
 import 'package:ourappfyp/models/user.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:ourappfyp/pages/navigator.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 class MessagingPage extends StatefulWidget {
   final String SenderId;
@@ -73,7 +77,7 @@ class _MessagingPageState extends State<MessagingPage> {
     fetchUser();
     fetchFirebaseToken();
     requestNotificationPermissions();
-
+    Noti.initialize(flutterLocalNotificationsPlugin);
     // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     //   if (message.data['type'] == 'CALL_NOTIFICATION') {
     //     final callerId = message.data['callerId'] ?? '';
@@ -479,7 +483,14 @@ class _MessagingPageState extends State<MessagingPage> {
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(Icons.send),
-                      onPressed: SendMessage,
+                      onPressed: () {
+                        SendMessage();
+                        // Noti.showBigTextNotification(
+                        //   title: "Title",
+                        //   body: "Message",
+                        //   fln: flutterLocalNotificationsPlugin,
+                        // );
+                      },
                       color: const Color.fromRGBO(109, 40, 217, 1.0),
                     ),
                   ),

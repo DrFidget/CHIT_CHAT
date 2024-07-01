@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:ourappfyp/pages/settings/generalSettings.dart';
 import 'package:uuid/uuid.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -10,7 +11,6 @@ import 'package:ourappfyp/pages/home/HomePage.dart';
 import 'package:ourappfyp/pages/login/LoginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ourappfyp/pages/register/RegistrationPage.dart';
-import 'package:ourappfyp/pages/settings/Settings.dart';
 import 'package:ourappfyp/pages/settings/profileSetting.dart';
 import 'package:ourappfyp/types/UserClass.dart';
 import 'firebase_options.dart';
@@ -20,6 +20,7 @@ import 'package:ourappfyp/models/location.dart';
 import 'package:ourappfyp/pages/call/calling_page.dart';
 import 'package:ourappfyp/pages/navigator.dart';
 import 'package:ourappfyp/services/permission/permission.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 Future<void> myBackgroundMessageHandler(RemoteMessage message) async {
   print('Handling a background message: ${message.messageId}');
@@ -53,6 +54,9 @@ void main() async {
   );
   await requestPermissions();
   FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Got a message whilst in the foreground!');
@@ -111,16 +115,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       //  home: RegistrationPage()
-      initialRoute: '/',
+      initialRoute: '/SettingsScreen',
       routes: {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegistrationPage(),
         //'/callScreen': (context) => const CallScreen(),
         '/MainApp': (context) => const AppStructure(),
-        '/Settings': (context) => SettingsPage(),
         '/profileSettings': (context) => ProfileScreen(),
         // '/Dashboard_Page': (context) => Dashboard_Page(),
+        '/SettingsScreen': (context) => SettingsScreen(),
       },
     );
   }
