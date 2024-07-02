@@ -124,6 +124,7 @@ class MyApp extends StatelessWidget {
         //'/callScreen': (context) => const CallScreen(),
         '/MainApp': (context) => const AppStructure(),
         '/profileSettings': (context) => ProfileScreen(),
+        '/generalSettings': (context) => GeneralSettingsScreen(),
         // '/Dashboard_Page': (context) => Dashboard_Page(),
         // '/SettingsScreen': (context) => SettingsScreen(),
       },

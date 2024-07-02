@@ -354,6 +354,13 @@ class _MessagingPageState extends State<MessagingPage> {
           ),
         ),
         backgroundColor: const Color.fromRGBO(109, 40, 217, 1.0),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          color: Colors.white,
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.call),

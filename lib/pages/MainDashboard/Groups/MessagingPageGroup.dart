@@ -373,7 +373,13 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
           ),
         ),
         backgroundColor: const Color.fromRGBO(109, 40, 217, 1.0),
-        // hiding for groups
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          color: Colors.white,
+        ),
         actions: [
           PopupMenuButton(
             shape: RoundedRectangleBorder(

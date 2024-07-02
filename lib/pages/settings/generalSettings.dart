@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; // Import for using Jockey One font
 
-class SettingsScreen extends StatelessWidget {
+class GeneralSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +19,9 @@ class SettingsScreen extends StatelessWidget {
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
           color: Colors.white,
         ),
         actions: [

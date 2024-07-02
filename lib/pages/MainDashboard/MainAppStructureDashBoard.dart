@@ -18,8 +18,8 @@ class _AppStructureState extends State<AppStructure> {
   // Handler function for popup menu item selection
   void _handlePopupMenuSelection(String value) async {
     switch (value) {
-      case 'Settings':
-        Navigator.pushNamed(context, '/Settings');
+      case 'General Settings':
+        Navigator.pushNamed(context, '/generalSettings');
         break;
       case 'Profile Settings':
         Navigator.pushNamed(context, '/profileSettings');
@@ -70,6 +70,16 @@ class _AppStructureState extends State<AppStructure> {
               icon: const Icon(Icons.more_vert, color: Colors.white),
               color: Color.fromARGB(100, 31, 41, 55),
               itemBuilder: (BuildContext context) => [
+                PopupMenuItem(
+                  value: "General Settings",
+                  child: Text(
+                    "General Settings",
+                    style: GoogleFonts.jockeyOne(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
                 PopupMenuItem(
                   value: "Profile Settings",
                   child: Text(
