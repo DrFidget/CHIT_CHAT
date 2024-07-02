@@ -1,11 +1,12 @@
 import 'dart:typed_data';
+import 'dart:convert';
+import 'dart:io'; // Ensure you have this import
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:http/http.dart' as http;
 
 // Import your services and other dependencies as needed
 import 'package:ourappfyp/services/ImageServiceFireStore/ImageService.dart';
@@ -22,7 +23,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  Uint8List? _image;
+  late UserClass? user = null;
+  String? _image;
   late String userId = '';
 
   @override
@@ -35,13 +37,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _getUserID() async {
     try {
       final _myBox = await Hive.openBox<UserClass>('userBox');
-      final UserClass? user = await _myBox.get(1);
+      user = await _myBox.get(1);
+      print(user?.imageLink);
 
       if (user != null) {
         setState(() {
-          userId = user.ID as String;
+          userId = user?.ID as String;
+          _image = user?.imageLink; // Retrieve imageLink
+          nameController.text = user!.name!;
+          emailController.text = user!.email!;
           print("Logged in user ID is -> $userId");
-          _checkUser(userId); // Fetch user details from Firestore
+          _checkUser(userId);
         });
       } else {
         print("User ID Not Found");
@@ -50,8 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print('Error fetching user ID: $error');
     }
   }
-
-  // Method to retrieve user details from Firestore based on user ID
+ // Method to retrieve user details from Firestore based on user ID
   void _checkUser(String userId) async {
     try {
       CollectionReference users =
@@ -63,25 +68,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Map<String, dynamic> userData =
             userSnapshot.data() as Map<String, dynamic>;
 
+
         setState(() {
-          nameController.text = userData['name'] ?? '';
-          emailController.text = userData['email'] ?? '';
-          String imageLink =
-              userData['profileImageUrl'] ?? ''; // Retrieve imageLink
-          if (imageLink.isNotEmpty) {
-            // Load image from Firebase Storage
-            firebase_storage.FirebaseStorage storage =
-                firebase_storage.FirebaseStorage.instance;
-            firebase_storage.Reference ref = storage.ref().child(imageLink);
-            ref.getDownloadURL().then((url) {
-              setState(() {
-                _image = null; // Clear previously selected image
-                _displayImageFromNetwork(url);
-              });
-            }).catchError((e) {
-              print('Error loading profile image: $e');
-            });
-          }
+          // nameController.text = userData['name'] ?? '';
+          // emailController.text = userData['email'] ?? '';
+          // String imageLink =
+          //     userData['profileImageUrl'] ?? ''; // Retrieve imageLink
+          // if (imageLink.isNotEmpty) {
+          //   // Load image from Firebase Storage
+          //   firebase_storage.FirebaseStorage storage =
+          //       firebase_storage.FirebaseStorage.instance;
+          //   firebase_storage.Reference ref = storage.ref().child(imageLink);
+          //   ref.getDownloadURL().then((url) {
+          //     setState(() {
+          //       _image = null; // Clear previously selected image
+          //       _displayImageFromNetwork(url);
+          //     });
+          //   }).catchError((e) {
+          //     print('Error loading profile image: $e');
+          //   });
+          // }
         });
       } else {
         print('User not found in Firestore');
@@ -90,32 +96,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print('Error retrieving user details: $error');
     }
   }
-
-  // Method to fetch image from network and update _image state
-  void _displayImageFromNetwork(String imageUrl) async {
-    final http.Response response = await http.get(Uri.parse(imageUrl));
-    if (response.statusCode == 200) {
+  // Method to select an image from gallery using ImagePicker
+  Future<void> _selectImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+      Uint8List imageBytes = await imageFile.readAsBytes();
+      String base64String = base64Encode(imageBytes);
       setState(() {
-        _image = response.bodyBytes;
+        _image = base64String;
       });
-    } else {
-      print('Error fetching image from network');
     }
   }
 
-  // Method to select an image from gallery using ImagePicker
-  void _selectImage() async {
-    Uint8List img = await pickImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-    });
-  }
-
   // Method to upload selected image to Firebase Storage and return download URL
-  Future<String> uploadImageToStorage(Uint8List image) async {
+  Future<String> uploadImageToStorage(String base64String) async {
     try {
       ImageServiceFirestore imageService = ImageServiceFirestore();
-      String? imageUrl = await imageService.uploadImage(image);
+      String? imageUrl = await imageService.uploadImage(base64String);
       // Handle null case if imageUrl is null
       if (imageUrl != null) {
         return imageUrl; // Return non-null value
@@ -128,37 +127,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Method to update user data in Firestore with name, email, and optional image URL
-  Future<void> updateUserData(
-      String name, String email, String? imageLink) async {
-    try {
-      CollectionReference users =
-          FirebaseFirestore.instance.collection('users');
-
-      await users.doc(userId).update({
-        'name': name,
-        'email': email,
-        if (imageLink != null) 'profileImageUrl': imageLink,
-      });
-
-      print('User data updated successfully!');
-    } catch (error) {
-      print('Error updating user data: $error');
-    }
-  }
-
   // Method to save profile changes (name, email, and optionally image)
-  void _saveProfile() async {
+  Future<void> _saveProfile() async {
     String name = nameController.text;
     String email = emailController.text;
     final UserService = UserFirestoreService();
     try {
       String? imageLink;
       if (_image != null) {
-        imageLink = await uploadImageToStorage(_image!);
+        if (_image!.startsWith('http')) {
+          imageLink = _image; // Already a URL
+        } else {
+          imageLink = await uploadImageToStorage(_image!); // Upload Base64 image
+        }
       }
       await UserService.updateUserCredentials(userId, name, email, imageLink);
 
+
+      // Update user in Hive box
+      final _myBox = await Hive.openBox<UserClass>('userBox');
+      user?.name = name;
+      user?.email = email;
+      user?.imageLink = imageLink;
+      await _myBox.put(1, user!);
       // Navigate back to main dashboard after saving profile
       Navigator.pushReplacement(
         context,
@@ -220,17 +211,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Center(
                     child: Stack(
                       children: [
-                        _image != null
-                            ? CircleAvatar(
-                                radius: 65.0,
-                                backgroundImage: MemoryImage(_image!),
-                              )
-                            : CircleAvatar(
-                                radius: 65.0,
-                                backgroundImage: AssetImage(
-                                  'assets/avatar.jpg', // Placeholder image
-                                ),
-                              ),
+                        if (_image != null)
+                          if (_image!.startsWith('http'))
+                            CircleAvatar(
+                              radius: 65.0,
+                              backgroundImage: NetworkImage(_image!),
+                            )
+                          else
+                            CircleAvatar(
+                              radius: 65.0,
+                              backgroundImage: MemoryImage(base64Decode(_image!)),
+                            )
+                        else
+                          CircleAvatar(
+                            radius: 65.0,
+                            backgroundImage: AssetImage('assets/avatar.jpg'),
+                          ),
                         Positioned(
                           bottom: 0,
                           right: 0,
@@ -242,9 +238,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: IconButton(
                               icon: Icon(Icons.add_a_photo),
                               color: Colors.black,
-                              onPressed: () {
-                                _selectImage(); // Open image picker
-                              },
+                              onPressed: _selectImage, // Open image picker
                             ),
                           ),
                         ),
@@ -267,9 +261,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(appBarColor),
+                  MaterialStateProperty.all<Color>(appBarColor),
                   foregroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  MaterialStateProperty.all<Color>(Colors.white),
                 ),
               )
             ],
