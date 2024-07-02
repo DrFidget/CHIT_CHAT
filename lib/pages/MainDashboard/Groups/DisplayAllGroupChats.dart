@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ourappfyp/pages/MainDashboard/Chats/messagingPage/MessagingPageGroup.dart';
+import 'package:ourappfyp/pages/MainDashboard/Groups/MessagingPageGroup.dart';
 import 'package:ourappfyp/services/ChatBoxCollectionFireStore/chatCollection.dart';
 import 'package:ourappfyp/Components/GroupChatBoxDsiplay.dart';
 import 'package:ourappfyp/types/UserClass.dart';
@@ -23,6 +23,7 @@ Widget DisplayAllGroupChats(
                   var timeStamp = chatRoom['timeStamp'] as Timestamp;
                   var groupName = chatRoom['name'] as String;
                   var chatRoomID = snapshot.data!.docs[index].id;
+                  dynamic chatRoomMembers = chatRoom['members'] as List<String>;
 
                   return GroupChatBoxDisplayWidget(
                     groupChat: GroupChatBoxDisplay(
@@ -40,6 +41,7 @@ Widget DisplayAllGroupChats(
                               ReceiverId: chatRoomID,
                               ChatRoomId: chatRoomID,
                               UNAME: groupName,
+                              chatRoomMembers: chatRoomMembers,
                             ),
                           ),
                         );

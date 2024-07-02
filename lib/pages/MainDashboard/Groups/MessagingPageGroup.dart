@@ -31,6 +31,7 @@ class MessagingPageGroup extends StatefulWidget {
   final String ChatRoomId;
   final String? RoomId;
   final String? UNAME;
+  final List<String> chatRoomMembers;
 
   const MessagingPageGroup({
     super.key,
@@ -39,6 +40,7 @@ class MessagingPageGroup extends StatefulWidget {
     required this.ChatRoomId,
     this.RoomId,
     this.UNAME,
+    required this.chatRoomMembers,
   });
 
   @override

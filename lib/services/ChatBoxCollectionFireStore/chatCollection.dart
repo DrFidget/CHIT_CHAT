@@ -39,6 +39,9 @@ class chatBoxFirestoreService {
   }
 
   Future<void> createChatRoom(String CreatorID, String MemberID) {
+    if (CreatorID.isEmpty || MemberID.isEmpty) {
+      return Future.error("CreatorID or MemberID is empty");
+    }
     var sortedList = <String>[];
     sortedList.add(CreatorID);
     sortedList.add(MemberID);

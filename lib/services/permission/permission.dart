@@ -20,6 +20,6 @@ Future<void> requestPermissions() async {
       // Show a dialog or navigate to an error screen
     }
   } catch (e) {
-    print(e);
+    return Future.error(e);
   }
 }

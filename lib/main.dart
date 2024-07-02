@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:ourappfyp/pages/settings/GroupSettings/GroupSettings.dart';
 import 'package:ourappfyp/pages/settings/generalSettings.dart';
 import 'package:uuid/uuid.dart';
 import 'package:hive/hive.dart';
@@ -115,7 +116,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       //  home: RegistrationPage()
-      initialRoute: '/SettingsScreen',
+      initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
@@ -124,7 +125,7 @@ class MyApp extends StatelessWidget {
         '/MainApp': (context) => const AppStructure(),
         '/profileSettings': (context) => ProfileScreen(),
         // '/Dashboard_Page': (context) => Dashboard_Page(),
-        '/SettingsScreen': (context) => SettingsScreen(),
+        // '/SettingsScreen': (context) => SettingsScreen(),
       },
     );
   }

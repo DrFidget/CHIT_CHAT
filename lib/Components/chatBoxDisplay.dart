@@ -52,12 +52,14 @@ class ChatBoxDisplayWidget extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                child: FadeInImage.assetNetwork(
-                  placeholder: 'assets/avatar.jpg',
-                  image: chatMessage.profilePicUrl,
-                  fit: BoxFit.cover,
-                  width: 40,
-                  height: 40,
+                child: ClipOval(
+                  child: FadeInImage.assetNetwork(
+                    placeholder: 'assets/avatar.jpg',
+                    image: chatMessage.profilePicUrl,
+                    fit: BoxFit.cover,
+                    width: 40,
+                    height: 40,
+                  ),
                 ),
               ),
               SizedBox(width: 12),
