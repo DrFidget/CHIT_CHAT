@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; // Import for using Jockey One font
+import 'contact.dart';
+import 'language.dart';
 
 class GeneralSettingsScreen extends StatelessWidget {
   @override
@@ -59,8 +61,12 @@ class GeneralSettingsScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Hi it\'s me Sarah',
-                        style: TextStyle(color: Colors.white70),
+                        'Hi, it\'s me Sarah',
+                        style: GoogleFonts.jockeyOne(
+                          textStyle: TextStyle(
+                            color: Colors.white70,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -77,9 +83,19 @@ class GeneralSettingsScreen extends StatelessWidget {
             buildListTile(context, Icons.notifications, 'Notifications',
                 'Message, group and call tones'),
             buildListTile(context, Icons.language, 'App language',
-                'English (phone\'s language)'),
-            buildListTile(context, Icons.help, 'Help',
-                'Help center, contact us, privacy policy'),
+                'English (phone\'s language)', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LanguageSettingsPage()),
+              );
+            }),
+            buildListTile(context, Icons.contacts, 'Contact Us',
+                'Email, Twitter, and more ways to reach us', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ContactPage()),
+              );
+            }),
           ],
         ),
       ),
@@ -87,7 +103,8 @@ class GeneralSettingsScreen extends StatelessWidget {
   }
 
   ListTile buildListTile(
-      BuildContext context, IconData icon, String title, String subtitle) {
+      BuildContext context, IconData icon, String title, String subtitle,
+      [VoidCallback? onTap]) {
     return ListTile(
       leading: Icon(icon, color: Color.fromARGB(255, 109, 40, 217)),
       title: Text(
@@ -99,8 +116,15 @@ class GeneralSettingsScreen extends StatelessWidget {
           ),
         ),
       ),
-      subtitle: Text(subtitle, style: TextStyle(color: Colors.white70)),
-      onTap: () {},
+      subtitle: Text(
+        subtitle,
+        style: GoogleFonts.jockeyOne(
+          textStyle: TextStyle(
+            color: Colors.white70,
+          ),
+        ),
+      ),
+      onTap: onTap,
     );
   }
 }
