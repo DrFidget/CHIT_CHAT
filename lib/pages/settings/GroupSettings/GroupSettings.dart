@@ -9,9 +9,10 @@ class GroupSettingsPage extends StatefulWidget {
   final String AdminID;
   final String LoggedINUser;
   final String GroupID;
+  final dynamic chatRoom;
 
-  GroupSettingsPage(
-      this.chatRoomMembers, this.AdminID, this.LoggedINUser, this.GroupID);
+  GroupSettingsPage(this.chatRoomMembers, this.AdminID, this.LoggedINUser,
+      this.GroupID, this.chatRoom);
 
   @override
   State<GroupSettingsPage> createState() => _GroupSettingsPageState();
@@ -80,35 +81,7 @@ class _GroupSettingsPageState extends State<GroupSettingsPage> {
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(
-                    padding: EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              'https://example.com/group_avatar.jpg'), // Replace with actual group image URL
-                          radius: 30,
-                        ),
-                        SizedBox(width: 16.0),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Flutter Group',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              'Group description or info',
-                              style: TextStyle(color: Colors.white70),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  topinfoOfGroup(widget.chatRoom),
                   Divider(color: Colors.white24),
                   ExpansionTile(
                     leading: Icon(Icons.group,
@@ -181,6 +154,43 @@ class _GroupSettingsPageState extends State<GroupSettingsPage> {
                 ],
               ),
             ),
+    );
+  }
+
+  Container topinfoOfGroup(dynamic chatroom) {
+    // Provide default values if properties do not exist
+    String imageUrl = 'https://example.com/group_avatar.jpg';
+    String name = chatroom['name']?.toString() ?? 'Flutter Group';
+    String description = 'Group description or info';
+
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundImage: NetworkImage(imageUrl),
+            radius: 30,
+          ),
+          SizedBox(width: 16.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                description,
+                style: TextStyle(color: Colors.white70),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

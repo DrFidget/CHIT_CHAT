@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:ourappfyp/pages/MainDashboard/Calls/CallsTab.dart';
@@ -42,111 +42,131 @@ class _AppStructureState extends State<AppStructure> {
     }
   }
 
+  Future<bool> _onWillPop() async {
+    return (await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('Do you want to exit the app?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('No'),
+              ),
+              TextButton(
+                onPressed: () => SystemNavigator.pop(),
+                child: Text('Yes'),
+              ),
+            ],
+          ),
+        )) ??
+        false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: Color.fromRGBO(3, 7, 18, 1),
-        appBar: AppBar(
-          backgroundColor: Color.fromRGBO(109, 40, 217, 1),
-          leading: BackButton(
-            color: Colors.white,
-            onPressed: () => {},
-          ),
-          title: Text(
-            "ChitChat",
-            style: GoogleFonts.jockeyOne(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
-          actions: [
-            PopupMenuButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(25)),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          backgroundColor: Color.fromRGBO(3, 7, 18, 1),
+          appBar: AppBar(
+            backgroundColor: Color.fromRGBO(109, 40, 217, 1),
+            title: Text(
+              "ChitChat",
+              style: GoogleFonts.jockeyOne(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.w300,
               ),
-              icon: const Icon(Icons.more_vert, color: Colors.white),
-              color: Color.fromARGB(100, 31, 41, 55),
-              itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
-                  value: "General Settings",
+            ),
+            actions: [
+              PopupMenuButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                ),
+                icon: const Icon(Icons.more_vert, color: Colors.white),
+                color: Color.fromARGB(100, 31, 41, 55),
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                    value: "General Settings",
+                    child: Text(
+                      "General Settings",
+                      style: GoogleFonts.jockeyOne(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "Profile Settings",
+                    child: Text(
+                      "Profile Settings",
+                      style: GoogleFonts.jockeyOne(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: "Log out",
+                    child: Text(
+                      "Log out",
+                      style: GoogleFonts.jockeyOne(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+                onSelected: _handlePopupMenuSelection,
+              ),
+            ],
+            bottom: TabBar(
+              tabs: [
+                Tab(
                   child: Text(
-                    "General Settings",
+                    "Chats",
                     style: GoogleFonts.jockeyOne(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 20,
                     ),
                   ),
                 ),
-                PopupMenuItem(
-                  value: "Profile Settings",
+                Tab(
                   child: Text(
-                    "Profile Settings",
+                    "Groups",
                     style: GoogleFonts.jockeyOne(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 20,
                     ),
                   ),
                 ),
-                PopupMenuItem(
-                  value: "Log out",
+                Tab(
                   child: Text(
-                    "Log out",
+                    "Calls",
                     style: GoogleFonts.jockeyOne(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 20,
                     ),
                   ),
                 ),
               ],
-              onSelected: _handlePopupMenuSelection, // Call handler function
+              indicatorColor: Colors.white,
+              indicatorWeight: 4.0,
             ),
-          ],
-          bottom: TabBar(
-            tabs: [
-              Tab(
-                child: Text(
-                  "Chats",
-                  style: GoogleFonts.jockeyOne(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              Tab(
-                child: Text(
-                  "Groups",
-                  style: GoogleFonts.jockeyOne(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              Tab(
-                child: Text(
-                  "Calls",
-                  style: GoogleFonts.jockeyOne(
-                    color: Colors.white,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-            ],
-            indicatorColor: Colors.white,
-            indicatorWeight: 4.0,
           ),
-        ),
-        body: TabBarView(
-          children: [
-            Container(
-              color: const Color.fromARGB(255, 255, 255, 255),
-              child: ChatsTab(),
-            ),
-            Container(color: Colors.green, child: GroupsTab()),
-            Container(color: Colors.blue, child: CallLogsTab()),
-          ],
+          body: TabBarView(
+            children: [
+              Container(
+                color: const Color.fromARGB(255, 255, 255, 255),
+                child: ChatsTab(),
+              ),
+              Container(color: Colors.green, child: GroupsTab()),
+              Container(color: Colors.blue, child: CallLogsTab()),
+            ],
+          ),
         ),
       ),
     );

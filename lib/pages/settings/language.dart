@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LanguageSettingsPage extends StatelessWidget {
+class LanguageSettingsPage extends StatefulWidget {
+  @override
+  _LanguageSettingsPageState createState() => _LanguageSettingsPageState();
+}
+
+class _LanguageSettingsPageState extends State<LanguageSettingsPage> {
   final List<Map<String, String>> languages = [
     {'code': 'en', 'name': 'English'},
     {'code': 'ur', 'name': 'Urdu'},
     // Add more languages as needed
   ];
+
+  String? _selectedAppLanguage;
+  String? _selectedSpeechLanguage;
+  String? _selectedTranslationLanguage;
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +39,27 @@ class LanguageSettingsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
-            _buildSectionTitle(context, 'App Language'),
+            _buildDropdown(context, 'App Language', _selectedAppLanguage,
+                (value) => setState(() => _selectedAppLanguage = value)),
             SizedBox(height: 20),
             Divider(
                 color: Colors.white), // Use white color divider for contrast
             SizedBox(height: 20),
-            _buildSectionTitle(context, 'Default Speech Language'),
+            _buildDropdown(
+                context,
+                'Default Speech Language',
+                _selectedSpeechLanguage,
+                (value) => setState(() => _selectedSpeechLanguage = value)),
             SizedBox(height: 20),
             Divider(
                 color: Colors.white), // Use white color divider for contrast
             SizedBox(height: 20),
-            _buildSectionTitle(context, 'Default Translation Language'),
+            _buildDropdown(
+                context,
+                'Default Translation Language',
+                _selectedTranslationLanguage,
+                (value) =>
+                    setState(() => _selectedTranslationLanguage = value)),
             SizedBox(height: 20),
           ],
         ),
@@ -48,79 +67,46 @@ class LanguageSettingsPage extends StatelessWidget {
     );
   }
 
-  void _showLanguageOptions(BuildContext context, String sectionTitle) {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-      ),
-      builder: (BuildContext context) {
-        return Container(
-          color: Colors.black,
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildSectionTitle(context, sectionTitle),
-              SizedBox(height: 10),
-              _buildLanguageList(context),
-              SizedBox(height: 20),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildLanguageList(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: languages.length,
-      itemBuilder: (context, index) {
-        final language = languages[index];
-        return GestureDetector(
-          onTap: () {
-            // Implement logic to set selected language
-            // For example, save to SharedPreferences and update UI
-            Navigator.pop(context, language['code']);
-          },
-          child: Container(
-            margin: EdgeInsets.symmetric(vertical: 8.0),
-            padding: EdgeInsets.all(12.0),
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 109, 40, 217),
-              borderRadius: BorderRadius.circular(10),
+  Widget _buildDropdown(BuildContext context, String title,
+      String? selectedValue, ValueChanged<String?> onChanged) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.jockeyOne(
+            textStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
-            child: Text(
-              language['name']!,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return GestureDetector(
-      onTap: () {
-        _showLanguageOptions(context, title);
-      },
-      child: Text(
-        title,
-        style: GoogleFonts.jockeyOne(
-          textStyle: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
           ),
         ),
-      ),
+        SizedBox(height: 10),
+        DropdownButtonFormField<String>(
+          value: selectedValue,
+          onChanged: onChanged,
+          items: languages.map((language) {
+            return DropdownMenuItem<String>(
+              value: language['code'],
+              child: Text(
+                language['name']!,
+                style: TextStyle(color: Colors.black),
+              ),
+            );
+          }).toList(),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
+          dropdownColor: Colors.white,
+          icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+          style: TextStyle(color: Colors.black),
+        ),
+      ],
     );
   }
 }

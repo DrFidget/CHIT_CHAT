@@ -8,6 +8,8 @@ class ChatRoom {
   String? roomType;
   Timestamp? timeStamp;
   List<dynamic>? members;
+  String? description;
+  String? imageLink;
 
   ChatRoom({
     this.creatorId,

@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:ourappfyp/Components/AudioPLayerCompoenent.dart';
 import 'package:ourappfyp/Components/AudioPLayerCompoenentGroup.dart';
-import 'package:ourappfyp/Components/Message.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/Components/MessageForGroup.dart';
 import 'package:ourappfyp/pages/settings/GroupSettings/GroupSettings.dart';
@@ -34,6 +32,7 @@ class MessagingPageGroup extends StatefulWidget {
   final String? UNAME;
   final List<dynamic> chatRoomMembers;
   final String groupcreatorId;
+  final dynamic? chatRoom;
 
   const MessagingPageGroup({
     super.key,
@@ -44,6 +43,7 @@ class MessagingPageGroup extends StatefulWidget {
     this.UNAME,
     required this.chatRoomMembers,
     required this.groupcreatorId,
+    this.chatRoom,
   });
 
   @override
@@ -347,8 +347,12 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => GroupSettingsPage(widget.chatRoomMembers,
-                  widget.groupcreatorId, widget.SenderId, widget.ChatRoomId)),
+              builder: (context) => GroupSettingsPage(
+                  widget.chatRoomMembers,
+                  widget.groupcreatorId,
+                  widget.SenderId,
+                  widget.ChatRoomId,
+                  widget.chatRoom)),
         );
         break;
 

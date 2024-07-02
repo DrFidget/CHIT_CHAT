@@ -10,6 +10,9 @@ class chatBoxFirestoreService {
       'creatorId': creatorID,
       'memberId': memberId,
       'timeStamp': Timestamp.now(),
+      'imageLink':
+          "https://firebasestorage.googleapis.com/v0/b/chitchat-425ea.appspot.com/o/images%2Fimage_1719166174077.jpg?alt=media&token=8e05db3f-5748-4f16-97e2-adacebdbbae6",
+      'description': "",
     });
   }
 
@@ -34,7 +37,10 @@ class chatBoxFirestoreService {
       'name': groupName,
       'timeStamp': Timestamp.now(),
       'memberId': '',
-      'roomType': "group"
+      'roomType': "group",
+      'imageLink':
+          "https://firebasestorage.googleapis.com/v0/b/chitchat-425ea.appspot.com/o/images%2Fimage_1719166174077.jpg?alt=media&token=8e05db3f-5748-4f16-97e2-adacebdbbae6",
+      'description': "",
     });
   }
 

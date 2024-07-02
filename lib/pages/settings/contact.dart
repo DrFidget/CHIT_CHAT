@@ -20,8 +20,8 @@ class ContactPage extends StatelessWidget {
         backgroundColor: Color.fromARGB(255, 109, 40, 217),
       ),
       body: ContactUs(
-        cardColor: Color.fromARGB(255, 109, 40, 217),
-        textColor: Colors.white,
+        cardColor: Color.fromARGB(255, 255, 255, 255),
+        textColor: const Color.fromARGB(255, 109, 40, 217),
         logo: null, // Remove the image
         email: 'yourapp@example.com',
         companyName: 'Chit Chat',

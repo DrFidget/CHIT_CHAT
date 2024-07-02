@@ -1,14 +1,13 @@
 import 'dart:typed_data';
 import 'dart:convert';
-import 'dart:io'; // Ensure you have this import
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
-// Import your services and other dependencies as needed
+import 'package:ourappfyp/services/HiveBoxService/HiveService.dart';
 import 'package:ourappfyp/services/ImageServiceFireStore/ImageService.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 import 'package:ourappfyp/utils.dart';
@@ -23,71 +22,47 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  late UserClass? user = null;
+  UserClass? user;
   String? _image;
-  late String userId = '';
+  String userId = '';
 
   @override
   void initState() {
     super.initState();
-    _getUserID();
+    _getUser();
   }
 
-  // Method to fetch user ID from local storage using Hive
-  void _getUserID() async {
+  void _getUser() async {
     try {
-      final _myBox = await Hive.openBox<UserClass>('userBox');
-      user = await _myBox.get(1);
-      print(user?.imageLink);
-
+      final hiveService = HiveService();
+      user = await hiveService.getUser();
       if (user != null) {
         setState(() {
-          userId = user?.ID as String;
-          _image = user?.imageLink; // Retrieve imageLink
+          userId = user!.ID!;
+          _image = user?.imageLink;
           nameController.text = user!.name!;
           emailController.text = user!.email!;
-          print("Logged in user ID is -> $userId");
-          _checkUser(userId);
         });
+        _checkUser(userId);
       } else {
-        print("User ID Not Found");
+        print("User not found in local storage.");
       }
     } catch (error) {
-      print('Error fetching user ID: $error');
+      print('Error fetching user: $error');
     }
   }
- // Method to retrieve user details from Firestore based on user ID
+
   void _checkUser(String userId) async {
     try {
       CollectionReference users =
           FirebaseFirestore.instance.collection('users');
-
       DocumentSnapshot userSnapshot = await users.doc(userId).get();
 
       if (userSnapshot.exists) {
         Map<String, dynamic> userData =
             userSnapshot.data() as Map<String, dynamic>;
-
-
         setState(() {
-          // nameController.text = userData['name'] ?? '';
-          // emailController.text = userData['email'] ?? '';
-          // String imageLink =
-          //     userData['profileImageUrl'] ?? ''; // Retrieve imageLink
-          // if (imageLink.isNotEmpty) {
-          //   // Load image from Firebase Storage
-          //   firebase_storage.FirebaseStorage storage =
-          //       firebase_storage.FirebaseStorage.instance;
-          //   firebase_storage.Reference ref = storage.ref().child(imageLink);
-          //   ref.getDownloadURL().then((url) {
-          //     setState(() {
-          //       _image = null; // Clear previously selected image
-          //       _displayImageFromNetwork(url);
-          //     });
-          //   }).catchError((e) {
-          //     print('Error loading profile image: $e');
-          //   });
-          // }
+          // Optional: Update other user details if needed
         });
       } else {
         print('User not found in Firestore');
@@ -96,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print('Error retrieving user details: $error');
     }
   }
-  // Method to select an image from gallery using ImagePicker
+
   Future<void> _selectImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -110,47 +85,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Method to upload selected image to Firebase Storage and return download URL
   Future<String> uploadImageToStorage(String base64String) async {
     try {
       ImageServiceFirestore imageService = ImageServiceFirestore();
       String? imageUrl = await imageService.uploadImage(base64String);
-      // Handle null case if imageUrl is null
       if (imageUrl != null) {
-        return imageUrl; // Return non-null value
+        return imageUrl;
       } else {
-        throw 'Failed to upload image'; // Handle error or return default URL
+        throw 'Failed to upload image';
       }
     } catch (error) {
       print('Error uploading image to Firebase Storage: $error');
-      return ''; // Return default value or handle error case
+      return '';
     }
   }
 
-  // Method to save profile changes (name, email, and optionally image)
   Future<void> _saveProfile() async {
     String name = nameController.text;
     String email = emailController.text;
-    final UserService = UserFirestoreService();
+    final userService = UserFirestoreService();
     try {
       String? imageLink;
       if (_image != null) {
         if (_image!.startsWith('http')) {
-          imageLink = _image; // Already a URL
+          imageLink = _image;
         } else {
-          imageLink = await uploadImageToStorage(_image!); // Upload Base64 image
+          imageLink = await uploadImageToStorage(_image!);
         }
       }
-      await UserService.updateUserCredentials(userId, name, email, imageLink);
-
-
-      // Update user in Hive box
-      final _myBox = await Hive.openBox<UserClass>('userBox');
-      user?.name = name;
-      user?.email = email;
-      user?.imageLink = imageLink;
-      await _myBox.put(1, user!);
-      // Navigate back to main dashboard after saving profile
+      await userService.updateUserCredentials(userId, name, email, imageLink);
+      if (user != null) {
+        user!.name = name;
+        user!.email = email;
+        user!.imageLink = imageLink;
+        final hiveService = HiveService();
+        await hiveService.updateUser(user!);
+      }
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => AppStructure()),
@@ -160,7 +130,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Build method for the profile screen UI
   @override
   Widget build(BuildContext context) {
     Color appBarColor = const Color.fromRGBO(109, 40, 217, 1);
@@ -172,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Navigate back to previous screen
+            Navigator.pop(context);
           },
         ),
         title: Text(
@@ -211,22 +180,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Center(
                     child: Stack(
                       children: [
-                        if (_image != null)
-                          if (_image!.startsWith('http'))
-                            CircleAvatar(
-                              radius: 65.0,
-                              backgroundImage: NetworkImage(_image!),
-                            )
-                          else
-                            CircleAvatar(
-                              radius: 65.0,
-                              backgroundImage: MemoryImage(base64Decode(_image!)),
-                            )
-                        else
-                          CircleAvatar(
-                            radius: 65.0,
-                            backgroundImage: AssetImage('assets/avatar.jpg'),
-                          ),
+                        CircleAvatar(
+                          radius: 65.0,
+                          backgroundImage: _image != null
+                              ? (_image!.startsWith('http')
+                                      ? NetworkImage(_image!)
+                                      : MemoryImage(base64Decode(_image!)))
+                                  as ImageProvider
+                              : AssetImage('assets/avatar.jpg'),
+                        ),
                         Positioned(
                           bottom: 0,
                           right: 0,
@@ -238,7 +200,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: IconButton(
                               icon: Icon(Icons.add_a_photo),
                               color: Colors.black,
-                              onPressed: _selectImage, // Open image picker
+                              onPressed: _selectImage,
                             ),
                           ),
                         ),
@@ -255,15 +217,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   "Email", Icons.info, "Enter Email", emailController),
               SizedBox(height: 45),
               ElevatedButton(
-                onPressed: _saveProfile, // Save profile changes
-                child: const Text(
-                  'Save Profile',
-                ),
+                onPressed: _saveProfile,
+                child: const Text('Save Profile'),
                 style: ButtonStyle(
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(appBarColor),
+                      MaterialStateProperty.all<Color>(appBarColor),
                   foregroundColor:
-                  MaterialStateProperty.all<Color>(Colors.white),
+                      MaterialStateProperty.all<Color>(Colors.white),
                 ),
               )
             ],
@@ -273,15 +233,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Widget to build each profile field (name, email)
   Widget _buildProfileField(String label, IconData icon, String hint,
       TextEditingController controller) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey),
-        ),
+        border: Border(bottom: BorderSide(color: Colors.grey)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,19 +265,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     hintStyle: TextStyle(color: Colors.white),
                     border: InputBorder.none,
                   ),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ],
             ),
           ),
           IconButton(
             icon: Icon(Icons.edit, color: Colors.white),
-            onPressed: () {
-              // Add your edit functionality here
-            },
+            onPressed: () {},
           ),
         ],
       ),

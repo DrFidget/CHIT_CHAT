@@ -44,6 +44,7 @@ Widget DisplayAllGroupChats(
                               UNAME: groupName,
                               chatRoomMembers: chatRoomMembers,
                               groupcreatorId: groupcreatorId,
+                              chatRoom: chatRoom,
                             ),
                           ),
                         );

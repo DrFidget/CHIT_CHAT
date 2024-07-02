@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:ourappfyp/types/UserClass.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
 
 class HiveService {
@@ -29,6 +30,25 @@ class HiveService {
       return Map<String, dynamic>.from(box.toMap());
     } else {
       throw Exception('Box $boxName does not exist');
+    }
+  }
+
+  Future<UserClass?> getUser() async {
+    try {
+      final _myBox = await Hive.openBox<UserClass>('userBox');
+      return _myBox.get(1);
+    } catch (error) {
+      print('Error fetching user: $error');
+      return null;
+    }
+  }
+
+  Future<void> updateUser(UserClass user) async {
+    try {
+      final _myBox = await Hive.openBox<UserClass>('userBox');
+      await _myBox.put(1, user);
+    } catch (error) {
+      print('Error updating user: $error');
     }
   }
 }

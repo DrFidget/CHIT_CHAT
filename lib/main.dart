@@ -99,6 +99,7 @@ void main() async {
     await Hive.initFlutter();
     Hive.registerAdapter(UserClassAdapter());
     await Hive.openBox<UserClass>('userBox');
+    await Hive.openBox('AppSettings');
   } catch (e) {
     print("error loading hive error : $e");
   }
