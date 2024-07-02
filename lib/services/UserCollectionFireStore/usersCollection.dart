@@ -120,4 +120,23 @@ class UserFirestoreService {
     }
     return null;
   }
+
+  Future<List<UserClass>> getUsersByIds(List<dynamic> ids) async {
+    try {
+      List<UserClass> userList = [];
+      for (String id in ids) {
+        DocumentSnapshot docSnapshot = await users.doc(id).get();
+        if (docSnapshot.exists) {
+          UserClass user =
+              UserClass.fromJson(docSnapshot.data() as Map<String, dynamic>);
+          user.ID = docSnapshot.id;
+          userList.add(user);
+        }
+      }
+      return userList;
+    } catch (e) {
+      print(e);
+      return [];
+    }
+  }
 }

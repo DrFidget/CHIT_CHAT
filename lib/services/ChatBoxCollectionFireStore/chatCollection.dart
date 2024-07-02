@@ -180,5 +180,29 @@ class chatBoxFirestoreService {
         .orderBy('timeStamp', descending: true)
         .snapshots();
   }
+
+  Future<void> leaveGroup(String groupID, String loggedInUserID) async {
+    try {
+      DocumentSnapshot doc = await chatBox.doc(groupID).get();
+      if (doc.exists) {
+        List<dynamic> members = doc['members'];
+        String creatorID = doc['creatorId'];
+        members.remove(loggedInUserID);
+        if (loggedInUserID == creatorID) {
+          await chatBox.doc(groupID).delete();
+        }
+
+        await chatBox.doc(groupID).update({
+          'members': members,
+          'timeStamp': Timestamp.now(),
+        });
+        print('User $loggedInUserID has left the group $groupID');
+      } else {
+        print('Chat room with ID $groupID does not exist.');
+      }
+    } catch (e) {
+      print('Error leaving group: $e');
+    }
+  }
 }
 //https://chat.openai.com/c/d51cf2a7-29b8-4e37-bca7-0057f6ec9cfb

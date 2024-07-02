@@ -8,6 +8,7 @@ import 'package:ourappfyp/Components/AudioPLayerCompoenentGroup.dart';
 import 'package:ourappfyp/Components/Message.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/Components/MessageForGroup.dart';
+import 'package:ourappfyp/pages/settings/GroupSettings/GroupSettings.dart';
 import 'package:ourappfyp/services/AudioServiceFirestore/AudioServiceFirestore.dart';
 import 'package:ourappfyp/services/ChatBoxCollectionFireStore/chatCollection.dart';
 import 'package:ourappfyp/services/MessagesCollectionFireStore/messageCollection.dart';
@@ -31,7 +32,8 @@ class MessagingPageGroup extends StatefulWidget {
   final String ChatRoomId;
   final String? RoomId;
   final String? UNAME;
-  final List<String> chatRoomMembers;
+  final List<dynamic> chatRoomMembers;
+  final String groupcreatorId;
 
   const MessagingPageGroup({
     super.key,
@@ -41,6 +43,7 @@ class MessagingPageGroup extends StatefulWidget {
     this.RoomId,
     this.UNAME,
     required this.chatRoomMembers,
+    required this.groupcreatorId,
   });
 
   @override
@@ -338,6 +341,22 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
     }
   }
 
+  void _handlePopupMenuSelection(String value) async {
+    switch (value) {
+      case 'Group':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => GroupSettingsPage(widget.chatRoomMembers,
+                  widget.groupcreatorId, widget.SenderId, widget.ChatRoomId)),
+        );
+        break;
+
+      default:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userName =
@@ -354,13 +373,39 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
           ),
         ),
         backgroundColor: const Color.fromRGBO(109, 40, 217, 1.0),
-        //hiding for groups
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.call),
-        //     onPressed: _initiateCall,
-        //   ),
-        // ],
+        // hiding for groups
+        actions: [
+          PopupMenuButton(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(25)),
+            ),
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            color: Color.fromARGB(100, 31, 41, 55),
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                value: "Group",
+                child: Text(
+                  "Group Settings",
+                  style: GoogleFonts.jockeyOne(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              // PopupMenuItem(
+              //   value: "Log out",
+              //   child: Text(
+              //     "Log out",
+              //     style: GoogleFonts.jockeyOne(
+              //       color: Colors.white,
+              //       fontSize: 16,
+              //     ),
+              //   ),
+              // ),
+            ],
+            onSelected: _handlePopupMenuSelection, // Call handler function
+          ),
+        ],
       ),
       body: Column(
         children: [

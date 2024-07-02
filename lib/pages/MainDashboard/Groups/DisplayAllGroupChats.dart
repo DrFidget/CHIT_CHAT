@@ -22,8 +22,9 @@ Widget DisplayAllGroupChats(
                   var chatRoom = chatRooms[index];
                   var timeStamp = chatRoom['timeStamp'] as Timestamp;
                   var groupName = chatRoom['name'] as String;
+                  var groupcreatorId = chatRoom['creatorId'] as String;
                   var chatRoomID = snapshot.data!.docs[index].id;
-                  dynamic chatRoomMembers = chatRoom['members'] as List<String>;
+                  List<dynamic> chatRoomMembers = chatRoom['members'];
 
                   return GroupChatBoxDisplayWidget(
                     groupChat: GroupChatBoxDisplay(
@@ -42,6 +43,7 @@ Widget DisplayAllGroupChats(
                               ChatRoomId: chatRoomID,
                               UNAME: groupName,
                               chatRoomMembers: chatRoomMembers,
+                              groupcreatorId: groupcreatorId,
                             ),
                           ),
                         );
