@@ -7,13 +7,32 @@ import 'package:intl/intl.dart'; // For date formatting
 Widget DisplayAllCallLogs(String loggedInUserId) {
   final UserFirestoreService userServices = UserFirestoreService();
 
+  String formatDate(Timestamp timestamp) {
+    DateTime date = timestamp.toDate();
+    DateTime now = DateTime.now();
+    DateTime yesterday = now.subtract(Duration(days: 1));
+
+    if (date.year == now.year && date.month == now.month && date.day == now.day) {
+      return 'Today';
+    } else if (date.year == yesterday.year && date.month == yesterday.month && date.day == yesterday.day) {
+      return 'Yesterday';
+    } else {
+      return DateFormat('EEEE, MMM d, yyyy').format(date);
+    }
+  }
+
+  String formatTime(Timestamp timestamp) {
+    return DateFormat('h:mm a').format(timestamp.toDate());
+  }
+
   return Column(
     children: [
       Expanded(
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('calls')
-              .where('callerId', isEqualTo: loggedInUserId)
+              .where('participants', arrayContains: loggedInUserId)
+              .orderBy('startTime', descending: true)  // Sort by startTime in descending order
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -24,23 +43,34 @@ Widget DisplayAllCallLogs(String loggedInUserId) {
                   var callLog = callLogs[index];
                   var callData = callLog.data() as Map<String, dynamic>;
                   var timeStamp = callData['startTime'] as Timestamp?;
-                  var duration = callData['duration'] as int?;
+                  var status = callData['status'] as String;
                   var callerId = callData['callerId'] as String;
                   var receiverId = callData['receiverId'] as String;
-                  var callId = snapshot.data!.docs[index].id;
-                  var displayNameID =
-                  loggedInUserId == callerId ? receiverId : callerId;
-                  String formattedTime = timeStamp != null
-                      ? DateFormat('hh:mm a').format(timeStamp.toDate())
-                      : '';
-                  String formattedDate = timeStamp != null
-                      ? DateFormat('EEEE, MMMM d, yyyy').format(timeStamp.toDate())
-                      : '';
+                  var displayNameID = loggedInUserId == callerId ? receiverId : callerId;
+                  var duration = callData['duration'] as int;
+
                   return FutureBuilder(
-                    future: userServices.getUserById(displayNameID as String),
+                    future: userServices.getUserById(displayNameID),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         UserClass user = snapshot.data!;
+                        Icon callIcon;
+                        String callType;
+
+                        if (status == 'Declined' || status == 'Missed' || duration == 0) {
+                          callIcon = Icon(Icons.call_missed, color: Colors.red, size: 18);
+                          callType = 'Missed Call';
+                        } else if (callerId == loggedInUserId) {
+                          callIcon = Icon(Icons.call_made, color: Colors.green, size: 18);
+                          callType = 'Outgoing Call';
+                        } else {
+                          callIcon = Icon(Icons.call_received, color: Colors.green, size: 18);
+                          callType = 'Incoming Call';
+                        }
+
+                        String formattedDate = timeStamp != null ? formatDate(timeStamp) : '';
+                        String formattedTime = timeStamp != null ? formatTime(timeStamp) : '';
+
                         return ListTile(
                           leading: CircleAvatar(
                             backgroundImage: NetworkImage(user.imageLink ??
@@ -53,32 +83,14 @@ Widget DisplayAllCallLogs(String loggedInUserId) {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          subtitle: Row(
                             children: [
-                              if (callData.containsKey('startTime') && callData.containsKey('duration')) ...[
-                                Text(
-                                  'Status: ${callData['status'] ?? 'Unknown'}',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                Text(
-                                  'Duration: ${duration ?? 0} seconds',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                Text(
-                                  'Timestamp: ${timeStamp?.toDate() ?? DateTime.now()}',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ] else ...[
-                                Text(
-                                  'Missed Call',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                                Text(
-                                'Missed on: ${formattedDate} at ${formattedTime}',
-                                   style: TextStyle(color: Colors.red),
-                                 ),
-                              ],
+                              callIcon,
+                              SizedBox(width: 5),
+                              Text(
+                                '$callType, $formattedDate, $formattedTime',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ],
                           ),
                         );

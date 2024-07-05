@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 import 'package:ourappfyp/pages/settings/profileSetting.dart';
 import 'package:ourappfyp/types/UserClass.dart';
+import 'package:ourappfyp/services/token_service.dart';  // Import TokenService
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -49,6 +50,8 @@ class _LoginPageState extends State<LoginPage> {
         email: _email,
         password: _password,
       );
+      print("Logged in with email: $_email");
+      await TokenService().saveTokenToDatabase(_email);
 
       await WriteData();
 

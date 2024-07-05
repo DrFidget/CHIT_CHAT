@@ -92,7 +92,7 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
             callerName != null &&
             roomId != null &&
             receiverId != null) {
-          navigateToCallPage(callerId, callerName, roomId, receiverId);
+          //navigateToCallPage(callerId, callerName, roomId, receiverId);
         }
       }
     });
@@ -108,7 +108,7 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
             callerName != null &&
             roomId != null &&
             receiverId != null) {
-          navigateToCallPage(callerId, callerName, roomId, receiverId);
+          //navigateToCallPage(callerId, callerName, roomId, receiverId);
         }
       }
     });
@@ -122,44 +122,45 @@ class _MessagingPageGroupState extends State<MessagingPageGroup> {
         final roomId = message.data['roomId'] ?? '';
         final receiverId = message.data['receiverId'] ?? '';
 
+
         if (callerId != null &&
             callerName != null &&
             roomId != null &&
             receiverId != null) {
-          navigateToCallPage(callerId, callerName, roomId, receiverId);
+          //navigateToCallPage(callerId, callerName, roomId, receiverId);
         }
       }
     });
   }
 
-  void _initiateCall() {
-    final String roomId = widget.ChatRoomId;
-    _firestore.collection('calls').doc(roomId).set({
-      'callerId': widget.SenderId,
-      'receiverId': widget.ReceiverId,
-      'roomId': roomId,
-    });
-
-    final senderName = sender?.name ?? 'Unknown';
-    sendCallNotification(
-        widget.SenderId, senderName, widget.ReceiverId, roomId);
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CallingPage(
-          callerId: widget.SenderId,
-          receiverId: widget.ReceiverId,
-          roomId: roomId,
-          UNAME: widget.UNAME ?? "",
-          onCallEnd: () {
-            Navigator.pop(
-                context); // This will navigate back to the MessagingPageGroup
-          },
-        ),
-      ),
-    );
-  }
+  // void _initiateCall() {
+  //   final String roomId = widget.ChatRoomId;
+  //   _firestore.collection('calls').doc(roomId).set({
+  //     'callerId': widget.SenderId,
+  //     'receiverId': widget.ReceiverId,
+  //     'roomId': roomId,
+  //   });
+  //
+  //   final senderName = sender?.name ?? 'Unknown';
+  //   sendCallNotification(
+  //       widget.SenderId, senderName, widget.ReceiverId, roomId);
+  //
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => CallingPage(
+  //         callerId: widget.SenderId,
+  //         receiverId: widget.ReceiverId,
+  //         roomId: roomId,
+  //         UNAME: widget.UNAME ?? "",
+  //         onCallEnd: () {
+  //           Navigator.pop(
+  //               context); // This will navigate back to the MessagingPageGroup
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void createUserObject() {
     setState(() {

@@ -10,7 +10,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH"  />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:label="Chit Chat"
@@ -35,7 +37,7 @@
 
             <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="you_can_name_it_whatever" 
+            android:value="call_channel"
             />
             <intent-filter>
                 <action android:name="FLUTTER_NOTIFICATION_CLICK"/>
