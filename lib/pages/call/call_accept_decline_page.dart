@@ -9,6 +9,7 @@ import '../../services/UserCollectionFireStore/usersCollection.dart';
 
 import '../../types/UserClass.dart';
 import 'package:flutter/services.dart';
+import 'package:ourappfyp/pages/MainDashboard/MainAppStructureDashBoard.dart';
 
 class CallAcceptDeclinePage extends StatefulWidget {
   final String callerId;
@@ -30,12 +31,28 @@ class CallAcceptDeclinePage extends StatefulWidget {
 class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
 
   var image;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCallerImage();
+  }
+  Future<void> _loadCallerImage() async {
+    try {
+      UserFirestoreService userFirestoreService = UserFirestoreService();
+      UserClass? currentUser = await userFirestoreService.getUserById(widget.callerId);
+      setState(() {
+        image = currentUser?.imageLink;
+      });
+    } catch (e) {
+      print("Failed to load caller image: $e");
+    }
+  }
   Future<void> _acceptCall() async {
-    UserFirestoreService userFirestoreService = UserFirestoreService();
-    UserClass? currentUser = await userFirestoreService.getUserById(widget.callerId);
-    image = currentUser?.imageLink;
-    print("image");
-    print(image);
+    setState(() {
+      _isLoading = true;
+    });
     FirebaseFirestore.instance.collection('calls').doc(widget.roomId).update({
       'status': 'Accepted',
       'startTime': FieldValue.serverTimestamp(),
@@ -50,7 +67,8 @@ class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
           roomId: widget.roomId,
           UNAME: widget.callername,
           onCallEnd: () {
-            Navigator.pop(context); // Navigate back to the MessagingPage
+            Navigator.pushAndRemoveUntil(context,
+                MaterialPageRoute(builder: (context)=> AppStructure()), (Route<dynamic> route) => false);// Navigate back to the MessagingPage
           },
         ),
       ),
@@ -61,7 +79,8 @@ class _CallAcceptDeclinePageState extends State<CallAcceptDeclinePage> {
     FirebaseFirestore.instance.collection('calls').doc(widget.roomId).update({
       'status': 'Declined',
     });
-    Navigator.pop(context); // Navigate back to the MessagingPage
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context)=> AppStructure()), (Route<dynamic> route) => false); // Navigate back to the MessagingPage
   }
 
   @override

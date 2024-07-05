@@ -13,8 +13,8 @@ import 'package:audio_session/audio_session.dart';
 import '../../services/UserCollectionFireStore/usersCollection.dart';
 import '../../services/permission/permission.dart';
 import '../../types/UserClass.dart';
-
-
+import 'package:ourappfyp/pages/MainDashboard/Chats/messagingPage/messagingPage.dart';
+import 'package:ourappfyp/pages/MainDashboard/Chats/ChatsTab.dart';
 class CallingPage extends StatefulWidget {
   final String callerId;
   final String receiverId;
@@ -55,12 +55,10 @@ class _CallingPageState extends State<CallingPage> {
   @override
   void initState() {
     super.initState();
-
     _initialize();
   }
 
   Future<void> _initialize() async {
-
     _localRenderer.initialize();
     _remoteRenderer.initialize();
     _webRTCManager.onAddRemoteStream = ((stream) {
@@ -68,7 +66,6 @@ class _CallingPageState extends State<CallingPage> {
       setState(() {});
     });
     requestPermissions().then((_) {
-      // Handle cases where permissions are not granted
       if (!mounted) return;
       setState(() {});
     });
@@ -92,9 +89,7 @@ class _CallingPageState extends State<CallingPage> {
   }
 
   Future<void> _startCall() async {
-    // Initialize Firestore service
 
-    // Request audio focus
     await _requestAudioFocus();
 
     // Open user media to initialize local video and audio streams
@@ -132,6 +127,7 @@ class _CallingPageState extends State<CallingPage> {
       print("joincall");
       print(image);
       DocumentSnapshot callDoc = await FirebaseFirestore.instance.collection('calls').doc(widget.roomId).get();
+      callDocId = callDoc.id;
       if (callDoc.exists) {
         String? roomId = callDoc['room'];
         print("Room ID: $roomId");
@@ -165,17 +161,22 @@ class _CallingPageState extends State<CallingPage> {
     _callTimer?.cancel();
   }
 
-  void _updateCallStatus(String status) {
+  Future<void> _updateCallStatus(String status) async {
     if (!mounted) return;
     setState(() {
       _callStatus = status;
     });
     if (callDocId != null) {
-      FirebaseFirestore.instance.collection('calls').doc(callDocId).update({
-        'status': status,
-      });
+      try {
+        await FirebaseFirestore.instance.collection('calls').doc(callDocId).update({
+          'status': status,
+        });
+      } catch (e) {
+        print("Failed to update call status: $e");
+      }
     }
   }
+
 
   void _updateCallDuration(int duration) {
     if (callDocId != null) {
@@ -199,10 +200,18 @@ class _CallingPageState extends State<CallingPage> {
             _startTime = (snapshot.data()!['startTime'] as Timestamp).toDate();
             _startCallTimer();
           }
+          else if (_callStatus == 'Ended') {
+             _endCall();
+          }
+          else if (_callStatus == 'Declined') {
+            _DeclineCall();
+          }
+
         });
       }
     });
   }
+
 
   @override
   void dispose() {
@@ -231,14 +240,21 @@ class _CallingPageState extends State<CallingPage> {
     final session = await AudioSession.instance;
     await session.setActive(false);
   }
-
-  void _endCall() {
+  void _DeclineCall() async {
     _stopCallTimer();
-    _updateCallStatus('Ended');
+    //await _updateCallStatus('Ended');
     _webRTCManager?.endCall();
+    await _releaseAudioFocus();
     widget.onCallEnd();
-    _releaseAudioFocus();
   }
+  void _endCall() async {
+    _stopCallTimer();
+    await _updateCallStatus('Ended');
+    _webRTCManager?.endCall();
+    await _releaseAudioFocus();
+    widget.onCallEnd();
+  }
+
 
   String _formatDuration(int seconds) {
     final int minutes = seconds ~/ 60;

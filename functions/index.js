@@ -19,11 +19,11 @@ exports.sendCallNotification = functions.https.onCall(async (data, context) => {
   }
 
   const payload = {
-    notification: {
-      title: 'Incoming Call',
-      body: `${callerName} is calling you`,
-      sound: 'default'
-    },
+//    notification: {
+//      title: 'Incoming Call',
+//      body: `${callerName} is calling you`,
+//      sound: 'default'
+//    },
     data: {
       callerId: callerId,
       callerName: callerName,

@@ -24,6 +24,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:ourappfyp/pages/navigator.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../../MainAppStructureDashBoard.dart';
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -78,68 +80,19 @@ class _MessagingPageState extends State<MessagingPage> {
     fetchFirebaseToken();
     requestNotificationPermissions();
     Noti.initialize(flutterLocalNotificationsPlugin);
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   if (message.data['type'] == 'CALL_NOTIFICATION') {
-    //     final callerId = message.data['callerId'] ?? '';
-    //     final callerName = message.data['callerName'] ?? '';
-    //     final roomId = message.data['roomId'] ?? '';
-    //     final receiverId = message.data['receiverId'] ?? '';
-    //
-    //     if (callerId != null &&
-    //         callerName != null &&
-    //         roomId != null &&
-    //         receiverId != null) {
-    //       navigateToCallPage(callerId, callerName, roomId, receiverId);
-    //     }
-    //   }
-    // });
-    //
-    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    //   if (message.data['type'] == 'CALL_NOTIFICATION') {
-    //     final callerId = message.data['callerId'] ?? '';
-    //     final callerName = message.data['callerName'] ?? '';
-    //     final roomId = message.data['roomId'] ?? '';
-    //     final receiverId = message.data['receiverId'] ?? '';
-    //
-    //     if (callerId != null &&
-    //         callerName != null &&
-    //         roomId != null &&
-    //         receiverId != null) {
-    //       navigateToCallPage(callerId, callerName, roomId, receiverId);
-    //     }
-    //   }
-    // });
-    // Handle when the app is launched from a terminated state by a notification
-    // FirebaseMessaging.instance
-    //     .getInitialMessage()
-    //     .then((RemoteMessage? message) {
-    //   if (message != null && message.data['type'] == 'CALL_NOTIFICATION') {
-    //     final callerId = message.data['callerId'] ?? '';
-    //     final callerName = message.data['callerName'] ?? '';
-    //     final roomId = message.data['roomId'] ?? '';
-    //     final receiverId = message.data['receiverId'] ?? '';
-    //
-    //     if (callerId != null &&
-    //         callerName != null &&
-    //         roomId != null &&
-    //         receiverId != null) {
-    //       navigateToCallPage(callerId, callerName, roomId, receiverId);
-    //     }
-    //   }
-    // });
   }
 
   void _initiateCall() {
-    final String roomId = widget.ChatRoomId;
-    _firestore.collection('calls').doc(roomId).set({
+    final String newroomId = FirebaseFirestore.instance.collection('calls').doc().id;
+    _firestore.collection('calls').doc(newroomId).set({
       'callerId': widget.SenderId,
       'receiverId': widget.ReceiverId,
-      'roomId': roomId,
+      'roomId': newroomId,
     });
 
     final senderName = sender?.name ?? 'Unknown';
     sendCallNotification(
-        widget.SenderId, senderName, widget.ReceiverId, roomId);
+        widget.SenderId, senderName, widget.ReceiverId, newroomId);
 
     Navigator.push(
       context,
@@ -147,11 +100,11 @@ class _MessagingPageState extends State<MessagingPage> {
         builder: (context) => CallingPage(
           callerId: widget.SenderId,
           receiverId: widget.ReceiverId,
-          roomId: roomId,
+          roomId: newroomId,
           UNAME: widget.UNAME ?? "",
           onCallEnd: () {
-            Navigator.pop(
-                context); // This will navigate back to the MessagingPage
+            Navigator.pushAndRemoveUntil(context,
+                MaterialPageRoute(builder: (context)=> MessagingPage(SenderId: widget.SenderId, ReceiverId: widget.ReceiverId, ChatRoomId: widget.ChatRoomId,UNAME: widget.UNAME,)), (Route<dynamic> route) => false);// This will navigate back to the MessagingPage
           },
         ),
       ),
@@ -357,7 +310,8 @@ class _MessagingPageState extends State<MessagingPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushAndRemoveUntil(context,
+                MaterialPageRoute(builder: (context)=> AppStructure()), (route) => false);
           },
           color: Colors.white,
         ),
