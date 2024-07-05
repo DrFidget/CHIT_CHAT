@@ -71,7 +71,7 @@ void main() async {
         defaultColor: Color(0xFF9D50DD),
         ledColor: Colors.white,
         importance: NotificationImportance.Max,
-        soundSource: 'resource://raw/res_custom_notification', // Your custom sound
+        soundSource: 'resource://raw/ring', // Your custom sound
         playSound: true,
         channelShowBadge: true,
         defaultRingtoneType: DefaultRingtoneType.Ringtone,
