@@ -14,7 +14,6 @@ class CallLogsTab extends StatefulWidget {
 
 class _CallLogsTabState extends State<CallLogsTab> {
   late String loggedInUserId = '';
-  bool isLoading = false;
 
   final UserFirestoreService userServices = UserFirestoreService();
 
@@ -32,18 +31,9 @@ class _CallLogsTabState extends State<CallLogsTab> {
         setState(() {
           loggedInUserId = user.ID as String;
         //  print("logged in user id is ->${loggedInUserId}");
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          isLoading = false;
         });
       }
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-
       print(e);
     }
   }
@@ -51,14 +41,8 @@ class _CallLogsTabState extends State<CallLogsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 3, 7, 18),
-      body: isLoading
-          ? const CircularProgressIndicator()
-          : Stack(
-        children: [
-          DisplayAllCallLogs(loggedInUserId),
-        ],
-      ),
+      backgroundColor: const Color.fromARGB(255, 3, 7, 18),
+      body: DisplayAllCallLogs(loggedInUserId),
     );
   }
 }

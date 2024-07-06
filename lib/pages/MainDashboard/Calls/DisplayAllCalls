@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:ourappfyp/services/UserCollectionFireStore/usersCollection.dart';
 import 'package:ourappfyp/types/UserClass.dart';
 import 'package:intl/intl.dart'; // For date formatting
+import 'package:ourappfyp/pages/call/Calling_page.dart'; // Import the CallingPage
+import 'package:ourappfyp/pages/MainDashboard/Calls/NotificationServiceCus.dart'; // Import the notification service
+import 'package:ourappfyp/pages/MainDashboard/MainAppStructureDashBoard.dart';
 
 Widget DisplayAllCallLogs(String loggedInUserId) {
   final UserFirestoreService userServices = UserFirestoreService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String formatDate(Timestamp timestamp) {
     DateTime date = timestamp.toDate();
@@ -25,92 +29,119 @@ Widget DisplayAllCallLogs(String loggedInUserId) {
     return DateFormat('h:mm a').format(timestamp.toDate());
   }
 
-  return Column(
-    children: [
-      Expanded(
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('calls')
-              .where('participants', arrayContains: loggedInUserId)
-              .orderBy('startTime', descending: true)  // Sort by startTime in descending order
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              var callLogs = snapshot.data!.docs;
-              return ListView.builder(
-                itemCount: callLogs.length,
-                itemBuilder: (context, index) {
-                  var callLog = callLogs[index];
-                  var callData = callLog.data() as Map<String, dynamic>;
-                  var timeStamp = callData['startTime'] as Timestamp?;
-                  var status = callData['status'] as String;
-                  var callerId = callData['callerId'] as String;
-                  var receiverId = callData['receiverId'] as String;
-                  var displayNameID = loggedInUserId == callerId ? receiverId : callerId;
-                  var duration = callData['duration'] as int;
+  void _initiateCall(BuildContext context, String callerId, String receiverId, String userName) {
+    final String newroomId = _firestore.collection('calls').doc().id;
+    _firestore.collection('calls').doc(newroomId).set({
+      'callerId': callerId,
+      'receiverId': receiverId,
+      'roomId': newroomId,
+    });
 
-                  return FutureBuilder(
-                    future: userServices.getUserById(displayNameID),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        UserClass user = snapshot.data!;
-                        Icon callIcon;
-                        String callType;
+    sendCallNotification(callerId, userName, receiverId, newroomId);
 
-                        if (status == 'Declined' || status == 'Missed' || duration == 0) {
-                          callIcon = Icon(Icons.call_missed, color: Colors.red, size: 18);
-                          callType = 'Missed Call';
-                        } else if (callerId == loggedInUserId) {
-                          callIcon = Icon(Icons.call_made, color: Colors.green, size: 18);
-                          callType = 'Outgoing Call';
-                        } else {
-                          callIcon = Icon(Icons.call_received, color: Colors.green, size: 18);
-                          callType = 'Incoming Call';
-                        }
-
-                        String formattedDate = timeStamp != null ? formatDate(timeStamp) : '';
-                        String formattedTime = timeStamp != null ? formatTime(timeStamp) : '';
-
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(user.imageLink ??
-                                'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg'),
-                          ),
-                          title: Text(
-                            user.name ?? "",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: Row(
-                            children: [
-                              callIcon,
-                              SizedBox(width: 5),
-                              Text(
-                                '$callType, $formattedDate, $formattedTime',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ],
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                    },
-                  );
-                },
-              );
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CallingPage(
+          callerId: callerId,
+          receiverId: receiverId,
+          roomId: newroomId,
+          UNAME: userName,
+          onCallEnd: () {
+            Navigator.pushAndRemoveUntil(context,
+                MaterialPageRoute(builder: (context)=>  AppStructure()), (Route<dynamic> route) => false);// This will navigate back to the MessagingPage
           },
         ),
       ),
-    ],
+    );
+  }
+
+  return StreamBuilder<QuerySnapshot>(
+    stream: FirebaseFirestore.instance
+        .collection('calls')
+        .where('participants', arrayContains: loggedInUserId)
+        .orderBy('startTime', descending: true)  // Sort by startTime in descending order
+        .snapshots(),
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        var callLogs = snapshot.data!.docs;
+        return ListView.builder(
+          itemCount: callLogs.length,
+          itemBuilder: (context, index) {
+            var callLog = callLogs[index];
+            var callData = callLog.data() as Map<String, dynamic>;
+            var timeStamp = callData['startTime'] as Timestamp?;
+            var status = callData['status'] as String;
+            var callerId = callData['callerId'] as String;
+            var receiverId = callData['receiverId'] as String;
+            var displayNameID = loggedInUserId == callerId ? receiverId : callerId;
+            var duration = callData['duration'] as int;
+
+            return FutureBuilder(
+              future: userServices.getUserById(displayNameID),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  UserClass user = snapshot.data!;
+                  Icon callIcon;
+                  String callType;
+
+                  if (status == 'Declined' || status == 'Missed' || duration == 0) {
+                    callIcon = Icon(Icons.call_missed, color: Colors.red, size: 18);
+                    callType = 'Missed Call';
+                  } else if (callerId == loggedInUserId) {
+                    callIcon = Icon(Icons.call_made, color: Colors.green, size: 18);
+                    callType = 'Outgoing Call';
+                  } else {
+                    callIcon = Icon(Icons.call_received, color: Colors.green, size: 18);
+                    callType = 'Incoming Call';
+                  }
+
+                  String formattedDate = timeStamp != null ? formatDate(timeStamp) : '';
+                  String formattedTime = timeStamp != null ? formatTime(timeStamp) : '';
+
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(user.imageLink ??
+                          'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg'),
+                    ),
+                    title: Text(
+                      user.name ?? "",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Row(
+                      children: [
+                        callIcon,
+                        SizedBox(width: 5),
+                        Text(
+                          '$callType, $formattedDate, $formattedTime',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(Icons.call, color: Colors.white),
+                      onPressed: () {
+                        _initiateCall(context, loggedInUserId, displayNameID, user.name ?? '');
+                      },
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return const SizedBox.shrink(); // Empty widget instead of loader
+                }
+              },
+            );
+          },
+        );
+      } else if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}');
+      } else {
+        return const SizedBox.shrink(); // Empty widget instead of loader
+      }
+    },
   );
 }
