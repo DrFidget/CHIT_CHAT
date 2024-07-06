@@ -66,6 +66,7 @@ Widget DisplayAllCallLogs(String loggedInUserId) {
       if (snapshot.hasData) {
         var callLogs = snapshot.data!.docs;
         return ListView.builder(
+          shrinkWrap: true,
           itemCount: callLogs.length,
           itemBuilder: (context, index) {
             var callLog = callLogs[index];
@@ -101,7 +102,7 @@ Widget DisplayAllCallLogs(String loggedInUserId) {
 
                   return ListTile(
                     leading: CircleAvatar(
-                      radius:24,
+                      radius: 24,
                       backgroundImage: NetworkImage(user.imageLink ??
                           'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg'),
                     ),
@@ -119,12 +120,12 @@ Widget DisplayAllCallLogs(String loggedInUserId) {
                         SizedBox(width: 10),
                         Text(
                           '$callType, $formattedDate, $formattedTime',
-                          style: TextStyle(color: Colors.white, fontSize:16),
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       ],
                     ),
                     trailing: IconButton(
-                      icon: Icon(Icons.call, color: Colors.white,size: 28),
+                      icon: Icon(Icons.call, color: Colors.white, size: 28),
                       onPressed: () {
                         _initiateCall(context, loggedInUserId, displayNameID, user.name ?? '');
                       },
