@@ -101,6 +101,7 @@ Widget DisplayAllCallLogs(String loggedInUserId) {
 
                   return ListTile(
                     leading: CircleAvatar(
+                      radius:24,
                       backgroundImage: NetworkImage(user.imageLink ??
                           'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/small_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg'),
                     ),
@@ -109,20 +110,21 @@ Widget DisplayAllCallLogs(String loggedInUserId) {
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
                     ),
                     subtitle: Row(
                       children: [
                         callIcon,
-                        SizedBox(width: 5),
+                        SizedBox(width: 10),
                         Text(
                           '$callType, $formattedDate, $formattedTime',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.white, fontSize:16),
                         ),
                       ],
                     ),
                     trailing: IconButton(
-                      icon: Icon(Icons.call, color: Colors.white),
+                      icon: Icon(Icons.call, color: Colors.white,size: 28),
                       onPressed: () {
                         _initiateCall(context, loggedInUserId, displayNameID, user.name ?? '');
                       },
