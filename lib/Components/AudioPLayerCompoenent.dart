@@ -55,16 +55,37 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     _audioPlayer.onPlayerStateChanged.listen((PlayerState s) {
       setState(() {
         _isPlaying = s == PlayerState.playing;
-        _isLoadingAudio = false;
+        _isLoadingAudio = false; // Turn off loading when audio starts playing
       });
     });
 
     _audioPlayer.onPlayerComplete.listen((_) {
       setState(() {
         _isPlaying = false;
-        _position = Duration.zero;
+        // _position = Duration.zero;
       });
     });
+
+    // Preload the audio
+    _loadAudio();
+  }
+
+  Future<void> _loadAudio() async {
+    try {
+      setState(() {
+        _isLoadingAudio = true; // Set loading state while audio is loading
+      });
+      await _audioPlayer.setSource(UrlSource(widget.audioUrl));
+    } catch (e) {
+      print('Failed to load audio: $e');
+      // Handle error loading audio
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingAudio = false;
+        });
+      }
+    }
   }
 
   @override
@@ -73,27 +94,15 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     super.dispose();
   }
 
-  Future<void> _togglePlayback() async {
-    print(
-        "Toggling playback. Current state: ${_isPlaying ? 'playing' : 'paused'}");
-    setState(() {
-      _isLoadingAudio = true;
-    });
-
+  void _togglePlayback() async {
     if (_isPlaying) {
-      print("Pausing audio");
       await _audioPlayer.pause();
     } else {
-      print("Setting audio source");
-      await _audioPlayer.setSource(UrlSource(widget.audioUrl));
-      print("Resuming audio");
+      if (_position == _duration) {
+        await _audioPlayer.seek(Duration.zero);
+      }
       await _audioPlayer.resume();
     }
-
-    setState(() {
-      _isLoadingAudio = false;
-    });
-    print("Toggled playback. New state: ${_isPlaying ? 'playing' : 'paused'}");
   }
 
   void _changePlaybackSpeed() {
@@ -115,8 +124,10 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
         transcriptionText.text = transcription;
       });
       print('Transcription: $transcription');
+      // Handle transcription result as needed
     } catch (e) {
       print('Failed to transcribe audio: $e');
+      // Handle error
     }
   }
 
